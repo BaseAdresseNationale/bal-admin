@@ -1,0 +1,58 @@
+{
+  "name": "gpf-geocodeur",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "xo"
+  },
+  "dependencies": {
+    "@codegouvfr/react-dsfr": "^0.0.8",
+    "lodash": "^4.17.21",
+    "next": "12.2.5",
+    "prop-types": "^15.8.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.2"
+  },
+  "devDependencies": {
+    "eslint-config-xo": "^0.42.0",
+    "eslint-config-xo-nextjs": "^4.2.1",
+    "next-transpile-modules": "^9.0.0",
+    "xo": "^0.52.3"
+  },
+  "xo": {
+    "extends": "xo-nextjs",
+    "semicolon": false,
+    "space": 2,
+    "envs": [
+      "browser",
+      "es2021"
+    ],
+    "rules": {
+      "camelcase": "warn",
+      "unicorn/catch-error-name": "off",
+      "react/jsx-sort-props": "off",
+      "import/no-anonymous-default-export": "off",
+      "unicorn/prevent-abbreviations": "off",
+      "comma-dangle": "off",
+      "import/extensions": "off",
+      "node/prefer-global/process": "off",
+      "unicorn/no-array-for-each": "off",
+      "unicorn/prefer-switch": "off",
+      "react/no-unknown-property": [
+        "error",
+        {
+          "ignore": [
+            "jsx"
+          ]
+        }
+      ]
+    }
+  },
+  "engines": {
+    "node": ">= 18"
+  }
+}
