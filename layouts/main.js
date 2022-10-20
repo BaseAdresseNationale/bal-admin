@@ -35,7 +35,6 @@ class Layout extends React.Component {
         <style jsx>{`
           main {
             flex: 1;
-            background-color: #fff;
           }
         `}
         </style>
