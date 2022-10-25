@@ -26,19 +26,11 @@ class Layout extends React.Component {
 
         <Header />
 
-        <main>
+        <main role='main'>
           <React.StrictMode>
             {children}
           </React.StrictMode>
         </main>
-
-        <style jsx>{`
-          main {
-            flex: 1;
-            background-color: #fff;
-          }
-        `}
-        </style>
       </>
     )
   }

@@ -2,7 +2,7 @@ import Main from '@/layouts/main'
 
 const Home = () => (
   <Main>
-   <div />
+    <div />
   </Main>
 )
 
