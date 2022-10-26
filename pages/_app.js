@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {withAppDsfr} from '@codegouvfr/react-dsfr/lib/nextJs'
+import {withAppDsfr} from '@codegouvfr/react-dsfr/lib/next'
 import '@codegouvfr/react-dsfr/dsfr/dsfr.css'
 
 const App = ({Component, pageProps}) => (
