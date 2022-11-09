@@ -8,6 +8,9 @@ module.exports = withTM({
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    domains: ['static.data.gouv.fr']
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.(woff2|webmanifest)$/,

@@ -15,6 +15,7 @@ app.prepare().then(async () => {
   }
 
   server.use('/proxy-api-depot', require('./proxy-api-depot'))
+  server.use('/proxy-api-moissonneur-bal', require('./proxy-api-moissonneur-bal'))
 
   server.get('*', (request, res) => handle(request, res))
 

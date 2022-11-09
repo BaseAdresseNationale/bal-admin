@@ -17,6 +17,7 @@ const MoissoneurBAL = ({sources}) => (
               <th scope='col'>Modèle</th>
               <th scope='col'>Type</th>
               <th scope='col'>Date de mise à jour</th>
+              <th scope='col' />
             </tr>
           </thead>
 
@@ -35,8 +36,8 @@ MoissoneurBAL.propTypes = {
   sources: PropTypes.array.isRequired
 }
 
-export async function getServerSideProps() {
-  const sources = await getSources()
+export async function getServerSideProps({query}) {
+  const sources = await getSources(query.sourceId)
 
   return {
     props: {sources}
