@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types'
+import Link from 'next/link'
 
 import {formatDate} from '@/lib/util/date'
 
 const MoissoneurSourceItem = ({_id, title, model, type, _updated}) => (
-  <tr>
+  <tr cursor='pointer'>
     <td className='fr-col fr-my-1v'>
-      {title}
+      <Link href={`/moissonneur-bal/sources/${_id}`}>
+        <a>{title}</a>
+      </Link>
     </td>
     <td className='fr-col fr-my-1v'>
       {model}
