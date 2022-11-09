@@ -26,11 +26,19 @@ async function harvestSource(req, res) {
   forward(response, res)
 }
 
+async function updateSource(req, res) {
+  const {sourceId} = req.params
+
+  const response = await client.put(`sources/${sourceId}`, {json: req.body})
+  forward(response, res)
+}
+
 const app = new express.Router()
 
 app.use(express.json())
 
 // Sources
 app.post('/sources/:sourceId/harvest', w(harvestSource))
+app.put('/sources/:sourceId', w(updateSource))
 
 module.exports = app

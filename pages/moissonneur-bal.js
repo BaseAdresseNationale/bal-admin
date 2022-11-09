@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Main from '@/layouts/main'
 import {getSources} from '@/lib/api-moissonneur-bal'
 
-import MoissoneurSourceItem from '@/components/moissonneur-ban/moissonneur-source-item'
+import MoissoneurSourceItem from '@/components/moissonneur-bal/moissonneur-source-item'
 
 const MoissoneurBAL = ({sources}) => (
   <Main>
@@ -17,6 +17,7 @@ const MoissoneurBAL = ({sources}) => (
               <th scope='col'>Modèle</th>
               <th scope='col'>Type</th>
               <th scope='col'>Date de mise à jour</th>
+              <th scope='col'>Activé</th>
               <th scope='col' />
             </tr>
           </thead>

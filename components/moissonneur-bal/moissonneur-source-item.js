@@ -1,15 +1,12 @@
 import Link from 'next/link'
 import PropTypes from 'prop-types'
-import Link from 'next/link'
 
 import {formatDate} from '@/lib/util/date'
 
-const MoissoneurSourceItem = ({_id, title, model, type, _updated}) => (
-  <tr cursor='pointer'>
+const MoissoneurSourceItem = ({_id, title, model, type, enabled, _updated}) => (
+  <tr>
     <td className='fr-col fr-my-1v'>
-      <Link href={`/moissonneur-bal/sources/${_id}`}>
-        <a>{title}</a>
-      </Link>
+      {title}
     </td>
     <td className='fr-col fr-my-1v'>
       {model}
@@ -19,6 +16,9 @@ const MoissoneurSourceItem = ({_id, title, model, type, _updated}) => (
     </td>
     <td className='fr-col fr-my-1v'>
       {_updated ? formatDate(_updated) : 'inconnu'}
+    </td>
+    <td className='fr-col fr-my-1v'>
+      <input type='checkbox' checked={enabled} disabled />
     </td>
     <td className='fr-col fr-my-1v'>
       <Link href={{
@@ -37,6 +37,7 @@ MoissoneurSourceItem.propTypes = {
   title: PropTypes.string.isRequired,
   model: PropTypes.oneOf(['bal', 'custom']).isRequired,
   type: PropTypes.string.isRequired,
+  enabled: PropTypes.bool.isRequired,
   _updated: PropTypes.string
 }
 
