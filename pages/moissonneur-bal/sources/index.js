@@ -1,14 +1,15 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 import PropTypes from 'prop-types'
 
-import {getSource, udpateSource, getSourceHarvests, harvestSource} from '@/lib/api-moissonneur-bal'
+import {getSource, udpateSource, getSourceHarvests, harvestSource, getSourceCurrentRevisions} from '@/lib/api-moissonneur-bal'
 
 import Main from '@/layouts/main'
 
 import HarvestItem from '@/components/moissonneur-bal/harvest-item'
 import SourceOrganisation from '@/components/moissonneur-bal/source-organization'
+import RevisionItem from '@/components/moissonneur-bal/revision-item'
 
-const MoissoneurBAL = ({initialSource, initialHarvests}) => {
+const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
   const [source, setSource] = useState(initialSource)
   const [harvests, setHarvests] = useState(initialHarvests)
 
@@ -107,13 +108,40 @@ const MoissoneurBAL = ({initialSource, initialHarvests}) => {
       </div>
 
       <div className='fr-container fr-my-12v'>
-        <button
-          type='button'
-          className='fr-btn fr-btn--secondary'
-          onClick={enabledSource}
-        >
-          {source.enabled ? 'Désactiver' : 'Activer'} la source
-        </button>
+        <h2>Révisions par commune</h2>
+
+        {revisions.length === 0 && (
+          <div>Aucune révisions</div>
+        )}
+
+        <div className='fr-table'>
+          <table>
+            <thead>
+              <tr>
+                <th scope='col'>Code commune</th>
+                <th scope='col'>Nombre de ligne</th>
+                <th scope='col'>Nombre de ligne en erreur</th>
+                <th scope='col'>Publication</th>
+                <th scope='col'>Fichier</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {revisions.map(revision => (
+                <RevisionItem key={revision._id} {...revision} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div className='fr-container fr-my-12v'>
+        <div className='fr-toggle'>
+          <input type='checkbox' className='fr-toggle__input' aria-describedby='toggle-source-hint-text' id='toggle-source' checked={source.enabled} onChange={enabledSource} />
+          <label className='fr-toggle__label' htmlFor='toggle-source' data-fr-checked-label='Activé' data-fr-unchecked-label='Désactivé'>Activation de la source</label>
+          <p className='fr-hint-text' id='toggle-source-hint-text'>Lorsqu’elle est désactivée, la source n’est plus moissonnée</p>
+        </div>
       </div>
     </Main>
   )
@@ -130,17 +158,20 @@ MoissoneurBAL.propTypes = {
     type: PropTypes.string.isRequired,
     harvesting: PropTypes.object.isRequired
   }).isRequired,
-  initialHarvests: PropTypes.array.isRequired
+  initialHarvests: PropTypes.array.isRequired,
+  revisions: PropTypes.array.isRequired
 }
 
 export async function getServerSideProps({query}) {
   const source = await getSource(query.sourceId)
   const harvests = await getSourceHarvests(query.sourceId)
+  const revisions = await getSourceCurrentRevisions(query.sourceId)
 
   return {
     props: {
       initialSource: source,
-      initialHarvests: harvests
+      initialHarvests: harvests,
+      revisions,
     }
   }
 }
