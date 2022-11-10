@@ -50,15 +50,28 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
   return (
     <Main>
       <div className='fr-container fr-py-12v'>
-        <h1>{source.title}</h1>
-        <ul className='fr-tags-group'>
-          <li>
-            <p className='fr-tag'>{source.license}</p>
-          </li>
-          <li>
-            <p className='fr-tag'>{source.type}</p>
-          </li>
-        </ul>
+        <div className='fr-grid-row fr-grid-row--gutters'>
+          <div className='fr-col-10'>
+            <h1>{source.title}</h1>
+            <ul className='fr-tags-group'>
+              <li>
+                <p className='fr-tag'>{source.license}</p>
+              </li>
+              <li>
+                <p className='fr-tag'>{source.type}</p>
+              </li>
+            </ul>
+          </div>
+
+          <div className='fr-col-2'>
+            <div className='fr-container'>
+              <div className='fr-toggle'>
+                <input type='checkbox' className='fr-toggle__input' aria-describedby='toggle-source-hint-text' id='toggle-source' checked={source.enabled} onChange={enabledSource} />
+                <label className='fr-toggle__label' htmlFor='toggle-source' data-fr-checked-label='Activé' data-fr-unchecked-label='Désactivé' />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className='fr-container'>
@@ -132,15 +145,6 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
               ))}
             </tbody>
           </table>
-        </div>
-
-      </div>
-
-      <div className='fr-container fr-my-12v'>
-        <div className='fr-toggle'>
-          <input type='checkbox' className='fr-toggle__input' aria-describedby='toggle-source-hint-text' id='toggle-source' checked={source.enabled} onChange={enabledSource} />
-          <label className='fr-toggle__label' htmlFor='toggle-source' data-fr-checked-label='Activé' data-fr-unchecked-label='Désactivé'>Activation de la source</label>
-          <p className='fr-hint-text' id='toggle-source-hint-text'>Lorsqu’elle est désactivée, la source n’est plus moissonnée</p>
         </div>
       </div>
     </Main>
