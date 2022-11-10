@@ -131,7 +131,7 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
           <table>
             <thead>
               <tr>
-                <th scope='col'>Code commune</th>
+                <th scope='col'>Commune</th>
                 <th scope='col'>Nombre de ligne</th>
                 <th scope='col'>Nombre de ligne en erreur</th>
                 <th scope='col'>Publication</th>

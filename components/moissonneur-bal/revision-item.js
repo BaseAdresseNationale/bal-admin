@@ -3,6 +3,7 @@ import Router from 'next/router'
 import Tooltip from '../tooltip'
 
 import {getFile} from '@/lib/api-moissonneur-bal'
+import {getCommune} from '@/lib/cog'
 
 const RevisionPublication = ({status, errorMessage}) => {
   if (status === 'provided-by-other-client') {
@@ -37,6 +38,8 @@ RevisionPublication.propTypes = {
 }
 
 const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publication}) => {
+  const commune = getCommune(codeCommune)
+
   const downloadFile = async () => {
     const file = await getFile(fileId)
     Router.push(file.url)
@@ -45,7 +48,7 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
   return (
     <tr>
       <td className='fr-col fr-my-1v'>
-        <a>{codeCommune}</a>
+        <a>{commune.nom} ({codeCommune})</a>
       </td>
       <td className='fr-col fr-my-1v'>
         <a>{nbRows}</a>
