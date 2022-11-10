@@ -1,5 +1,5 @@
 import NextDocument, {Html, Head, Main, NextScript} from 'next/document'
-import {getColorSchemeSsrUtils} from '@codegouvfr/react-dsfr/lib/next'
+import {getColorSchemeSsrUtils} from '@codegouvfr/react-dsfr/next'
 
 const {
   readColorSchemeFromCookie,

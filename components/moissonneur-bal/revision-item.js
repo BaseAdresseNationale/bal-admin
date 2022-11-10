@@ -63,7 +63,7 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
         {fileId && (
           <button
             type='button'
-            className='fr-btn fr-btn--primary'
+            className='fr-btn fr-icon-download-fill fr-btn--icon-right'
             onClick={downloadFile}
           >
             Télécharger

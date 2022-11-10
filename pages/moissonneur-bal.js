@@ -17,7 +17,6 @@ const MoissoneurBAL = ({sources}) => (
               <th scope='col'>Modèle</th>
               <th scope='col'>Type</th>
               <th scope='col'>Date de mise à jour</th>
-              <th scope='col'>Activé</th>
               <th scope='col' />
             </tr>
           </thead>

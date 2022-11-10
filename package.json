@@ -6,10 +6,12 @@
     "dev": "node server",
     "build": "next build",
     "start": "NODE_ENV=production node server",
-    "lint": "xo"
+    "lint": "xo",
+    "predev": "only_include_used_icons",
+    "prebuild": "only_include_used_icons"
   },
   "dependencies": {
-    "@codegouvfr/react-dsfr": "^0.0.12",
+    "@codegouvfr/react-dsfr": "^0.0.28",
     "@etalab/decoupage-administratif": "^2.2.1",
     "compression": "^1.7.4",
     "date-fns": "^2.29.3",

@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {withAppDsfr} from '@codegouvfr/react-dsfr/lib/next'
+import {withAppDsfr} from '@codegouvfr/react-dsfr/next'
 import '@codegouvfr/react-dsfr/dsfr/dsfr.css'
+import '@codegouvfr/react-dsfr/dsfr/utility/icons/icons.css'
 
 const App = ({Component, pageProps}) => (
   <React.StrictMode>

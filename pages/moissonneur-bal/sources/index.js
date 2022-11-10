@@ -92,7 +92,7 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
 
         <button
           type='button'
-          className='fr-btn fr-btn--primary'
+          className={`fr-btn fr-btn--primary ${source.harvesting.asked || !source.enabled ? '' : 'fr-btn--icon-right fr-icon-flashlight-fill'}`}
           onClick={askHarvest}
           disabled={source.harvesting.asked || !source.enabled}
         >

@@ -78,7 +78,7 @@ const HarvestItem = ({startedAt, finishedAt, status, error, updateStatus, update
         {fileId && (
           <button
             type='button'
-            className='fr-btn fr-btn--primary'
+            className='fr-btn fr-icon-download-line fr-btn--icon-right'
             onClick={downloadFile}
           >
             Télécharger
