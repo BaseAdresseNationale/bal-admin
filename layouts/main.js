@@ -4,36 +4,27 @@ import Head from 'next/head'
 
 import Header from '@/components/header'
 
-class Layout extends React.Component {
-  static propTypes = {
-    children: PropTypes.node
-  }
+const Layout = ({isAdmin, children}) => (
+  <>
+    <Head>
+      <title>BAL Admin</title>
+      <meta name='description' content='BAL Admin' />
+      <meta name='viewport' content='width=device-width, initial-scale=1' />
+    </Head>
 
-  static defaultProps = {
-    children: null
-  }
+    <Header isLoggedIn={isAdmin} />
 
-  render() {
-    const {children} = this.props
+    <main role='main'>
+      <React.StrictMode>
+        {children}
+      </React.StrictMode>
+    </main>
+  </>
+)
 
-    return (
-      <>
-        <Head>
-          <title>BAL Admin</title>
-          <meta name='description' content='BAL Admin' />
-          <meta name='viewport' content='width=device-width, initial-scale=1' />
-        </Head>
-
-        <Header />
-
-        <main role='main'>
-          <React.StrictMode>
-            {children}
-          </React.StrictMode>
-        </main>
-      </>
-    )
-  }
+Layout.propTypes = {
+  isAdmin: PropTypes.bool.isRequired,
+  children: PropTypes.node.isRequired
 }
 
 export default Layout
