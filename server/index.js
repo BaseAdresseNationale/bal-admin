@@ -1,29 +1,28 @@
+#!/usr/bin/env node
 const express = require('express')
 const next = require('next')
-const compression = require('compression')
 
-const port = process.env.PORT || 3000
-const dev = process.env.NODE_ENV !== 'production'
-const app = next({dev})
-const handle = app.getRequestHandler()
+const createApiRoutes = require('./routes')
 
-app.prepare().then(async () => {
+async function main() {
   const server = express()
 
-  if (!dev) {
-    server.use(compression())
-  }
+  const port = process.env.PORT || 3000
+  const dev = process.env.NODE_ENV !== 'production'
 
-  server.use('/proxy-api-depot', require('./proxy-api-depot'))
-  server.use('/proxy-api-moissonneur-bal', require('./proxy-api-moissonneur-bal'))
+  const nextApp = next({dev})
+  await nextApp.prepare()
 
-  server.get('*', (request, res) => handle(request, res))
+  server.use('/api', createApiRoutes())
 
-  server.listen(port, err => {
-    if (err) {
-      throw err
-    }
-
-    console.log(`> Ready on http://localhost:${port}`)
+  server.get('*', (req, res) => {
+    nextApp.render(req, res, req.params[0], req.query)
   })
+
+  server.listen(port)
+}
+
+main().catch(error => {
+  console.error(error)
+  process.exit(1)
 })
