@@ -10,13 +10,13 @@ import {useUser} from '@/hooks/user'
 const Login = () => {
   const [isAdmin] = useUser()
 
-  const [error, setError] = useState('')
+  const [error, setError] = useState()
 
   const handleSubmit = async e => {
     e.preventDefault()
 
     if (error) {
-      setError('')
+      setError(null)
     }
 
     try {
@@ -26,7 +26,7 @@ const Login = () => {
         setError('Mot de passe incorrecte')
       }
     } catch (error) {
-      console.error('An unexpected error happened occurred:', error)
+      console.error('Une erreur imprévue est survenue :', error)
       setError(error.message)
     }
   }
