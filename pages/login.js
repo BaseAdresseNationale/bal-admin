@@ -25,6 +25,10 @@ const Login = () => {
       if (res.status === 401) {
         setError('Mot de passe incorrecte')
       }
+
+      if (res.ok) {
+        Router.push('/')
+      }
     } catch (error) {
       console.error('Une erreur imprévue est survenue :', error)
       setError(error.message)

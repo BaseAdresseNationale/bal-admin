@@ -25,11 +25,10 @@ module.exports = app => {
     if (process.env.TOKEN_SECRET && req.body.password === process.env.TOKEN_SECRET) {
       req.session.user = {isAdmin: true}
       await req.session.save()
-      res.redirect('/')
-      return
+      res.sendStatus(200)
+    } else {
+      res.sendStatus(401)
     }
-
-    res.sendStatus(401)
   })
 
   router.get('/admin', async (req, res) => {
