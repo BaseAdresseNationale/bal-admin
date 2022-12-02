@@ -46,9 +46,6 @@ module.exports = app => {
   })
 
   router.get('/', authSession)
-  router.get('/moissonneur-bal', authSession)
-  router.get('/mes-adresses', authSession)
-  router.get('/api-depot', authSession)
 
   router.use('/proxy-api-depot', require('./proxy-api-depot'))
   router.use('/proxy-api-moissonneur-bal', require('./proxy-api-moissonneur-bal'))
