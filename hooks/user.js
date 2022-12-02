@@ -11,7 +11,7 @@ export function useUser() {
       setIsLoading(true)
       const user = await getUser()
 
-      if (user.isAdmin) {
+      if (user && user.isAdmin) {
         setIsAdmin(user.isAdmin)
         setIsLoading(false)
       } else {
