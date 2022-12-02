@@ -18,7 +18,7 @@ module.exports = app => {
   router.use(ironSession({
     cookieName: 'bal-admin-session',
     ttl: 6 * 3600, // 6 heures
-    password: process.env.TOKEN_SECRET,
+    password: process.env.IRON_SESSION_SECRET,
   }))
 
   router.post('/login', async (req, res) => {
