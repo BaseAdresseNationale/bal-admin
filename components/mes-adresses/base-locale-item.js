@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import {formatDate} from '@/lib/util/date'
 import {computeStatus} from '@/lib/bal-status'
+import {getCommune} from '@/lib/cog'
 
 const BaseLocaleItem = ({_id, nom, commune, _created, _updated, _deleted, status, sync, nbNumerosCertifies, nbNumeros}) => {
   const computedStatus = computeStatus(status, sync)
@@ -13,7 +14,7 @@ const BaseLocaleItem = ({_id, nom, commune, _created, _updated, _deleted, status
         {nom}
       </td>
       <td className='fr-col fr-my-1v'>
-        {commune}
+        {getCommune(commune).nom} ({commune})
       </td>
       <td className='fr-col fr-my-1v'>
         {_created ? formatDate(_created) : 'inconnu'}

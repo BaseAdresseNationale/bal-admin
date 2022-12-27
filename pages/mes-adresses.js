@@ -6,6 +6,7 @@ import Pagination from 'react-js-pagination'
 
 import {searchBasesLocales} from '@/lib/api-mes-adresses'
 import {STATUSES} from '@/lib/bal-status'
+import {isCommune} from '@/lib/cog'
 
 import Main from '@/layouts/main'
 
@@ -40,7 +41,7 @@ const MesAdresses = ({basesLocales, query, page, limit, offset, count}) => {
 
     if (input.includes('@')) {
       setInputEmail(input)
-    } else if (input.length === 5) {
+    } else if (isCommune(input)) {
       setInputCommune(input)
     } else {
       setIsInputError(true)
