@@ -1,16 +1,19 @@
-import Link from 'next/link'
 import PropTypes from 'prop-types'
+import Link from 'next/link'
 
 import {formatDate} from '@/lib/util/date'
 import {computeStatus} from '@/lib/bal-status'
 
-const BaseLocaleItem = ({_id, nom, _created, _updated, _deleted, status, sync, nbNumerosCertifies, nbNumeros}) => {
+const BaseLocaleItem = ({_id, nom, commune, _created, _updated, _deleted, status, sync, nbNumerosCertifies, nbNumeros}) => {
   const computedStatus = computeStatus(status, sync)
 
   return (
     <tr>
       <td className='fr-col fr-my-1v'>
         {nom}
+      </td>
+      <td className='fr-col fr-my-1v'>
+        {commune}
       </td>
       <td className='fr-col fr-my-1v'>
         {_created ? formatDate(_created) : 'inconnu'}
@@ -25,9 +28,6 @@ const BaseLocaleItem = ({_id, nom, _created, _updated, _deleted, status, sync, n
       </td>
       <td className='fr-col fr-my-1v'>
         {nbNumerosCertifies} / {nbNumeros}
-      </td>
-      <td className='fr-col fr-my-1v'>
-        <input type='checkbox' id='checkbox' name='checkbox' checked={Boolean(_deleted)} disabled />
       </td>
       <td className='fr-col fr-my-1v'>
         <Link href={{
@@ -47,6 +47,7 @@ const BaseLocaleItem = ({_id, nom, _created, _updated, _deleted, status, sync, n
 BaseLocaleItem.propTypes = {
   _id: PropTypes.string.isRequired,
   nom: PropTypes.string.isRequired,
+  commune: PropTypes.string.isRequired,
   _created: PropTypes.string.isRequired,
   _updated: PropTypes.string.isRequired,
   _deleted: PropTypes.string,
