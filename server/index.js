@@ -7,7 +7,7 @@ const createApiRoutes = require('./routes')
 async function main() {
   const server = express()
 
-  const port = process.env.PORT || 3000
+  const port = process.env.PORT || 9000
   const dev = process.env.NODE_ENV !== 'production'
 
   const nextApp = next({dev})
