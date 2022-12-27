@@ -1,9 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Link from 'next/link'
 
-import {withAppDsfr} from '@codegouvfr/react-dsfr/next'
-import '@codegouvfr/react-dsfr/dsfr/dsfr.css'
-import '@codegouvfr/react-dsfr/dsfr/utility/icons/icons.css'
+import {createNextDsfrIntegrationApi} from '@codegouvfr/react-dsfr/next'
+
+const {withDsfr, dsfrDocumentApi} = createNextDsfrIntegrationApi({
+  defaultColorScheme: 'system',
+  Link
+})
+
+export {dsfrDocumentApi}
 
 const App = ({Component, pageProps}) => (
   <React.StrictMode>
@@ -16,8 +22,5 @@ App.propTypes = {
   pageProps: PropTypes.object.isRequired,
 }
 
-export default withAppDsfr(
-  App,
-  {defaultColorScheme: 'system'}
-)
+export default withDsfr(App)
 

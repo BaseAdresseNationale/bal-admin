@@ -1,13 +1,13 @@
-import NextDocument, {Html, Head, Main, NextScript} from 'next/document'
-import {getColorSchemeSsrUtils} from '@codegouvfr/react-dsfr/next'
+import {Html, Head, Main, NextScript} from 'next/document'
+import {dsfrDocumentApi} from './_app'
 
 const {
-  readColorSchemeFromCookie,
-  getColorSchemeHtmlAttributes
-} = getColorSchemeSsrUtils()
+  getColorSchemeHtmlAttributes,
+  augmentDocumentForDsfr
+} = dsfrDocumentApi
 
-const Document = () => (
-  <Html {...getColorSchemeHtmlAttributes()}>
+const Document = props => (
+  <Html {...getColorSchemeHtmlAttributes(props)}>
     <Head />
     <body>
       <Main />
@@ -18,10 +18,4 @@ const Document = () => (
 
 export default Document
 
-Document.getInitialProps = async ctx => {
-  const initialProps = await NextDocument.getInitialProps(ctx)
-
-  readColorSchemeFromCookie(ctx)
-
-  return {...initialProps}
-}
+augmentDocumentForDsfr(Document)
