@@ -15,7 +15,7 @@ import {useUser} from '@/hooks/user'
 import BaseLocaleItem from '@/components/mes-adresses/base-locale-item'
 import Loader from '@/components/loader'
 
-const MesAdresses = ({basesLocales, query, page, limit, offset, count}) => {
+const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
   const [isAdmin, isLoading] = useUser()
   const router = useRouter()
 
@@ -28,9 +28,29 @@ const MesAdresses = ({basesLocales, query, page, limit, offset, count}) => {
 
   const currentPage = Math.ceil((offset - 1) / limit) + 1
 
+  const computeQuery = useCallback(page => {
+    const query = {page, limit, deleted: deleted ? 1 : 0}
+
+    if (status !== '') {
+      query.status = status
+    }
+
+    if (inputEmail) {
+      query.email = inputEmail
+    }
+
+    if (inputCommune) {
+      query.commune = inputCommune
+    }
+
+    return query
+  }, [limit, inputEmail, inputCommune, deleted, status])
+
   const onPageChange = useCallback(page => {
-    router.push(`/mes-adresses?page=${page}`)
-  }, [router])
+    const query = computeQuery(page)
+
+    router.push({pathname: '/mes-adresses', query})
+  }, [router, computeQuery])
 
   const submitInput = useCallback(event => {
     event.preventDefault()
@@ -49,22 +69,10 @@ const MesAdresses = ({basesLocales, query, page, limit, offset, count}) => {
   }, [input])
 
   useEffect(() => {
-    const query = {page, limit, deleted: deleted ? 1 : 0}
-
-    if (status !== '') {
-      query.status = status
-    }
-
-    if (inputEmail) {
-      query.email = inputEmail
-    }
-
-    if (inputCommune) {
-      query.commune = inputCommune
-    }
+    const query = computeQuery(1)
 
     router.push({pathname: '/mes-adresses', query})
-  }, [page, limit, inputEmail, inputCommune, deleted, status]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [limit, inputEmail, inputCommune, deleted, status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Main isAdmin={isAdmin}>
@@ -181,7 +189,6 @@ const MesAdresses = ({basesLocales, query, page, limit, offset, count}) => {
 }
 
 MesAdresses.defaultProps = {
-  page: 1,
   offset: 0,
   limit: 20,
   count: 0
