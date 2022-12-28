@@ -1,6 +1,8 @@
 import {useEffect, useState} from 'react'
 import Router from 'next/router'
 
+import Button from '@codegouvfr/react-dsfr/Button'
+
 import Main from '@/layouts/main'
 
 import {login} from '@/lib/user'
@@ -47,9 +49,9 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <label className='fr-label' htmlFor='password'>Mot de passe</label>
           <input className='fr-input' type='password' id='password' name='password' required />
-          <button type='submit' className='fr-btn fr-my-2w'>
+          <Button className='fr-my-2w' type='submit'>
             Connexion
-          </button>
+          </Button>
 
           {error && (
             <div className='fr-alert fr-alert--error fr-alert--sm fr-my-2w'>

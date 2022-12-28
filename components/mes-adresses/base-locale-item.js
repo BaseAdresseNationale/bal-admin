@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import Link from 'next/link'
 
+import Button from '@codegouvfr/react-dsfr/Button'
+
 import {formatDate} from '@/lib/util/date'
 import {computeStatus} from '@/lib/bal-status'
 import {getCommune} from '@/lib/cog'
@@ -31,14 +33,14 @@ const BaseLocaleItem = ({_id, nom, commune, _created, _updated, _deleted, status
         {nbNumerosCertifies} / {nbNumeros}
       </td>
       <td className='fr-col fr-my-1v'>
-        <Link href={{
+        <Link passHref href={{
           pathname: '/mes-adresses/base-locale',
           query: {baseLocaleId: _id}
         }}
         >
-          <button className='fr-btn fr-btn--icon-right fr-icon-arrow-right-line' type='button' >
+          <Button iconId='fr-icon-arrow-right-line' iconPosition='right'>
             Consulter
-          </button>
+          </Button>
         </Link>
       </td>
     </tr>

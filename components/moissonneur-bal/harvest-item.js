@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types'
 import Router from 'next/router'
+
+import Button from '@codegouvfr/react-dsfr/Button'
+
 import Tooltip from '../tooltip'
 import {formatDate} from '@/lib/util/date'
 
@@ -76,13 +79,13 @@ const HarvestItem = ({startedAt, finishedAt, status, error, updateStatus, update
       </td>
       <td className='fr-col fr-my-1v'>
         {fileId && (
-          <button
-            type='button'
-            className='fr-btn fr-icon-download-line fr-btn--icon-right'
+          <Button
+            iconId='fr-icon-download-line'
+            iconPosition='right'
             onClick={downloadFile}
           >
             Télécharger
-          </button>
+          </Button>
         )}
       </td>
     </tr>

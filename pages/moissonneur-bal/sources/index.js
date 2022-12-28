@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 import PropTypes from 'prop-types'
 
+import Button from '@codegouvfr/react-dsfr/Button'
 import {getSource, udpateSource, getSourceHarvests, harvestSource, getSourceCurrentRevisions} from '@/lib/api-moissonneur-bal'
 
 import {useUser} from '@/hooks/user'
@@ -98,14 +99,13 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
             <div className='fr-container fr-my-12v'>
               <h2>Moissonnages</h2>
 
-              <button
-                type='button'
-                className={`fr-btn fr-btn--primary ${source.harvesting.asked || !source.enabled ? '' : 'fr-btn--icon-right fr-icon-flashlight-fill'}`}
-                onClick={askHarvest}
-                disabled={source.harvesting.asked || !source.enabled}
+              <Button
+                iconId={source.harvesting.asked || !source.enabled ? '' : 'fr-icon-flashlight-fill'}
+                iconPosition='right'
+                disabled={source.harvesting.asked || !source.enabled} onClick={askHarvest}
               >
                 {source.harvesting.asked ? 'Moissonnage en cours…' : 'Lancer le moissonnage'}
-              </button>
+              </Button>
 
               <div className='fr-table'>
                 <table>

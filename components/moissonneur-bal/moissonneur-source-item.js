@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 
+import Button from '@codegouvfr/react-dsfr/Button'
+
 import {formatDate} from '@/lib/util/date'
 
 const MoissoneurSourceItem = ({_id, title, model, type, _updated}) => (
@@ -18,14 +20,14 @@ const MoissoneurSourceItem = ({_id, title, model, type, _updated}) => (
       {_updated ? formatDate(_updated) : 'inconnu'}
     </td>
     <td className='fr-col fr-my-1v'>
-      <Link href={{
+      <Link passHref href={{
         pathname: '/moissonneur-bal/sources',
         query: {sourceId: _id}
       }}
       >
-        <button className='fr-btn fr-btn--icon-right fr-icon-arrow-right-line' type='button' >
+        <Button iconId='fr-icon-arrow-right-line' iconPosition='right'>
           Consulter
-        </button>
+        </Button>
       </Link>
     </td>
   </tr>

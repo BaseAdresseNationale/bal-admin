@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types'
 import Router from 'next/router'
+
+import Button from '@codegouvfr/react-dsfr/Button'
+
 import Tooltip from '../tooltip'
 
 import {getFile} from '@/lib/api-moissonneur-bal'
@@ -61,13 +64,13 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
       </td>
       <td className='fr-col fr-my-1v'>
         {fileId && (
-          <button
-            type='button'
-            className='fr-btn fr-icon-download-fill fr-btn--icon-right'
+          <Button
+            iconId='fr-icon-download-line'
+            iconPosition='right'
             onClick={downloadFile}
           >
             Télécharger
-          </button>
+          </Button>
         )}
       </td>
     </tr>
