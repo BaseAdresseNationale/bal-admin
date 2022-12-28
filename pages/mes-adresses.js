@@ -107,7 +107,7 @@ const MesAdresses = ({basesLocales, query, page, limit, offset, count}) => {
                     </label>
                     <select className='fr-select' id='select-status' name='select-status' value={status} onChange={e => setStatus(e.target.value)}>
                       <option value='' disabled hidden>Tous</option>
-                      {Object.keys(STATUSES).map(key => (
+                      {Object.keys(pick(STATUSES, ['draft', 'demo', 'ready-to-publish', 'published'])).map(key => (
                         <option key={key} value={key}>{STATUSES[key].label}</option>
                       ))}
                     </select>
