@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import Router from 'next/router'
 
 import Button from '@codegouvfr/react-dsfr/Button'
+import Badge from '@codegouvfr/react-dsfr/Badge'
 
 import Tooltip from '../tooltip'
 
@@ -10,21 +11,21 @@ import {getCommune} from '@/lib/cog'
 
 const RevisionPublication = ({status, errorMessage}) => {
   if (status === 'provided-by-other-client') {
-    return <p className='fr-badge fr-badge--info'>Publiée par un autre client</p>
+    return <Badge label='Publiée par un autre client' severity='info' noIcon />
   }
 
   if (status === 'provided-by-other-source') {
-    return <p className='fr-badge fr-badge--error'>Publiée par une autre source</p>
+    return <Badge label='Publiée par une autre source' severity='error' noIcon />
   }
 
   if (status === 'published') {
-    return <p className='fr-badge fr-badge--success'>Publiée</p>
+    return <Badge label='Publiée' severity='success' noIcon />
   }
 
   if (status === 'error') {
     return (
       <Tooltip text={errorMessage}>
-        <p className='fr-badge fr-badge--error'>Erreur</p>
+        <Badge label='Erreur' severity='error' noIcon />
       </Tooltip>
     )
   }

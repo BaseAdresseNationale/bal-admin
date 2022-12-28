@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import Link from 'next/link'
 
 import Button from '@codegouvfr/react-dsfr/Button'
+import Badge from '@codegouvfr/react-dsfr/Badge'
 
 import {formatDate} from '@/lib/util/date'
 import {computeStatus} from '@/lib/bal-status'
@@ -25,9 +26,7 @@ const BaseLocaleItem = ({_id, nom, commune, _created, _updated, _deleted, status
         {_updated ? formatDate(_updated) : 'inconnu'}
       </td>
       <td className='fr-col fr-my-1v'>
-        <p className={`fr-badge fr-badge--${computedStatus.intent} fr-badge--sm fr-badge--no-icon`}>
-          {computedStatus.label}
-        </p>
+        <Badge label={computedStatus.label} severity={computedStatus.intent} noIcon />
       </td>
       <td className='fr-col fr-my-1v'>
         {nbNumerosCertifies} / {nbNumeros}

@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import Link from 'next/link'
 
+import Badge from '@codegouvfr/react-dsfr/Badge'
+
 import {getBaseLocale} from '@/lib/api-mes-adresses'
 import {computeStatus} from '@/lib/bal-status'
 
@@ -38,9 +40,7 @@ const BaseLocale = ({baseLocale}) => {
                   <h1>{nom} ({commune})</h1>
 
                   <div className='fr-my-4v'>
-                    <p className={`fr-badge fr-badge--${computedStatus.intent} fr-badge--sm fr-badge--no-icon`}>
-                      {computedStatus.label}
-                    </p>
+                    <Badge label={computedStatus.label} severity={computedStatus.intent} noIcon />
                   </div>
 
                   <ul className='fr-tags-group'>

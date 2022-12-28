@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import Router from 'next/router'
 
 import Button from '@codegouvfr/react-dsfr/Button'
+import Badge from '@codegouvfr/react-dsfr/Badge'
 
 import Tooltip from '../tooltip'
 import {formatDate} from '@/lib/util/date'
@@ -10,19 +11,19 @@ import {getFile} from '@/lib/api-moissonneur-bal'
 
 const StatusBadge = ({status, error}) => {
   if (status === 'active') {
-    return <p className='fr-badge fr-badge--info'>En cours…</p>
+    return <Badge label='En cours…' severity='info' noIcon />
   }
 
   if (status === 'failed') {
     return (
       <Tooltip text={error}>
-        <p className='fr-badge fr-badge--error'>Échec</p>
+        <Badge label='Échec' severity='error' noIcon />
       </Tooltip>
     )
   }
 
   if (status === 'completed') {
-    return <p className='fr-badge fr-badge--success'>Terminé</p>
+    return <Badge label='Terminé' severity='success' noIcon />
   }
 }
 
@@ -33,19 +34,19 @@ StatusBadge.propTypes = {
 
 const UpdateStatusBadge = ({updateStatus, updateRejectionReason}) => {
   if (updateStatus === 'unchanged') {
-    return <p className='fr-badge fr-badge--info'>Aucun changement</p>
+    return <Badge label='Aucun changement' severity='info' noIcon />
   }
 
   if (updateStatus === 'rejected') {
     return (
       <Tooltip text={updateRejectionReason}>
-        <p className='fr-badge fr-badge--error'>Rejeté</p>
+        <Badge label='Rejeté' severity='error' noIcon />
       </Tooltip>
     )
   }
 
   if (updateStatus === 'updated') {
-    return <p className='fr-badge fr-badge--success'>Mis à jour</p>
+    return <Badge label='Mis à jour' severity='success' noIcon />
   }
 }
 
