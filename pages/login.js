@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react'
 import Router from 'next/router'
 
 import Button from '@codegouvfr/react-dsfr/Button'
+import Alert from '@codegouvfr/react-dsfr/Alert'
 
 import Main from '@/layouts/main'
 
@@ -54,9 +55,14 @@ const Login = () => {
           </Button>
 
           {error && (
-            <div className='fr-alert fr-alert--error fr-alert--sm fr-my-2w'>
-              <p>Erreur : {error}</p>
-            </div>
+            <Alert
+              className='fr-my-2w'
+              title='Erreur'
+              description={error}
+              severity='error'
+              closable={false}
+              small
+            />
           )}
         </form>
 

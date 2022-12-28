@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import Badge from '@codegouvfr/react-dsfr/Badge'
 
+import Alert from '@codegouvfr/react-dsfr/Alert'
 import {getBaseLocale} from '@/lib/api-mes-adresses'
 import {computeStatus} from '@/lib/bal-status'
 
@@ -28,10 +29,12 @@ const BaseLocale = ({baseLocale}) => {
           <div className='fr-container'>
 
             {_deleted && (
-              <div className='fr-alert fr-alert--error'>
-                <h3 className='fr-alert__title'>Cette Base Adresse Locale a été supprimée</h3>
-                <p>La Base Adresse Locale a été supprimée le <b>{formatDate(_deleted)}</b></p>
-              </div>
+              <Alert
+                className='fr-mt-4v'
+                title='Cette Base Adresse Locale a été supprimée'
+                severity='error'
+                description={`La Base Adresse Locale a été supprimée le ${formatDate(_deleted)}`}
+              />
             )}
 
             <div className='fr-container fr-py-12v'>
