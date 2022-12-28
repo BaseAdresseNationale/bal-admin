@@ -1,7 +1,9 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 import PropTypes from 'prop-types'
 
+import Card from '@codegouvfr/react-dsfr/Card'
 import Button from '@codegouvfr/react-dsfr/Button'
+
 import {getSource, udpateSource, getSourceHarvests, harvestSource, getSourceCurrentRevisions} from '@/lib/api-moissonneur-bal'
 
 import {useUser} from '@/hooks/user'
@@ -9,7 +11,6 @@ import {useUser} from '@/hooks/user'
 import Main from '@/layouts/main'
 
 import HarvestItem from '@/components/moissonneur-bal/harvest-item'
-import SourceOrganisation from '@/components/moissonneur-bal/source-organization'
 import RevisionItem from '@/components/moissonneur-bal/revision-item'
 import Loader from '@/components/loader'
 
@@ -90,7 +91,17 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
             <div className='fr-container'>
               <h2>Organisation</h2>
               {source.organization ? (
-                <SourceOrganisation {...source.organization} />
+                <Card
+                  desc=''
+                  enlargeLink
+                  horizontal
+                  imageAlt={`Logo de l'organisation ${source.organization.name}`}
+                  imageUrl={source.organization.logo}
+                  linkProps={{
+                    href: source.organization.page
+                  }}
+                  title={source.organization.name}
+                />
               ) : (
                 <div>Aucune information</div>
               )}
