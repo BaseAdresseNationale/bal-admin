@@ -19,7 +19,9 @@ async function main() {
     nextApp.render(req, res, req.params[0], req.query)
   })
 
-  server.listen(port)
+  server.listen(port, () => {
+    console.log(`Start listening on port ${port}`)
+  })
 }
 
 main().catch(error => {
