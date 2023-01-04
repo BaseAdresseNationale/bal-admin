@@ -14,6 +14,7 @@ import {useUser} from '@/hooks/user'
 
 import BaseLocaleItem from '@/components/mes-adresses/base-locale-item'
 import Loader from '@/components/loader'
+import SelectInput from '@/components/select-input'
 
 const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
   const [isAdmin, isLoading] = useUser()
@@ -109,17 +110,13 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
 
               <div className='fr-grid-row fr-grid-row--gutters'>
                 <div className='fr-col-12 fr-col-sm-6'>
-                  <div className='fr-select-group'>
-                    <label className='fr-label' htmlFor='select-status'>
-                      Statut
-                    </label>
-                    <select className='fr-select' id='select-status' name='select-status' value={status} onChange={e => setStatus(e.target.value)}>
-                      <option value='' disabled hidden>Tous</option>
-                      {Object.keys(pick(STATUSES, ['draft', 'demo', 'ready-to-publish', 'published'])).map(key => (
-                        <option key={key} value={key}>{STATUSES[key].label}</option>
-                      ))}
-                    </select>
-                  </div>
+                  <SelectInput
+                    label='Statut'
+                    value={status}
+                    options={Object.keys(pick(STATUSES, ['draft', 'demo', 'ready-to-publish', 'published'])).map(key => ({value: key, label: STATUSES[key].label}))}
+                    defaultOption='Tous'
+                    handleChange={setStatus}
+                  />
                 </div>
 
                 <div className='fr-col-12 fr-col-sm-6'>
