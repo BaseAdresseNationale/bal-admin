@@ -26,6 +26,7 @@ const APIDepot = ({clients, mandataires, chefsDeFile}) => {
                     <th scope='col'>Stratégie d’autorisation</th>
                     <th scope='col'>Activé</th>
                     <th scope='col'>Mode relax</th>
+                    <th scope='col' />
                   </tr>
                 </thead>
 
