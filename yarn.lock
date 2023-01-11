@@ -23,10 +23,10 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@codegouvfr/react-dsfr@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-0.13.0.tgz#d07adcf7aa60d35e3cf2e08d444a9ce736aa759e"
-  integrity sha512-Ucbc2x7zdD5NZUrRMDSlXNsRdBThn1R/bzgaO7HRpXVdnjArUR1ztJ1+2qvm0gyDzqCrDXZLsJiafri7hko+sA==
+"@codegouvfr/react-dsfr@^0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-0.24.0.tgz#f1ad4c513f27b40419f4858a7b45c4afe7ff7738"
+  integrity sha512-5Uos8tZdgUNCWyzgOv8l4UU3F53ffyZZvLeSi3jAsu7DLeLUGQNJhybX7Xg74HcTcB0lEm4Ky4c237HIM3A8Xw==
   dependencies:
     tsafe "^1.4.0"
 

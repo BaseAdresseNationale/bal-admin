@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Link from 'next/link'
 
-import {createNextDsfrIntegrationApi} from '@codegouvfr/react-dsfr/next'
+import {createNextDsfrIntegrationApi} from '@codegouvfr/react-dsfr/next-pagesdir'
 
 const {withDsfr, dsfrDocumentApi} = createNextDsfrIntegrationApi({
   defaultColorScheme: 'system',
