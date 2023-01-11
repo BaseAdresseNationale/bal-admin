@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {useRouter} from 'next/router'
 import {pick} from 'lodash'
 import Pagination from 'react-js-pagination'
+import SearchBar from '@codegouvfr/react-dsfr/SearchBar'
 
 import {searchBasesLocales} from '@/lib/api-mes-adresses'
 import {STATUSES} from '@/lib/bal-status'
@@ -85,20 +86,16 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
               <div className='fr-grid-row fr-grid-row--gutters'>
                 <div className='fr-col'>
                   <form onSubmit={submitInput}>
-                    <div className='fr-search-bar' id='search-input' role='search'>
-                      <input
-                        className={`fr-input ${isInputError ? 'fr-input--error' : ''}`}
-                        placeholder='Recherche code commune ou email'
-                        type='search'
-                        value={input}
-                        id='search-input'
-                        name='search-input'
-                        onChange={e => setInput(e.target.value)}
-                      />
-                      <button type='submit' className='fr-btn' title='Rechercher'>
-                        Rechercher
-                      </button>
-                    </div>
+                    <SearchBar
+                      label='Recherche code commune ou email'
+                      nativeInputProps={{
+                        value: input,
+                        id: 'search-input',
+                        name: 'search-input',
+                        onChange: e => setInput(e.target.value)
+                      }}
+                    />
+
                     {isInputError && (
                       <p id='text-input-error-desc-error' className='fr-error-text'>
                         Veuillez indiquer un code commune ou une adresse email
