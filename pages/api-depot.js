@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
+import Link from 'next/link'
 
+import Button from '@codegouvfr/react-dsfr/Button'
 import {getChefsDeFile, getClients, getMandataires} from '@/lib/api-depot'
 
 import Main from '@/layouts/main'
@@ -15,6 +17,20 @@ const APIDepot = ({clients, mandataires, chefsDeFile}) => {
       <Loader isLoading={isLoading}>
         {isAdmin && (
           <div className='fr-container fr-py-12v'>
+
+            <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--right'>
+              <div className='fr-col-2'>
+                <Link passHref href={{
+                  pathname: '/api-depot/client/client-form',
+                }}
+                >
+                  <Button iconId='fr-icon-add-line'>
+                    Ajouter un client
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
             <div className='fr-table'>
               <table>
                 <caption>Liste des clients de l’API dépôt</caption>

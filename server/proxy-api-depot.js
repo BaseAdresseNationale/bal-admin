@@ -39,6 +39,11 @@ async function updateClient(req, res) {
   forward(response, res)
 }
 
+async function createMandataire(req, res) {
+  const response = await client.post('mandataires', {json: req.body})
+  forward(response, res)
+}
+
 async function getMandataire(req, res) {
   const response = await client.get(`mandataires/${req.params.mandataireId}`)
   forward(response, res)
@@ -46,6 +51,11 @@ async function getMandataire(req, res) {
 
 async function getMandataires(req, res) {
   const response = await client.get('mandataires')
+  forward(response, res)
+}
+
+async function createChefDeFile(req, res) {
+  const response = await client.post('chefs-de-file', {json: req.body})
   forward(response, res)
 }
 
@@ -70,10 +80,12 @@ app.get('/clients/:clientId', w(getClient))
 app.put('/clients/:clientId', w(updateClient))
 
 // Mandataires
+app.post('/mandataires', w(createMandataire))
 app.get('/mandataires', w(getMandataires))
 app.get('/mandataires/:mandataireId', w(getMandataire))
 
 // Chefs de file
+app.post('/chefs-de-file', w(createChefDeFile))
 app.get('/chefs-de-file', w(getChefsDeFile))
 app.get('/chefs-de-file/:chefDeFileId', w(getChefDeFile))
 

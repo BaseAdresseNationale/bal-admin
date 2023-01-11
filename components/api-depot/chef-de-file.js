@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {getEPCI, getDepartement, getCommune} from '@/lib/cog'
 
 function getPerimeters(perimetre) {
-  return perimetre.map(p => {
+  return perimetre ? perimetre.map(p => {
     const [territoireType, code] = p.split('-')
 
     if (territoireType === 'epci') {
@@ -19,7 +19,7 @@ function getPerimeters(perimetre) {
     }
 
     return 'inconnu'
-  })
+  }) : null
 }
 
 const ChefDeFile = ({nom, email, perimetre, signataireCharte}) => {
@@ -27,24 +27,26 @@ const ChefDeFile = ({nom, email, perimetre, signataireCharte}) => {
   return (
     <div className='fr-container'>
       <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--middle'>
-        <div className='fr-col-6'>
+        <div className='fr-col-10'>
           <h3>{nom}</h3>
         </div>
+
         <div className='fr-col'>
           <a href={`emailTo:${email}`}>{email}</a>
         </div>
+
         <div className='fr-col'>
           <input type='checkbox' id='checkbox' name='checkbox' checked={signataireCharte} disabled />
           <label className='fr-label' htmlFor='checkbox'>signataire de la charte</label>
         </div>
       </div>
 
-      <div>
+      <div className='fr-my-2w'>
         <label className='fr-label'>Périmètre :</label>
         <ul>
-          {perimeters.map(p => (
+          {perimeters ? perimeters.map(p => (
             <li key={p}>{p}</li>
-          ))}
+          )) : 'Aucune périmètre n’est défini'}
         </ul>
       </div>
     </div>

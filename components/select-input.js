@@ -25,13 +25,14 @@ const SelectInput = ({label, value, hint, options, defaultOption, isDisabled, ha
 )
 
 SelectInput.defaultProps = {
+  value: '',
   hint: null,
   isDisabled: false
 }
 
 SelectInput.propTypes = {
   label: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string,
   hint: PropTypes.string,
   options: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string.isRequired,
