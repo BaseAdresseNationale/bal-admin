@@ -4,14 +4,15 @@ import Router from 'next/router'
 import Input from '@codegouvfr/react-dsfr/Input'
 import Button from '@codegouvfr/react-dsfr/Button'
 import Alert from '@codegouvfr/react-dsfr/Alert'
+import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch'
+
+import {createClient, createMandataire, createChefDeFile, getChefsDeFile, getClients, getMandataires} from '@/lib/api-depot'
 
 import Main from '@/layouts/main'
 
 import {useUser} from '@/hooks/user'
 
 import Loader from '@/components/loader'
-import {createClient, createMandataire, createChefDeFile, getChefsDeFile, getClients, getMandataires} from '@/lib/api-depot'
-import ToggleInput from '@/components/toggle-input'
 import SelectInput from '@/components/select-input'
 import MandataireForm from '@/components/api-depot/client/client-form/mandataire-form'
 import ChefDeFileForm from '@/components/api-depot/client/client-form/chef-de-file-form'
@@ -85,18 +86,18 @@ const ClientForm = ({client, mandataires, chefsDeFile}) => {
                 onChange={setNom}
               />
 
-              <ToggleInput
+              <ToggleSwitch
                 label='Activé'
-                hint='Authorise le client à utiliser l’API'
-                isCheck={isActive}
-                handleChange={setIsActive}
+                helperText='Authorise le client à utiliser l’API'
+                checked={isActive}
+                onChange={setIsActive}
               />
 
-              <ToggleInput
+              <ToggleSwitch
                 label='Mode relax'
-                hint='Le mode relax assoupli les vérifications du Validateur BAL'
-                isCheck={isModeRelax}
-                handleChange={setIsModeRelax}
+                helperText='Le mode relax assoupli les vérifications du Validateur BAL'
+                checked={isModeRelax}
+                onChange={setIsModeRelax}
               />
 
               <SelectInput

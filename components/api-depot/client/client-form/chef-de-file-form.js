@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import {uniqueId} from 'lodash'
 import Button from '@codegouvfr/react-dsfr/Button'
 import Input from '@codegouvfr/react-dsfr/Input'
+import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch'
 
 import {checkEmail} from '@/lib/util/email'
 
 import SelectInput from '@/components/select-input'
-import ToggleInput from '@/components/toggle-input'
 import ChefDeFilePerimeter from '@/components/api-depot/client/client-form/chef-de-file-perimeter'
 
 const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
@@ -55,11 +55,11 @@ const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
         <div>
           <label className='fr-label'>Chef de file</label>
 
-          <ToggleInput
+          <ToggleSwitch
             label='Signataire de la charte'
-            isCheck={isSignataireCharte}
-            hint='Le chef de file a signé la charte'
-            handleChange={setIsSignataireCharte}
+            checked={isSignataireCharte}
+            helperText='Le chef de file a signé la charte'
+            onChange={setIsSignataireCharte}
           />
 
           <div className='fr-grid-row fr-grid-row--gutters'>

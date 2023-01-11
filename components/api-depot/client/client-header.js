@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import ToggleInput from '@/components/toggle-input'
+import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch'
 
 const ClientHeader = ({nom, isActive, isDisabled, onUpdate}) => (
   <div className='fr-container fr-py-12v'>
@@ -10,14 +10,12 @@ const ClientHeader = ({nom, isActive, isDisabled, onUpdate}) => (
       </div>
 
       <div className='fr-col-2'>
-        <div className='fr-container'>
-          <ToggleInput
-            label=''
-            isCheck={isActive}
-            isDisabled={isDisabled}
-            handleChange={checked => onUpdate({active: checked})}
-          />
-        </div>
+        <ToggleSwitch
+          label=''
+          checked={isActive}
+          disabled={isDisabled}
+          onChange={checked => onUpdate({active: checked})}
+        />
       </div>
     </div>
   </div>

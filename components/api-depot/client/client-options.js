@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types'
 
-import ToggleInput from '@/components/toggle-input'
+import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch'
 
 const ClientOptions = ({isModeRelax, isDisabled, onUpdate}) => (
   <div className='fr-container fr-py-12v'>
     <h2>Options</h2>
     <div>
-      <ToggleInput
+      <ToggleSwitch
         label='Mode relax'
-        hint='Le mode relax assoupli les vérifications du Validateur BAL'
-        isCheck={isModeRelax}
-        isDisabled={isDisabled}
-        handleChange={checked => onUpdate({options: {relaxMode: checked}})}
+        helperText='Le mode relax assoupli les vérifications du Validateur BAL'
+        checked={isModeRelax}
+        disabled={isDisabled}
+        onChange={checked => onUpdate({options: {relaxMode: checked}})}
       />
     </div>
   </div>
