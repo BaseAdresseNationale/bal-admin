@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
+import Input from '@codegouvfr/react-dsfr/Input'
 
-import TextInput from '@/components/text-input'
 import SelectInput from '@/components/select-input'
 
 const typeOptions = [
@@ -16,14 +16,14 @@ const Perimeter = ({type, code, handlePerimeter}) => (
         label='Type'
         value={type}
         options={typeOptions}
-        handleChange={v => handlePerimeter({type: v, code})}
+        onChange={v => handlePerimeter({type: v, code})}
       />
     </div>
     <div className='fr-col-6'>
-      <TextInput
+      <Input
         label='Code'
         value={code}
-        handleChange={v => handlePerimeter({type, code: v})}
+        onChange={v => handlePerimeter({type, code: v})}
       />
     </div>
   </div>

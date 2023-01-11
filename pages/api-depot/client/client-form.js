@@ -1,16 +1,16 @@
 import {useCallback, useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
-
+import Router from 'next/router'
+import Input from '@codegouvfr/react-dsfr/Input'
 import Button from '@codegouvfr/react-dsfr/Button'
 import Alert from '@codegouvfr/react-dsfr/Alert'
-import Router from 'next/router'
+
 import Main from '@/layouts/main'
 
 import {useUser} from '@/hooks/user'
 
 import Loader from '@/components/loader'
 import {createClient, createMandataire, createChefDeFile, getChefsDeFile, getClients, getMandataires} from '@/lib/api-depot'
-import TextInput from '@/components/text-input'
 import ToggleInput from '@/components/toggle-input'
 import SelectInput from '@/components/select-input'
 import MandataireForm from '@/components/api-depot/client/client-form/mandataire-form'
@@ -78,11 +78,11 @@ const ClientForm = ({client, mandataires, chefsDeFile}) => {
         {isAdmin && (
           <div className='fr-container fr-my-4w'>
             <form onSubmit={handleSumit}>
-              <TextInput
+              <Input
                 label='Nom'
                 value={nom}
-                hint='Nom du client. Exemple : Business Geografic'
-                handleChange={setNom}
+                hintText='Nom du client. Exemple : Business Geografic'
+                onChange={setNom}
               />
 
               <ToggleInput

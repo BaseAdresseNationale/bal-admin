@@ -1,10 +1,10 @@
 import {useEffect, useMemo, useState} from 'react'
 import PropTypes from 'prop-types'
 import Button from '@codegouvfr/react-dsfr/Button'
+import Input from '@codegouvfr/react-dsfr/Input'
 
 import {checkEmail} from '@/lib/util/email'
 
-import TextInput from '@/components/text-input'
 import SelectInput from '@/components/select-input'
 
 const MandataireForm = ({selectMandataire, mandataires, onSelect}) => {
@@ -46,10 +46,16 @@ const MandataireForm = ({selectMandataire, mandataires, onSelect}) => {
 
           <div className='fr-grid-row fr-grid-row--gutters'>
             <div className='fr-col-6'>
-              <TextInput label='Nom' value={nom} handleChange={setNom} />
+              <Input label='Nom' value={nom} onChange={setNom} />
             </div>
             <div className='fr-col-6'>
-              <TextInput label='Email' value={email} handleChange={setEmail} error={isEmailValid === false ? 'L’email n’est pas valid' : null} />
+              <Input
+                label='Email'
+                value={email}
+                onChange={setEmail}
+                state={isEmailValid === false ? 'error' : 'default'}
+                stateRelatedMessage='L’email n’est pas valide'
+              />
             </div>
           </div>
 
