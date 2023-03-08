@@ -155,6 +155,7 @@ ClientForm.defaultProps = {
 }
 
 ClientForm.propTypes = {
+  /* eslint-disable react/boolean-prop-naming */
   client: PropTypes.shape({
     nom: PropTypes.string,
     options: PropTypes.shape({
@@ -165,6 +166,7 @@ ClientForm.propTypes = {
     mandataire: PropTypes.string,
     chefDeFile: PropTypes.string
   }),
+  /* eslint-enable react/boolean-prop-naming */
   mandataires: PropTypes.array.isRequired,
   chefsDeFile: PropTypes.array.isRequired
 }

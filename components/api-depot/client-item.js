@@ -46,7 +46,7 @@ ClientItem.propTypes = {
     nom: PropTypes.string.isRequired
   }),
   authorizationStrategy: PropTypes.oneOf(['habilitation', 'chef-de-file', 'internal']).isRequired,
-  active: PropTypes.bool.isRequired,
+  active: PropTypes.bool.isRequired, // eslint-disable-line react/boolean-prop-naming
   options: PropTypes.shape({
     relaxMode: PropTypes.bool.isRequired
   }).isRequired

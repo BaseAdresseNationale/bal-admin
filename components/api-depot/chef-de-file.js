@@ -56,6 +56,7 @@ const ChefDeFile = ({_id, nom, email, perimetre, signataireCharte}) => {
   )
 }
 
+/* eslint-disable react/boolean-prop-naming */
 ChefDeFile.propTypes = {
   _id: PropTypes.string.isRequired,
   nom: PropTypes.string.isRequired,
@@ -63,5 +64,6 @@ ChefDeFile.propTypes = {
   perimetre: PropTypes.string.isRequired,
   signataireCharte: PropTypes.bool.isRequired
 }
+/* eslint-enable react/boolean-prop-naming */
 
 export default ChefDeFile
