@@ -112,7 +112,7 @@ const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
 }
 
 ChefDeFileForm.propTypes = {
-  selectedChefDeFile: PropTypes.object,
+  selectedChefDeFile: PropTypes.string,
   chefsDeFile: PropTypes.array.isRequired,
   onSelect: PropTypes.func.isRequired
 }

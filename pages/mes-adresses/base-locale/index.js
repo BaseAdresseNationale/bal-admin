@@ -75,7 +75,7 @@ const BaseLocale = ({baseLocale}) => {
               <h2>Paramètres</h2>
               <div className='fr-container'>
                 <div className='fr-checkbox-group'>
-                  <input type='checkbox' id='enabledComplement' name='enabledComplement' checked={enableComplement} disabled />
+                  <input type='checkbox' id='enabledComplement' name='enabledComplement' checked={Boolean(enableComplement)} disabled />
                   <label className='fr-label' htmlFor='enabledComplement'>Complément de voie</label>
                 </div>
               </div>
@@ -92,7 +92,7 @@ BaseLocale.propTypes = {
   baseLocale: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     nom: PropTypes.string.isRequired,
-    enableComplement: PropTypes.bool.isRequired,
+    enableComplement: PropTypes.bool,
     status: PropTypes.string.isRequired,
     _created: PropTypes.string.isRequired,
     _updated: PropTypes.string.isRequired,
