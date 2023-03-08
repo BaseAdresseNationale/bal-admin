@@ -7,7 +7,7 @@ import {checkEmail} from '@/lib/util/email'
 
 import SelectInput from '@/components/select-input'
 
-const MandataireForm = ({selectMandataire, mandataires, onSelect}) => {
+const MandataireForm = ({selectedMandataire, mandataires, onSelect}) => {
   const [nom, setNom] = useState('')
   const [email, setEmail] = useState('')
   const [isEmailValid, setIsEmailValid] = useState()
@@ -46,13 +46,13 @@ const MandataireForm = ({selectMandataire, mandataires, onSelect}) => {
 
           <div className='fr-grid-row fr-grid-row--gutters'>
             <div className='fr-col-6'>
-              <Input label='Nom' value={nom} onChange={setNom} />
+              <Input label='Nom' value={nom} onChange={e => setNom(e.target.value)} />
             </div>
             <div className='fr-col-6'>
               <Input
                 label='Email'
                 value={email}
-                onChange={setEmail}
+                onChange={e => setEmail(e.target.value)}
                 state={isEmailValid === false ? 'error' : 'default'}
                 stateRelatedMessage='L’email n’est pas valide'
               />
@@ -73,7 +73,7 @@ const MandataireForm = ({selectMandataire, mandataires, onSelect}) => {
             <SelectInput
               label='Mandataire'
               hint='Mandataire gestionnaire du client'
-              value={selectMandataire}
+              value={selectedMandataire}
               defaultOption='Sélectionner un mandataire'
               options={mandatairesOptions}
               handleChange={onSelect}
@@ -92,7 +92,7 @@ const MandataireForm = ({selectMandataire, mandataires, onSelect}) => {
 }
 
 MandataireForm.propTypes = {
-  selectMandataire: PropTypes.object,
+  selectedMandataire: PropTypes.string,
   mandataires: PropTypes.array.isRequired,
   onSelect: PropTypes.func.isRequired
 }

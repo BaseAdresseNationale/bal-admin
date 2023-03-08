@@ -16,8 +16,15 @@ const SelectInput = ({label, value, hint, options, defaultOption, isDisabled, ha
       onChange={event => handleChange(event.target.value)}
     >
       {defaultOption && <option value=''>{defaultOption}</option>}
-      {options.map(({label, value, isDisabled}) => (
-        <option key={label} value={value} disabled={isDisabled}>{label}</option>
+      {options.map(option => (
+        <option
+          key={option.label}
+          value={option.value}
+          disabled={isDisabled}
+          selected={value === option.value}
+        >
+          {option.label}
+        </option>
       ))}
     </select>
   </div>

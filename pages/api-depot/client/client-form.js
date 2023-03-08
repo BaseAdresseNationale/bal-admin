@@ -70,8 +70,14 @@ const ClientForm = ({client, mandataires, chefsDeFile}) => {
   }, [nom, isModeRelax, isActive, authorizationStrategy, mandataire, chefDeFile])
 
   useEffect(() => {
-    setIsFormValid(nom && mandataire)
-  }, [nom, mandataire])
+    let isFormValid = nom && mandataire
+
+    if (authorizationStrategy === 'chef-de-file' && !chefDeFile) {
+      isFormValid = false
+    }
+
+    setIsFormValid(isFormValid)
+  }, [nom, mandataire, chefDeFile, authorizationStrategy])
 
   return (
     <Main isAdmin={isAdmin}>
@@ -83,7 +89,7 @@ const ClientForm = ({client, mandataires, chefsDeFile}) => {
                 label='Nom'
                 value={nom}
                 hintText='Nom du client. Exemple : Business Geografic'
-                onChange={setNom}
+                onChange={e => setNom(e.target.value)}
               />
 
               <ToggleSwitch
@@ -115,7 +121,7 @@ const ClientForm = ({client, mandataires, chefsDeFile}) => {
               />
 
               <ChefDeFileForm
-                selectChefDeFile={chefDeFile}
+                selectedChefDeFile={chefDeFile}
                 chefsDeFile={chefsDeFile}
                 onSelect={setChefDeFile}
               />

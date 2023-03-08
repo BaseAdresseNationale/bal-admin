@@ -64,13 +64,13 @@ const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
 
           <div className='fr-grid-row fr-grid-row--gutters'>
             <div className='fr-col-4'>
-              <Input label='Nom' value={nom} onChange={setNom} />
+              <Input label='Nom' value={nom} onChange={e => setNom(e.target.value)} />
             </div>
             <div className='fr-col-4'>
               <Input
                 label='Email'
                 value={email}
-                onChange={setEmail}
+                onChange={e => setEmail(e.target.value)}
                 state={isEmailValid === false ? 'error' : 'default'}
                 stateRelatedMessage='L’email n’est pas valide'
               />

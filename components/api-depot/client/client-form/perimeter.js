@@ -16,14 +16,14 @@ const Perimeter = ({type, code, handlePerimeter}) => (
         label='Type'
         value={type}
         options={typeOptions}
-        onChange={v => handlePerimeter({type: v, code})}
+        handleChange={v => handlePerimeter({type: v, code})}
       />
     </div>
     <div className='fr-col-6'>
       <Input
         label='Code'
         value={code}
-        onChange={v => handlePerimeter({type, code: v})}
+        onChange={e => handlePerimeter({type, code: e.target.value})}
       />
     </div>
   </div>
