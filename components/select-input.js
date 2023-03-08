@@ -21,7 +21,6 @@ const SelectInput = ({label, value, hint, options, defaultOption, isDisabled, ha
           key={option.label}
           value={option.value}
           disabled={isDisabled}
-          selected={value === option.value}
         >
           {option.label}
         </option>
