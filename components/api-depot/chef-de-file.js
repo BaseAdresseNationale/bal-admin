@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 
 import {getEPCI, getDepartement, getCommune} from '@/lib/cog'
 
+import MongoId from '@/components/mongo-id'
+
 function getPerimeters(perimetre) {
   return perimetre ? perimetre.map(p => {
     const [territoireType, code] = p.split('-')
@@ -22,13 +24,14 @@ function getPerimeters(perimetre) {
   }) : null
 }
 
-const ChefDeFile = ({nom, email, perimetre, signataireCharte}) => {
+const ChefDeFile = ({_id, nom, email, perimetre, signataireCharte}) => {
   const perimeters = getPerimeters(perimetre)
   return (
     <div className='fr-container'>
       <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--middle'>
         <div className='fr-col-10'>
           <h3>{nom}</h3>
+          <MongoId id={_id} />
         </div>
 
         <div className='fr-col'>
@@ -54,6 +57,7 @@ const ChefDeFile = ({nom, email, perimetre, signataireCharte}) => {
 }
 
 ChefDeFile.propTypes = {
+  _id: PropTypes.string.isRequired,
   nom: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
   perimetre: PropTypes.string.isRequired,

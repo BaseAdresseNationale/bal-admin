@@ -1,10 +1,13 @@
 import PropTypes from 'prop-types'
 
-const Mandataire = ({nom, email}) => (
+import MongoId from '@/components/mongo-id'
+
+const Mandataire = ({_id, nom, email}) => (
   <div className='fr-container'>
     <div className='fr-grid-row fr-grid-row--gutters'>
       <div className='fr-col'>
         <h3>{nom}</h3>
+        <MongoId id={_id} />
       </div>
       <div className='fr-col'>
         <a href={`emailTo:${email}`}>{email}</a>
@@ -14,6 +17,7 @@ const Mandataire = ({nom, email}) => (
 )
 
 Mandataire.propTypes = {
+  _id: PropTypes.string.isRequired,
   nom: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired
 }

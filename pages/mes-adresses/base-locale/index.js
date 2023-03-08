@@ -6,13 +6,14 @@ import Badge from '@codegouvfr/react-dsfr/Badge'
 import Alert from '@codegouvfr/react-dsfr/Alert'
 import {getBaseLocale} from '@/lib/api-mes-adresses'
 import {computeStatus} from '@/lib/bal-status'
+import {formatDate} from '@/lib/util/date'
 
 import {useUser} from '@/hooks/user'
 
 import Main from '@/layouts/main'
 
 import Loader from '@/components/loader'
-import {formatDate} from '@/lib/util/date'
+import MongoId from '@/components/mongo-id'
 
 const NEXT_PUBLIC_MES_ADRESSES_URL = process.env.NEXT_PUBLIC_MES_ADRESSES_URL || 'http://mes-adresses.data.gouv.fr'
 
@@ -41,6 +42,7 @@ const BaseLocale = ({baseLocale}) => {
               <div className='fr-grid-row fr-grid-row--gutters'>
                 <div className='fr-col-10'>
                   <h1>{nom} ({commune})</h1>
+                  <MongoId id={_id} />
 
                   <div className='fr-my-4v'>
                     <Badge label={computedStatus.label} severity={computedStatus.intent} noIcon />

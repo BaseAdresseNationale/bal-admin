@@ -41,6 +41,7 @@ const Client = ({_client, _mandataire, _chefDeFile}) => {
             {error && <Alert severity='error' title='Error' description={error} />}
 
             <ClientHeader
+              id={client._id}
               nom={client.nom}
               isActive={client.active}
               isDisabled={isUpdating}

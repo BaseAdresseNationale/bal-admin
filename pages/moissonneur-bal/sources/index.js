@@ -10,9 +10,10 @@ import {useUser} from '@/hooks/user'
 
 import Main from '@/layouts/main'
 
+import MongoId from '@/components/mongo-id'
+import Loader from '@/components/loader'
 import HarvestItem from '@/components/moissonneur-bal/harvest-item'
 import RevisionItem from '@/components/moissonneur-bal/revision-item'
-import Loader from '@/components/loader'
 
 const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
   const [isAdmin, isLoading] = useUser()
@@ -63,6 +64,7 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
               <div className='fr-grid-row fr-grid-row--gutters'>
                 <div className='fr-col-10'>
                   <h1>{source.title}</h1>
+                  <MongoId id={source._id} />
                   <ul className='fr-tags-group'>
                     <li>
                       <p className='fr-tag'>{source.license}</p>
