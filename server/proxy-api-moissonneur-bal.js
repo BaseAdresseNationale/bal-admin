@@ -3,7 +3,7 @@ const got = require('got')
 
 const w = require('./w')
 
-const API_MOISSONEUR_BAL = process.env.NEXT_PUBLIC_API_MOISSONEUR_BAL || 'https://plateforme.adresse.data.gouv.fr'
+const API_MOISSONEUR_BAL = process.env.NEXT_PUBLIC_API_MOISSONEUR_BAL || 'https://plateforme-bal.adresse.data.gouv.fr/moissonneur'
 const {API_MOISSONEUR_BAL_TOKEN} = process.env
 
 const client = got.extend({
