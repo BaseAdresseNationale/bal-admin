@@ -120,7 +120,7 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
                   <div className='fr-toggle'>
                     <input type='checkbox' className='fr-toggle__input' aria-describedby='toggle-deleted-hint-text' id='toggle-deleted' checked={deleted} onChange={() => setDeleted(!deleted)} />
                     <label className='fr-toggle__label' htmlFor='toggle-deleted' data-fr-checked-label='Activé' data-fr-unchecked-label='Désactivé'>Supprimée</label>
-                    <p className='fr-hint-text' id='toggle-deleted-hint-text'>Affiche uniquemen les bases locales supprimées</p>
+                    <p className='fr-hint-text' id='toggle-deleted-hint-text'>Affiche uniquement les bases locales supprimées</p>
                   </div>
                 </div>
               </div>
