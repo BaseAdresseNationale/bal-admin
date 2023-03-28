@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const express = require('express')
 const next = require('next')
+require('dotenv').config()
 
 const createApiRoutes = require('./routes')
 

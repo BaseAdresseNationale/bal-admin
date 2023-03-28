@@ -1,5 +1,5 @@
 {
-  "name": "gpf-geocodeur",
+  "name": "bal-admin",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -28,6 +28,7 @@
     "sharp": "^0.31.2"
   },
   "devDependencies": {
+    "dotenv": "^16.0.3",
     "eslint-config-xo": "^0.42.0",
     "eslint-config-xo-nextjs": "^4.2.1",
     "next-transpile-modules": "^9.0.0",
