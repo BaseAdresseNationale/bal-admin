@@ -85,6 +85,43 @@ async function getChefsDeFile(req, res) {
   forward(response, res)
 }
 
+/*
+  Retourne le nombre cumulé de première révision de BAL publiée pour chaque jours entre 'from' et 'to' inclus
+  Exemple :
+    Query : stats/firsts-publications?from=2023-03-12&to=2023-03-28
+
+    Réponse :
+    [{ date: '2023-03-12', totalCreations: 1000 }, { date: '2023-03-28', totalCreations: 1010 } ...]
+
+    Si pas de paramètre from / to, la requête renvoit par défaut le mois dernier
+*/
+async function getStatFirstPublicationEvolution(req, res) {
+  const {from, to} = req.query
+
+  const response = await client.get(`stats/firsts-publications?from=${from}&to=${to}`)
+  forward(response, res)
+}
+
+/*
+  Retourne les BAL publiées pour chaque jours entre 'from' et 'to' inclus
+  Exemple :
+    Query : stats/publications?from=2023-03-12&to=2023-03-28
+
+    Réponse :
+    [{ date: '2023-03-12', publishedBAL: [ { _id: "2913923", codeCommune: "37003", numPublications: 3 }, { .... } ] }, { date: '2023-03-13', updatedBAL: [ {  } ] } ...]
+
+    - numPublications est le nombre de fois que la BAL a été publiée dans le journée
+    - On a besoin du code commune pour la répartition des BAL publiées par département
+
+    Si pas de paramètre from / to, la requête renvoit par défaut le mois dernier
+*/
+async function getStatPublications(req, res) {
+  const {from, to} = req.query
+
+  const response = await client.get(`stats/publications?from=${from}&to=${to}`)
+  forward(response, res)
+}
+
 const app = new express.Router()
 
 app.use(express.json())
@@ -107,6 +144,10 @@ app.get('/mandataires/:mandataireId', w(getMandataire))
 app.post('/chefs-de-file', w(createChefDeFile))
 app.get('/chefs-de-file', w(getChefsDeFile))
 app.get('/chefs-de-file/:chefDeFileId', w(getChefDeFile))
+
+// Dashboard
+app.get('/stats/firsts-publications', w(getStatFirstPublicationEvolution))
+app.get('/stats/publications', w(getStatPublications))
 
 module.exports = app
 

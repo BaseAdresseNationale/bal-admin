@@ -3,6 +3,7 @@ import Main from '@/layouts/main'
 import {useUser} from '@/hooks/user'
 
 import Loader from '@/components/loader'
+import Dashboard from '@/components/dashboard'
 
 const Home = () => {
   const [isAdmin, isLoading] = useUser()
@@ -10,7 +11,7 @@ const Home = () => {
   return (
     <Main isAdmin={isAdmin}>
       <Loader isLoading={isLoading}>
-        {isAdmin && <div>Bienvenue</div>}
+        {isAdmin && <Dashboard />}
       </Loader>
     </Main>
   )
