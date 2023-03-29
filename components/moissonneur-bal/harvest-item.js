@@ -11,13 +11,13 @@ import {getFile} from '@/lib/api-moissonneur-bal'
 
 const StatusBadge = ({status, error}) => {
   if (status === 'active') {
-    return <Badge label='En cours…' severity='info' noIcon />
+    return <Badge severity='info' noIcon>En cours…</Badge>
   }
 
   if (status === 'failed') {
     return (
       <Tooltip text={error}>
-        <Badge label='Échec' severity='error' noIcon />
+        <Badge severity='error' noIcon>Échec</Badge>
       </Tooltip>
     )
   }
@@ -34,19 +34,19 @@ StatusBadge.propTypes = {
 
 const UpdateStatusBadge = ({updateStatus, updateRejectionReason}) => {
   if (updateStatus === 'unchanged') {
-    return <Badge label='Aucun changement' severity='info' noIcon />
+    return <Badge severity='info' noIcon >Aucun changement</Badge>
   }
 
   if (updateStatus === 'rejected') {
     return (
       <Tooltip text={updateRejectionReason}>
-        <Badge label='Rejeté' severity='error' noIcon />
+        <Badge severity='error' noIcon >Rejeté</Badge>
       </Tooltip>
     )
   }
 
   if (updateStatus === 'updated') {
-    return <Badge label='Mis à jour' severity='success' noIcon />
+    return <Badge severity='success' noIcon>Mis à jour</Badge>
   }
 }
 
