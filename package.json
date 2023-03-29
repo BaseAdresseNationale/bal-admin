@@ -11,7 +11,7 @@
     "prebuild": "only-include-used-icons"
   },
   "dependencies": {
-    "@codegouvfr/react-dsfr": "^0.24.0",
+    "@codegouvfr/react-dsfr": "^0.44.0",
     "@etalab/decoupage-administratif": "^3.0.0",
     "compression": "^1.7.4",
     "date-fns": "^2.29.3",

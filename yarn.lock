@@ -23,12 +23,12 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@codegouvfr/react-dsfr@^0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-0.24.0.tgz#f1ad4c513f27b40419f4858a7b45c4afe7ff7738"
-  integrity sha512-5Uos8tZdgUNCWyzgOv8l4UU3F53ffyZZvLeSi3jAsu7DLeLUGQNJhybX7Xg74HcTcB0lEm4Ky4c237HIM3A8Xw==
+"@codegouvfr/react-dsfr@^0.44.0":
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-0.44.0.tgz#93595e0a6643a45065e665177b5cd2ba4576149f"
+  integrity sha512-EfoZ/jvsx1MD1R87zk3Bb552eiEbLIejQs314xEgpiEHQKTYShrTEd5VjbY7I9G0OSmZVGow0s2Qr5U086ftvA==
   dependencies:
-    tsafe "^1.4.0"
+    tsafe "^1.6.0"
 
 "@eslint/eslintrc@^1.3.0", "@eslint/eslintrc@^1.3.1":
   version "1.3.1"
@@ -3730,10 +3730,10 @@ trim-newlines@^4.0.2:
   resolved "https://registry.yarnpkg.com/trim-newlines/-/trim-newlines-4.0.2.tgz#d6aaaf6a0df1b4b536d183879a6b939489808c7c"
   integrity sha512-GJtWyq9InR/2HRiLZgpIKv+ufIKrVrvjQWEj7PxAXNc5dwbNJkqhAUoAGgzRmULAnoOM5EIpveYd3J2VeSAIew==
 
-tsafe@^1.4.0:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.1.tgz#59cdad8ac41babf88e56dcd1a683ae2fb145d059"
-  integrity sha512-3IDBalvf6SyvHFS14UiwCWzqdSdo+Q0k2J7DZyJYaHW/iraW9DJpaBKDJpry3yQs3o/t/A+oGaRW3iVt2lKxzA==
+tsafe@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.6.0.tgz#48a9bd0a4c43df43d289bdfc1d89f0d7fffbd612"
+  integrity sha512-wlUeRBnyN3EN2chXznpLm7vBEvJLEOziDU+MN6NRlD99AkwmXgtChNQhp+V97VyRa3Bp05IaL4Cocsc7JlyEUg==
 
 tsconfig-paths@^3.14.1:
   version "3.14.1"
