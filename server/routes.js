@@ -10,6 +10,11 @@ function authSession(req, res, next) {
   next()
 }
 
+function setDemoClient(req, res, next) {
+  req.demo = 1
+  next()
+}
+
 module.exports = app => {
   const router = new express.Router()
 
@@ -47,6 +52,7 @@ module.exports = app => {
   router.get('/', authSession)
 
   router.use('/proxy-api-depot', require('./proxy-api-depot'))
+  router.use('/proxy-api-depot-demo', setDemoClient, require('./proxy-api-depot'))
   router.use('/proxy-api-moissonneur-bal', require('./proxy-api-moissonneur-bal'))
 
   router.get('*', (req, res) => {
