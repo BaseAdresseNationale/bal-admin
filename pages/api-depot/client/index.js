@@ -14,7 +14,7 @@ import ClientOptions from '@/components/api-depot/client/client-options'
 import Mandataire from '@/components/api-depot/mandataire'
 import ChefDeFile from '@/components/api-depot/chef-de-file'
 
-const Client = ({_client, _mandataire, _chefDeFile}) => {
+const Client = ({_client, _mandataire, _chefDeFile, isDemo}) => {
   const [isAdmin, isLoading] = useUser()
 
   const [client, setClient] = useState(_client)
@@ -38,6 +38,15 @@ const Client = ({_client, _mandataire, _chefDeFile}) => {
       <Loader isLoading={isLoading}>
         {isAdmin && (
           <div className='fr-container fr-my-4w'>
+            {isDemo && (
+              <Alert
+                className='fr-mt-4v'
+                title='Client de démonstration'
+                severity='info'
+                small
+              />
+            )}
+
             {error && <Alert severity='error' title='Error' description={error} />}
 
             <ClientHeader
@@ -73,28 +82,31 @@ const Client = ({_client, _mandataire, _chefDeFile}) => {
 Client.propTypes = {
   _client: PropTypes.object.isRequired,
   _mandataire: PropTypes.object.isRequired,
-  _chefDeFile: PropTypes.object
+  _chefDeFile: PropTypes.object,
+  isDemo: PropTypes.bool.isRequired
 }
 
 export async function getServerSideProps({query}) {
   let chefDeFile = null
-  const client = await getClient(query.clientId)
+  const isDemo = query.demo === '1'
+  const client = await getClient(query.clientId, isDemo)
 
   if (!client) {
     return {notFound: true}
   }
 
-  const mandataire = await getMandataire(client.mandataire)
+  const mandataire = await getMandataire(client.mandataire, isDemo)
 
   if (client.chefDeFile) {
-    chefDeFile = await getChefDeFile(client.chefDeFile)
+    chefDeFile = await getChefDeFile(client.chefDeFile, isDemo)
   }
 
   return {
     props: {
       _client: client,
       _mandataire: mandataire,
-      _chefDeFile: chefDeFile
+      _chefDeFile: chefDeFile,
+      isDemo
     }
   }
 }

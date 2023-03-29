@@ -2,7 +2,7 @@ import Button from '@codegouvfr/react-dsfr/Button'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 
-const ClientItem = ({_id, nom, mandataire, chefDeFile, authorizationStrategy, active, options}) => (
+const ClientItem = ({_id, nom, mandataire, chefDeFile, authorizationStrategy, active, options, isDemo}) => (
   <tr>
     <td className='fr-col fr-my-1v'>
       {nom}
@@ -25,7 +25,7 @@ const ClientItem = ({_id, nom, mandataire, chefDeFile, authorizationStrategy, ac
     <td className='fr-col fr-my-1v'>
       <Link passHref href={{
         pathname: '/api-depot/client',
-        query: {clientId: _id}
+        query: {clientId: _id, demo: isDemo ? 1 : 0}
       }}
       >
         <Button iconId='fr-icon-arrow-right-line' iconPosition='right'>
@@ -49,7 +49,8 @@ ClientItem.propTypes = {
   active: PropTypes.bool.isRequired, // eslint-disable-line react/boolean-prop-naming
   options: PropTypes.shape({
     relaxMode: PropTypes.bool.isRequired
-  }).isRequired
+  }).isRequired,
+  isDemo: PropTypes.bool.isRequired
 }
 
 export default ClientItem
