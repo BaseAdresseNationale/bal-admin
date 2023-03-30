@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import {useEffect, useState} from 'react'
 
+import Alert from '@codegouvfr/react-dsfr/Alert'
 import {getChefsDeFile, getClients, getMandataires} from '@/lib/api-depot'
 
 import ClientItem from '@/components/api-depot/client-item'
@@ -26,6 +27,19 @@ const ClientsList = ({isDemo}) => {
 
     fetchData()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (error) {
+    return (
+      <Alert
+        className='fr-my-2w'
+        title='Erreur'
+        description={error}
+        severity='error'
+        closable={false}
+        small
+      />
+    )
+  }
 
   return (
     <div className='fr-table'>
@@ -59,9 +73,6 @@ const ClientsList = ({isDemo}) => {
       ) : (
         <div>Chargement…</div>
       )}
-
-      {error}
-
     </div>
   )
 }
