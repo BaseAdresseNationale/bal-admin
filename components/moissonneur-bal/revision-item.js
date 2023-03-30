@@ -11,21 +11,21 @@ import {getCommune} from '@/lib/cog'
 
 const RevisionPublication = ({status, errorMessage}) => {
   if (status === 'provided-by-other-client') {
-    return <Badge label='Publiée par un autre client' severity='info' noIcon />
+    return <Badge severity='info' noIcon>Publiée par un autre client</Badge>
   }
 
   if (status === 'provided-by-other-source') {
-    return <Badge label='Publiée par une autre source' severity='error' noIcon />
+    return <Badge severity='error' noIcon>Publiée par une autre source</Badge>
   }
 
   if (status === 'published') {
-    return <Badge label='Publiée' severity='success' noIcon />
+    return <Badge severity='success' noIcon>Publiée</Badge>
   }
 
   if (status === 'error') {
     return (
       <Tooltip text={errorMessage}>
-        <Badge label='Erreur' severity='error' noIcon />
+        <Badge severity='error' noIcon>Erreur</Badge>
       </Tooltip>
     )
   }

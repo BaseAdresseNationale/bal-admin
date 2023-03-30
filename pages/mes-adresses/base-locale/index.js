@@ -45,7 +45,7 @@ const BaseLocale = ({baseLocale}) => {
                   <MongoId id={_id} />
 
                   <div className='fr-my-4v'>
-                    <Badge label={computedStatus.label} severity={computedStatus.intent} noIcon />
+                    <Badge severity={computedStatus.intent} noIcon>{computedStatus.label}</Badge>
                   </div>
 
                   <ul className='fr-tags-group'>

@@ -26,7 +26,7 @@ const BaseLocaleItem = ({_id, nom, commune, _created, _updated, _deleted, status
         {_updated ? formatDate(_updated) : 'inconnu'}
       </td>
       <td className='fr-col fr-my-1v'>
-        <Badge label={computedStatus.label} severity={computedStatus.intent} noIcon />
+        <Badge severity={computedStatus.intent} noIcon>{computedStatus.label}</Badge>
       </td>
       <td className='fr-col fr-my-1v'>
         {nbNumerosCertifies} / {nbNumeros}
