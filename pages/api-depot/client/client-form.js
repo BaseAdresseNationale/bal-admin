@@ -6,7 +6,7 @@ import Button from '@codegouvfr/react-dsfr/Button'
 import Alert from '@codegouvfr/react-dsfr/Alert'
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch'
 
-import {createClient, createMandataire, createChefDeFile, getChefsDeFile, getClients, getMandataires} from '@/lib/api-depot'
+import {createClient, createMandataire, createChefDeFile, getChefsDeFile, getClient, getMandataires} from '@/lib/api-depot'
 
 import Main from '@/layouts/main'
 
@@ -23,7 +23,7 @@ const authorizationStrategyOptions = [
   {label: 'Interne', value: 'internal'}
 ]
 
-const ClientForm = ({client, mandataires, chefsDeFile}) => {
+const ClientForm = ({client, mandataires, chefsDeFile, isDemo}) => {
   const [isAdmin, isLoading] = useUser()
 
   const [nom, setNom] = useState(client.nom || '')
@@ -48,7 +48,7 @@ const ClientForm = ({client, mandataires, chefsDeFile}) => {
     try {
       // Gestion du mandataire sélectionné ou créé
       if (typeof mandataire === 'object') {
-        const newMandataire = await createMandataire(mandataire)
+        const newMandataire = await createMandataire(mandataire, isDemo)
         body.mandataire = newMandataire._id
       } else {
         body.mandataire = mandataire
@@ -56,18 +56,18 @@ const ClientForm = ({client, mandataires, chefsDeFile}) => {
 
       // Gestion du chef de file sélectionné ou créé
       if (typeof chefDeFile === 'object') {
-        const newChefDeFile = await createChefDeFile(chefDeFile)
+        const newChefDeFile = await createChefDeFile(chefDeFile, isDemo)
         body.chefDeFile = newChefDeFile._id
       } else if (chefDeFile) {
         body.chefDeFile = chefDeFile
       }
 
-      const {_id} = await createClient(body)
-      Router.push({pathname: '/api-depot/client', query: {clientId: _id}})
+      const {_id} = await createClient(body, isDemo)
+      Router.push({pathname: '/api-depot/client', query: {clientId: _id, demo: isDemo ? 1 : 0}})
     } catch (error) {
       setSubmitError(error.message || '')
     }
-  }, [nom, isModeRelax, isActive, authorizationStrategy, mandataire, chefDeFile])
+  }, [nom, isModeRelax, isActive, authorizationStrategy, mandataire, chefDeFile, isDemo])
 
   useEffect(() => {
     let isFormValid = nom && mandataire
@@ -168,24 +168,27 @@ ClientForm.propTypes = {
   }),
   /* eslint-enable react/boolean-prop-naming */
   mandataires: PropTypes.array.isRequired,
-  chefsDeFile: PropTypes.array.isRequired
+  chefsDeFile: PropTypes.array.isRequired,
+  isDemo: PropTypes.bool.isRequired
 }
 
 export async function getServerSideProps({query}) {
   let client = {}
 
-  const mandataires = await getMandataires()
-  const chefsDeFile = await getChefsDeFile()
+  const isDemo = query.demo === '1'
+  const mandataires = await getMandataires(isDemo)
+  const chefsDeFile = await getChefsDeFile(isDemo)
 
   if (query.clientId) {
-    client = await getClients(query.baseLocaleId)
+    client = await getClient(query.clientId, isDemo)
   }
 
   return {
     props: {
       client,
       mandataires,
-      chefsDeFile
+      chefsDeFile,
+      isDemo
     }
   }
 }
