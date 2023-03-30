@@ -9,13 +9,15 @@ import Tooltip from '../tooltip'
 import {getFile} from '@/lib/api-moissonneur-bal'
 import {getCommune} from '@/lib/cog'
 
-const RevisionPublication = ({status, errorMessage}) => {
+const RevisionPublication = ({status, errorMessage, currentSourceName, currentClientName}) => {
   if (status === 'provided-by-other-client') {
-    return <Badge severity='info' noIcon>Publiée par un autre client</Badge>
+    const badge = <Badge severity='warning' noIcon>Publiée par un autre client</Badge>
+    return currentClientName ? <Tooltip text={`ID: ${currentClientName}`}>{badge}</Tooltip> : badge
   }
 
   if (status === 'provided-by-other-source') {
-    return <Badge severity='error' noIcon>Publiée par une autre source</Badge>
+    const badge = <Badge severity='error' noIcon>Publiée par une autre source</Badge>
+    return currentSourceName ? <Tooltip text={currentSourceName}>{badge}</Tooltip> : badge
   }
 
   if (status === 'published') {
@@ -38,16 +40,20 @@ RevisionPublication.propTypes = {
     'published',
     'error'
   ]).isRequired,
-  errorMessage: PropTypes.string
+  errorMessage: PropTypes.string,
+  currentSourceName: PropTypes.string,
+  currentClientName: PropTypes.string
 }
 
-const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publication}) => {
+const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publication, onForcePublishRevision, isForcePublishRevisionLoading}) => {
   const commune = getCommune(codeCommune)
 
   const downloadFile = async () => {
     const file = await getFile(fileId)
     Router.push(file.url)
   }
+
+  const displayForcePublishButton = publication.status === 'provided-by-other-source' || publication.status === 'provided-by-other-client'
 
   return (
     <tr>
@@ -74,6 +80,16 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
           </Button>
         )}
       </td>
+      <td className='fr-col fr-my-1v'>
+        {displayForcePublishButton && (
+          <Button
+            onClick={onForcePublishRevision}
+            disabled={isForcePublishRevisionLoading}
+          >
+            {isForcePublishRevisionLoading ? 'Publication...' : 'Forcer la publication'}
+          </Button>
+        )}
+      </td>
     </tr>
   )
 }
@@ -83,7 +99,9 @@ RevisionItem.propTypes = {
   nbRows: PropTypes.number.isRequired,
   nbRowsWithErrors: PropTypes.number.isRequired,
   publication: PropTypes.object.isRequired,
-  fileId: PropTypes.string
+  fileId: PropTypes.string,
+  onForcePublishRevision: PropTypes.func,
+  isForcePublishRevisionLoading: PropTypes.bool
 }
 
 export default RevisionItem

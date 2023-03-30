@@ -3,8 +3,9 @@ import PropTypes from 'prop-types'
 
 import Card from '@codegouvfr/react-dsfr/Card'
 import Button from '@codegouvfr/react-dsfr/Button'
+import Alert from '@codegouvfr/react-dsfr/Alert'
 
-import {getSource, udpateSource, getSourceHarvests, harvestSource, getSourceCurrentRevisions} from '@/lib/api-moissonneur-bal'
+import {getSource, udpateSource, getSourceHarvests, harvestSource, getSourceCurrentRevisions, publishRevision} from '@/lib/api-moissonneur-bal'
 
 import {useUser} from '@/hooks/user'
 
@@ -15,11 +16,13 @@ import Loader from '@/components/loader'
 import HarvestItem from '@/components/moissonneur-bal/harvest-item'
 import RevisionItem from '@/components/moissonneur-bal/revision-item'
 
-const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
+const MoissoneurBAL = ({initialSource, initialHarvests, initialRevisions}) => {
   const [isAdmin, isLoading] = useUser()
 
   const [source, setSource] = useState(initialSource)
   const [harvests, setHarvests] = useState(initialHarvests)
+  const [revisions, setRevisions] = useState(initialRevisions)
+  const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState(null)
 
   const interval = useRef()
 
@@ -47,6 +50,19 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
   const enabledSource = async () => {
     const updatedSource = await udpateSource(source._id, {enabled: !source.enabled})
     setSource(updatedSource)
+  }
+
+  const onForcePublishRevision = async id => {
+    setForcePublishRevisionStatus('loading')
+    try {
+      await publishRevision(id, {force: true})
+      const updateRevisions = await getRevisionsWithPublicationData(source._id)
+      setRevisions(updateRevisions)
+      setForcePublishRevisionStatus('success')
+    } catch (err) {
+      console.error(err)
+      setForcePublishRevisionStatus('error')
+    }
   }
 
   useEffect(() => {
@@ -148,6 +164,9 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
                 <div>Aucune révisions</div>
               )}
 
+              {forcePublishRevisionStatus === 'error' && <Alert title='Erreur' description='La publication de la révision a échoué' severity='error' closable small />}
+              {forcePublishRevisionStatus === 'success' && <Alert title='Succès' description='La révision a bien été publiée' severity='success' closable small />}
+
               <div className='fr-table'>
                 <table>
                   <thead>
@@ -157,12 +176,18 @@ const MoissoneurBAL = ({initialSource, initialHarvests, revisions}) => {
                       <th scope='col'>Nombre de ligne en erreur</th>
                       <th scope='col'>Publication</th>
                       <th scope='col'>Fichier</th>
+                      <th scope='col'>Actions</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {revisions.map(revision => (
-                      <RevisionItem key={revision._id} {...revision} />
+                      <RevisionItem
+                        key={revision._id}
+                        onForcePublishRevision={() => onForcePublishRevision(revision._id)}
+                        isForcePublishRevisionLoading={forcePublishRevisionStatus === 'loading'}
+                        {...revision}
+                      />
                     ))}
                   </tbody>
                 </table>
@@ -187,19 +212,41 @@ MoissoneurBAL.propTypes = {
     harvesting: PropTypes.object.isRequired
   }).isRequired,
   initialHarvests: PropTypes.array.isRequired,
-  revisions: PropTypes.array.isRequired
+  initialRevisions: PropTypes.array.isRequired
+}
+
+async function getRevisionsWithPublicationData(sourceId) {
+  const revisions = await getSourceCurrentRevisions(sourceId)
+  const revisionsWithPublicationData = await Promise.all(revisions.map(async revision => {
+    if (revision.publication.status === 'provided-by-other-source') {
+      const currentSource = await getSource(revision.publication.currentSourceId)
+      revision.publication = {
+        ...revision.publication,
+        currentSourceName: currentSource.organization.name
+      }
+    } else if (revision.publication.status === 'provided-by-other-client') {
+      revision.publication = {
+        ...revision.publication,
+        currentClientName: revision.publication.currentClientId
+      }
+    }
+
+    return revision
+  }))
+
+  return revisionsWithPublicationData
 }
 
 export async function getServerSideProps({query}) {
   const source = await getSource(query.sourceId)
   const harvests = await getSourceHarvests(query.sourceId)
-  const revisions = await getSourceCurrentRevisions(query.sourceId)
+  const revisions = await getRevisionsWithPublicationData(query.sourceId)
 
   return {
     props: {
       initialSource: source,
       initialHarvests: harvests,
-      revisions,
+      initialRevisions: revisions,
     }
   }
 }
