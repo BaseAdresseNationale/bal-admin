@@ -23,7 +23,7 @@ const StatusBadge = ({status, error}) => {
   }
 
   if (status === 'completed') {
-    return <Badge label='Terminé' severity='success' noIcon />
+    return <Badge severity='success' noIcon>Terminé</Badge>
   }
 }
 
@@ -34,13 +34,13 @@ StatusBadge.propTypes = {
 
 const UpdateStatusBadge = ({updateStatus, updateRejectionReason}) => {
   if (updateStatus === 'unchanged') {
-    return <Badge severity='info' noIcon >Aucun changement</Badge>
+    return <Badge severity='info' noIcon>Aucun changement</Badge>
   }
 
   if (updateStatus === 'rejected') {
     return (
       <Tooltip text={updateRejectionReason}>
-        <Badge severity='error' noIcon >Rejeté</Badge>
+        <Badge severity='error' noIcon>Rejeté</Badge>
       </Tooltip>
     )
   }
