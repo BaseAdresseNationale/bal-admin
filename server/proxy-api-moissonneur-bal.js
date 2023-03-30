@@ -33,6 +33,13 @@ async function updateSource(req, res) {
   forward(response, res)
 }
 
+async function publishRevision(req, res) {
+  const {revisionId} = req.params
+
+  const response = await client.post(`revisions/${revisionId}/publish`, {json: req.body})
+  forward(response, res)
+}
+
 const app = new express.Router()
 
 app.use(express.json())
@@ -40,5 +47,6 @@ app.use(express.json())
 // Sources
 app.post('/sources/:sourceId/harvest', w(harvestSource))
 app.put('/sources/:sourceId', w(updateSource))
+app.post('/revisions/:revisionId/publish', w(publishRevision))
 
 module.exports = app
