@@ -218,16 +218,18 @@ MoissoneurBAL.propTypes = {
 async function getRevisionsWithPublicationData(sourceId) {
   const revisions = await getSourceCurrentRevisions(sourceId)
   const revisionsWithPublicationData = await Promise.all(revisions.map(async revision => {
-    if (revision.publication.status === 'provided-by-other-source') {
-      const currentSource = await getSource(revision.publication.currentSourceId)
-      revision.publication = {
-        ...revision.publication,
-        currentSourceName: currentSource.organization.name
-      }
-    } else if (revision.publication.status === 'provided-by-other-client') {
-      revision.publication = {
-        ...revision.publication,
-        currentClientName: revision.publication.currentClientId
+    if (revision.publication) {
+      if (revision.publication.status === 'provided-by-other-source') {
+        const currentSource = await getSource(revision.publication.currentSourceId)
+        revision.publication = {
+          ...revision.publication,
+          currentSourceName: currentSource.organization.name
+        }
+      } else if (revision.publication.status === 'provided-by-other-client') {
+        revision.publication = {
+          ...revision.publication,
+          currentClientName: revision.publication.currentClientId
+        }
       }
     }
 

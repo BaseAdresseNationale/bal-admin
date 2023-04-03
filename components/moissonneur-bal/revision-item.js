@@ -31,6 +31,10 @@ const RevisionPublication = ({status, errorMessage, currentSourceName, currentCl
       </Tooltip>
     )
   }
+
+  return (
+    <Badge noIcon>Inconnu</Badge>
+  )
 }
 
 RevisionPublication.propTypes = {
@@ -39,7 +43,7 @@ RevisionPublication.propTypes = {
     'provided-by-other-source',
     'published',
     'error'
-  ]).isRequired,
+  ]),
   errorMessage: PropTypes.string,
   currentSourceName: PropTypes.string,
   currentClientName: PropTypes.string
@@ -53,7 +57,7 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
     Router.push(file.url)
   }
 
-  const displayForcePublishButton = publication.status === 'provided-by-other-source' || publication.status === 'provided-by-other-client'
+  const displayForcePublishButton = publication?.status === 'provided-by-other-source' || publication?.status === 'provided-by-other-client'
 
   return (
     <tr>
@@ -94,11 +98,15 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
   )
 }
 
+RevisionItem.default = {
+  publication: null
+}
+
 RevisionItem.propTypes = {
   codeCommune: PropTypes.string.isRequired,
   nbRows: PropTypes.number.isRequired,
   nbRowsWithErrors: PropTypes.number.isRequired,
-  publication: PropTypes.object.isRequired,
+  publication: PropTypes.object,
   fileId: PropTypes.string,
   onForcePublishRevision: PropTypes.func,
   isForcePublishRevisionLoading: PropTypes.bool
