@@ -33,7 +33,7 @@ const RevisionPublication = ({status, errorMessage, currentSourceName, currentCl
   }
 
   return (
-    <Badge noIcon>Inconnu</Badge>
+    <Badge noIcon>Non publiée</Badge>
   )
 }
 
