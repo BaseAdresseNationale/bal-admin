@@ -53,7 +53,7 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
     Router.push(file.url)
   }
 
-  const displayForcePublishButton = publication.status === 'provided-by-other-source' || publication.status === 'provided-by-other-client'
+  const displayForcePublishButton = publication?.status === 'provided-by-other-source' || publication?.status === 'provided-by-other-client'
 
   return (
     <tr>
