@@ -6,6 +6,7 @@ import Button from '@codegouvfr/react-dsfr/Button'
 import Alert from '@codegouvfr/react-dsfr/Alert'
 
 import {getSource, udpateSource, getSourceHarvests, harvestSource, getSourceCurrentRevisions, publishRevision} from '@/lib/api-moissonneur-bal'
+import {getClient} from '@/lib/api-depot'
 
 import {useUser} from '@/hooks/user'
 
@@ -226,9 +227,15 @@ async function getRevisionsWithPublicationData(sourceId) {
           currentSourceName: currentSource.organization.name
         }
       } else if (revision.publication.status === 'provided-by-other-client') {
+        let currentClientName = null
+        if (revision.publication.currentClientId) {
+          const currentClient = await getClient(revision.publication.currentClientId)
+          currentClientName = currentClient.nom
+        }
+
         revision.publication = {
           ...revision.publication,
-          currentClientName: revision.publication.currentClientId
+          currentClientName
         }
       }
     }
