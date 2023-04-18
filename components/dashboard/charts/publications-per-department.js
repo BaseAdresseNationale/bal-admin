@@ -12,19 +12,18 @@ const PublicationPerDepartmentChart = ({publicationsResponse}) => {
     const sortedDepartments = departements.map(({nom, code}) => {
       // eslint-disable-next-line unicorn/no-array-reduce
       const count = publicationsResponse.reduce((acc, {publishedBAL}) => {
-        const selectedCommunes = publishedBAL.filter(
-          ({codeCommune}) => codeCommune.slice(0, 2) === code
+        const selectedCommunes = Object.keys(publishedBAL).filter(
+          codeCommune => codeCommune.slice(0, code.length) === code
         )
         return (
           acc
           + selectedCommunes.reduce(
-            (selectedCommunesCount, {numPublications}) =>
-              selectedCommunesCount + numPublications,
+            (selectedCommunesCount, codeCommunes) =>
+              selectedCommunesCount + publishedBAL[codeCommunes],
             0
           )
         )
       }, 0)
-
       return {
         count,
         nom

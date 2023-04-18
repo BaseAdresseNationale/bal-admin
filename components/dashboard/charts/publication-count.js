@@ -14,7 +14,7 @@ const PublicationCountChart = ({publicationsResponse}) => {
     datasets: [
       {
         label: 'BAL publiées',
-        data: publicationsResponse.map(({publishedBAL}) => publishedBAL.reduce((acc, {numPublications}) => acc + numPublications, 0)),
+        data: publicationsResponse.map(({publishedBAL}) => Object.values(publishedBAL).reduce((acc, numPublications) => acc + numPublications, 0)),
         borderColor: '#36A2EB',
         backgroundColor: '#9BD0F5',
       }
