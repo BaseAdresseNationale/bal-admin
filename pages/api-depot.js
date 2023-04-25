@@ -46,7 +46,8 @@ const APIDepot = () => {
                     <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--right'>
                       <div className='fr-col-2'>
                         <Link passHref href={{
-                          pathname: '/api-depot/client/client-form?demo=1',
+                          pathname: '/api-depot/client/client-form',
+                          query: {demo: 1}
                         }}
                         >
                           <Button iconId='fr-icon-add-line'>
