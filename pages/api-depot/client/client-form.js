@@ -55,11 +55,13 @@ const ClientForm = ({client, mandataires, chefsDeFile, isDemo}) => {
       }
 
       // Gestion du chef de file sélectionné ou créé
-      if (typeof chefDeFile === 'object') {
-        const newChefDeFile = await createChefDeFile(chefDeFile, isDemo)
-        body.chefDeFile = newChefDeFile._id
-      } else if (chefDeFile) {
-        body.chefDeFile = chefDeFile
+      if (authorizationStrategy === 'chef-de-file') {
+        if (typeof chefDeFile === 'object') {
+          const newChefDeFile = await createChefDeFile(chefDeFile, isDemo)
+          body.chefDeFile = newChefDeFile._id
+        } else if (chefDeFile) {
+          body.chefDeFile = chefDeFile
+        }
       }
 
       const {_id} = await createClient(body, isDemo)
@@ -120,11 +122,13 @@ const ClientForm = ({client, mandataires, chefsDeFile, isDemo}) => {
                 onSelect={setMandataire}
               />
 
-              <ChefDeFileForm
-                selectedChefDeFile={chefDeFile}
-                chefsDeFile={chefsDeFile}
-                onSelect={setChefDeFile}
-              />
+              {authorizationStrategy === 'chef-de-file' && (
+                <ChefDeFileForm
+                  selectedChefDeFile={chefDeFile}
+                  chefsDeFile={chefsDeFile}
+                  onSelect={setChefDeFile}
+                />
+              )}
 
               <Button
                 type='submit'

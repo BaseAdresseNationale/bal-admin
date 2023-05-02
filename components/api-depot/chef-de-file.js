@@ -29,7 +29,7 @@ const ChefDeFile = ({_id, nom, email, perimetre, signataireCharte}) => {
   return (
     <div className='fr-container'>
       <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--middle'>
-        <div className='fr-col-10'>
+        <div className='fr-col'>
           <h3>{nom}</h3>
           <MongoId id={_id} />
         </div>
