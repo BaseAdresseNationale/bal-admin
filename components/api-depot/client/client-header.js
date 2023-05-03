@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 import MongoId from '@/components/mongo-id'
 
-const ClientHeader = ({id, nom}) => (
+const ClientHeader = ({id, nom, token}) => (
   <div className='fr-py-4v'>
     <h1 className='fr-m-1v' >Client</h1>
     <div className='fr-container fr-py-4v'>
@@ -10,6 +10,7 @@ const ClientHeader = ({id, nom}) => (
         <div className='fr-col-10'>
           <h2>{nom}</h2>
           <MongoId id={id} />
+          token: {token}
         </div>
       </div>
     </div>
@@ -19,6 +20,7 @@ const ClientHeader = ({id, nom}) => (
 ClientHeader.propTypes = {
   id: PropTypes.string.isRequired,
   nom: PropTypes.string.isRequired,
+  token: PropTypes.string.isRequired,
 }
 
 export default ClientHeader

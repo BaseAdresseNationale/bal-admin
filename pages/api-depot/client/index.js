@@ -41,7 +41,7 @@ const Client = ({_client, _mandataire, _chefDeFile, isDemo}) => {
               </Button>
             </Link>
 
-            <ClientHeader id={_client._id} nom={_client.nom} />
+            <ClientHeader id={_client._id} nom={_client.nom} token={_client.token} />
 
             <Mandataire {..._mandataire} />
 
