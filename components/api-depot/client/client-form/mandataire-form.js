@@ -14,7 +14,7 @@ const MandataireForm = ({selectedMandataire, mandataires, onSelect}) => {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false)
 
   const mandatairesOptions = useMemo(() =>
-    mandataires.sort((a, b) => a.nom > b.nom).map(m => ({label: m.nom, value: m._id}))
+    mandataires.sort((a, b) => a.nom > b.nom).map(m => ({label: m.nom + ' (' + m.email + ')', value: m._id}))
   , [mandataires])
 
   const handleCreationForm = (event, isOpen) => {
@@ -92,7 +92,10 @@ const MandataireForm = ({selectedMandataire, mandataires, onSelect}) => {
 }
 
 MandataireForm.propTypes = {
-  selectedMandataire: PropTypes.string,
+  selectedMandataire: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object,
+  ]),
   mandataires: PropTypes.array.isRequired,
   onSelect: PropTypes.func.isRequired
 }

@@ -54,7 +54,8 @@ const ClientsList = ({isDemo}) => {
               <th scope='col'>Stratégie d’autorisation</th>
               <th scope='col'>Activé</th>
               <th scope='col'>Mode relax</th>
-              <th scope='col' />
+              <th scope='col'>Editer</th>
+              <th scope='col'>Consulter</th>
             </tr>
           </thead>
 

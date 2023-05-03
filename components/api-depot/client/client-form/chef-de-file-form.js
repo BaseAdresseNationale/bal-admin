@@ -19,12 +19,13 @@ const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false)
 
   const chefsDeFileOptions = useMemo(() =>
-    chefsDeFile.sort((a, b) => a.nom > b.nom).map(m => ({label: m.nom, value: m._id}))
+    chefsDeFile.sort((a, b) => a.nom > b.nom).map(m => ({label: m.nom + ' (' + m.email + ')', value: m._id}))
   , [chefsDeFile])
 
   const handleCreationForm = (event, isOpen) => {
     event.preventDefault()
     setIsCreateFormOpen(isOpen)
+    onSelect('')
   }
 
   useEffect(() => {
@@ -112,7 +113,10 @@ const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
 }
 
 ChefDeFileForm.propTypes = {
-  selectedChefDeFile: PropTypes.string,
+  selectedChefDeFile: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object,
+  ]),
   chefsDeFile: PropTypes.array.isRequired,
   onSelect: PropTypes.func.isRequired
 }

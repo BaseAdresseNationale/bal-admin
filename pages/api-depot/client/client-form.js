@@ -1,12 +1,11 @@
 import {useCallback, useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
 import Router from 'next/router'
-import Input from '@codegouvfr/react-dsfr/Input'
 import Button from '@codegouvfr/react-dsfr/Button'
 import Alert from '@codegouvfr/react-dsfr/Alert'
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch'
 
-import {createClient, createMandataire, createChefDeFile, getChefsDeFile, getClient, getMandataires} from '@/lib/api-depot'
+import {createClient, updateClient, createMandataire, createChefDeFile, getChefsDeFile, getClient, getMandataires} from '@/lib/api-depot'
 
 import Main from '@/layouts/main'
 
@@ -14,6 +13,7 @@ import {useUser} from '@/hooks/user'
 
 import Loader from '@/components/loader'
 import SelectInput from '@/components/select-input'
+import TextInput from '@/components/text-input'
 import MandataireForm from '@/components/api-depot/client/client-form/mandataire-form'
 import ChefDeFileForm from '@/components/api-depot/client/client-form/chef-de-file-form'
 
@@ -37,7 +37,6 @@ const ClientForm = ({client, mandataires, chefsDeFile, isDemo}) => {
 
   const handleSumit = useCallback(async event => {
     event.preventDefault()
-
     const body = {
       nom,
       options: {relaxMode: isModeRelax},
@@ -64,12 +63,19 @@ const ClientForm = ({client, mandataires, chefsDeFile, isDemo}) => {
         }
       }
 
-      const {_id} = await createClient(body, isDemo)
-      Router.push({pathname: '/api-depot/client', query: {clientId: _id, demo: isDemo ? 1 : 0}})
+      let clientId = client._id
+      if (clientId) {
+        await updateClient(clientId, body, isDemo)
+      } else {
+        const response = await createClient(body, isDemo)
+        clientId = response._id
+      }
+
+      Router.push({pathname: '/api-depot/client', query: {clientId, demo: isDemo ? 1 : 0}})
     } catch (error) {
       setSubmitError(error.message || '')
     }
-  }, [nom, isModeRelax, isActive, authorizationStrategy, mandataire, chefDeFile, isDemo])
+  }, [nom, client._id, isModeRelax, isActive, authorizationStrategy, mandataire, chefDeFile, isDemo])
 
   useEffect(() => {
     let isFormValid = nom && mandataire
@@ -87,10 +93,10 @@ const ClientForm = ({client, mandataires, chefsDeFile, isDemo}) => {
         {isAdmin && (
           <div className='fr-container fr-my-4w'>
             <form onSubmit={handleSumit}>
-              <Input
+              <TextInput
                 label='Nom'
                 value={nom}
-                hintText='Nom du client. Exemple : Business Geografic'
+                hint='Nom du client. Exemple : Business Geografic'
                 onChange={e => setNom(e.target.value)}
               />
 
@@ -161,6 +167,7 @@ ClientForm.defaultProps = {
 ClientForm.propTypes = {
   /* eslint-disable react/boolean-prop-naming */
   client: PropTypes.shape({
+    _id: PropTypes.string,
     nom: PropTypes.string,
     options: PropTypes.shape({
       relaxMode: PropTypes.bool
