@@ -13,7 +13,6 @@ const ChefDeFilePerimeter = ({perimeters, handlePerimeter}) => {
 
   const handleChange = useCallback((perimeter, key, idx) => {
     const {type, code} = perimeter
-
     const cpy = [...perimeters]
     cpy[idx] = {type, code, key}
 

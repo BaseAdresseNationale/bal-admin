@@ -1,8 +1,9 @@
-import {useState, useCallback} from 'react'
 import PropTypes from 'prop-types'
 import Alert from '@codegouvfr/react-dsfr/Alert'
+import Button from '@codegouvfr/react-dsfr/Button'
+import Link from 'next/link'
 
-import {getChefDeFile, getClient, getMandataire, updateClient} from '@/lib/api-depot'
+import {getChefDeFile, getClient, getMandataire} from '@/lib/api-depot'
 
 import Main from '@/layouts/main'
 
@@ -10,28 +11,11 @@ import {useUser} from '@/hooks/user'
 
 import Loader from '@/components/loader'
 import ClientHeader from '@/components/api-depot/client/client-header'
-import ClientOptions from '@/components/api-depot/client/client-options'
 import Mandataire from '@/components/api-depot/mandataire'
 import ChefDeFile from '@/components/api-depot/chef-de-file'
 
 const Client = ({_client, _mandataire, _chefDeFile, isDemo}) => {
   const [isAdmin, isLoading] = useUser()
-
-  const [client, setClient] = useState(_client)
-  const [isUpdating, setIsUpdating] = useState(false)
-  const [error, setError] = useState()
-
-  const handleClientUpdate = useCallback(async changes => {
-    try {
-      setIsUpdating(true)
-      const updatedClient = await updateClient(_client._id, changes)
-      setClient(updatedClient)
-    } catch (error) {
-      setError(error.message)
-    }
-
-    setIsUpdating(false)
-  }, [_client])
 
   return (
     <Main isAdmin={isAdmin}>
@@ -47,31 +31,22 @@ const Client = ({_client, _mandataire, _chefDeFile, isDemo}) => {
               />
             )}
 
-            {error && <Alert severity='error' title='Error' description={error} />}
+            <Link passHref href={{
+              pathname: '/api-depot/client/client-form',
+              query: {clientId: _client._id, demo: isDemo ? 1 : 0}
+            }}
+            >
+              <Button iconId='fr-icon-edit-line'>
+                Modifier le client
+              </Button>
+            </Link>
 
-            <ClientHeader
-              id={client._id}
-              nom={client.nom}
-              isActive={client.active}
-              isDisabled={isUpdating}
-              onUpdate={handleClientUpdate}
-            />
+            <ClientHeader id={_client._id} nom={_client.nom} />
 
-            <ClientOptions
-              isModeRelax={client.options.relaxMode}
-              isDisabled={isUpdating}
-              onUpdate={handleClientUpdate}
-            />
+            <Mandataire {..._mandataire} />
 
-            <div className='fr-container fr-my-4w'>
-              <h2>Mandataire</h2>
-              <Mandataire {..._mandataire} />
-            </div>
+            <ChefDeFile hasChefDeFile={_chefDeFile !== null} {..._chefDeFile} />
 
-            <div className='fr-container fr-my-4w'>
-              <h2>Chef de file</h2>
-              {_chefDeFile ? <ChefDeFile {..._chefDeFile} /> : 'Aucun chef de file'}
-            </div>
           </div>
         )}
       </Loader>

@@ -15,7 +15,6 @@ const Layout = ({isAdmin, children}) => (
 
     <div className='test'>
       <Header isLoggedIn={isAdmin} />
-
       <main role='main'>
         <React.StrictMode>
           {children}
@@ -34,9 +33,7 @@ const Layout = ({isAdmin, children}) => (
           href: '#'
         }}
       />
-
     </div>
-
     <style jsx>{`
       .test {
         display: flex;
@@ -47,7 +44,7 @@ const Layout = ({isAdmin, children}) => (
       main {
         flex: 1;
       }
-      `}</style>
+    `}</style>
   </>
 )
 

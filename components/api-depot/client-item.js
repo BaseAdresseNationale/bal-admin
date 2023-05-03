@@ -24,6 +24,17 @@ const ClientItem = ({_id, nom, mandataire, chefDeFile, authorizationStrategy, ac
     </td>
     <td className='fr-col fr-my-1v'>
       <Link passHref href={{
+        pathname: '/api-depot/client/client-form',
+        query: {clientId: _id, demo: isDemo ? 1 : 0}
+      }}
+      >
+        <Button iconId='fr-icon-edit-line' iconPosition='right'>
+          Editer
+        </Button>
+      </Link>
+    </td>
+    <td className='fr-col fr-my-1v'>
+      <Link passHref href={{
         pathname: '/api-depot/client',
         query: {clientId: _id, demo: isDemo ? 1 : 0}
       }}
