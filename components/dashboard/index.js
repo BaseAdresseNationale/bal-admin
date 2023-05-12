@@ -4,6 +4,7 @@ import {useState} from 'react'
 import PublicationPerDepartmentChart from './charts/publications-per-department'
 import FirstPublicationEvolutionChart from './charts/first-publication-evolution'
 import PublicationCountChart from './charts/publication-count'
+import CreationCountChart from './charts/creation-count'
 import {useDashboardData} from '@/hooks/dashboard-data'
 
 export const defaultChartOptions = {
@@ -54,7 +55,12 @@ const DashboardContainer = styled.div`
     height: 500px;
   }
 `
-const timeLapseButtons = [
+const timeLapses = [
+  {
+    label: 'Année',
+    value: 365,
+    interval: 30
+  },
   {
     label: 'Mois',
     value: 30,
@@ -62,39 +68,38 @@ const timeLapseButtons = [
   {
     label: 'Semaine',
     value: 7,
-  },
-  {
-    label: 'Jour',
-    value: 0,
-  },
+  }
 ]
 
 const Dashboard = () => {
-  const [timeLapse, setTimeLapse] = useState(30)
-  const {dashboardData} = useDashboardData(timeLapse)
+  const [timeLapseIndex, setTimeLapseIndex] = useState(1)
+  const {dashboardData} = useDashboardData(timeLapses[timeLapseIndex].value)
 
   return (
     <DashboardContainer>
       <div className='dashboard-header'>
-        {timeLapseButtons.map(({label, value}) => (
+        {timeLapses.map(({label}, index) => (
           <Button
             key={label}
             type='button'
-            className={value === timeLapse ? 'active' : ''}
-            onClick={() => setTimeLapse(value)}
+            className={index === timeLapseIndex ? 'active' : ''}
+            onClick={() => setTimeLapseIndex(index)}
           >
             {label}
           </Button>
         ))}
       </div>
       <div className='chart-wrapper'>
-        <FirstPublicationEvolutionChart firstPublicationEvolutionResponse={dashboardData.firstPublicationEvolutionResponse} />
+        <FirstPublicationEvolutionChart firstPublicationEvolutionResponse={dashboardData.firstPublicationEvolutionResponse} interval={timeLapses[timeLapseIndex].interval} />
       </div>
       <div className='chart-wrapper'>
         <PublicationPerDepartmentChart publicationsResponse={dashboardData.publicationsResponse} />
       </div>
       <div className='chart-wrapper'>
-        <PublicationCountChart publicationsResponse={dashboardData.publicationsResponse} />
+        <PublicationCountChart publicationsResponse={dashboardData.publicationsResponse} firstPublicationEvolutionResponse={dashboardData.firstPublicationEvolutionResponse} interval={timeLapses[timeLapseIndex].interval} />
+      </div>
+      <div className='chart-wrapper'>
+        <CreationCountChart creationsResponse={dashboardData.creationsResponse} interval={timeLapses[timeLapseIndex].interval} />
       </div>
     </DashboardContainer>
   )

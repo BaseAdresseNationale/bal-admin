@@ -1,28 +1,30 @@
-import {useState, useEffect, useCallback} from 'react'
+import {useState, useEffect} from 'react'
 import {format} from 'date-fns'
 import {getStatFirstPublicationEvolution, getStatPublications} from '@/lib/api-depot'
+import {getStatCreations} from '@/lib/api-mes-adresses'
 
 const intialDashboardData = {
   firstPublicationEvolutionResponse: [],
   publicationsResponse: [],
+  creationsResponse: []
 }
 
 const dayToMs = 1000 * 60 * 60 * 24
 const getISODate = date => format(date, 'yyyy-MM-dd')
 
+const addEmptyDatesToResponse = (response, timeLapse, initValue) => {
+  const dates = []
+  for (let i = 0; i <= timeLapse; i++) {
+    const curDate = getISODate(new Date(Date.now() + ((i - timeLapse) * dayToMs)))
+    const current = response.find(({date}) => date === curDate) || {date: curDate, ...initValue}
+    dates.push(current)
+  }
+
+  return dates
+}
+
 export function useDashboardData(timeLapse) {
   const [dashboardData, setDashboardData] = useState(intialDashboardData)
-
-  const addEmptyPublicationsToResponse = useCallback(publicationsResponse => {
-    const publications = []
-    for (let i = 0; i <= timeLapse; i++) {
-      const curDate = getISODate(new Date(Date.now() + ((i - timeLapse) * dayToMs)))
-      const curPublications = publicationsResponse.find(({date}) => date === curDate) || {date: curDate, publishedBAL: []}
-      publications.push(curPublications)
-    }
-
-    return publications
-  }, [timeLapse])
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -31,9 +33,11 @@ export function useDashboardData(timeLapse) {
       try {
         const firstPublicationEvolutionResponse = await getStatFirstPublicationEvolution({from, to})
         const publicationsResponse = await getStatPublications({from, to})
+        const creationsResponse = await getStatCreations({from, to})
         setDashboardData({
           firstPublicationEvolutionResponse,
-          publicationsResponse: addEmptyPublicationsToResponse(publicationsResponse, timeLapse)
+          publicationsResponse: addEmptyDatesToResponse(publicationsResponse, timeLapse, {publishedBAL: {}}),
+          creationsResponse: addEmptyDatesToResponse(creationsResponse, timeLapse, {createdBAL: {}}),
         })
       } catch (err) {
         console.error(err)
@@ -41,7 +45,7 @@ export function useDashboardData(timeLapse) {
     }
 
     fetchDashboardData()
-  }, [timeLapse, addEmptyPublicationsToResponse])
+  }, [timeLapse])
 
   return {dashboardData}
 }
