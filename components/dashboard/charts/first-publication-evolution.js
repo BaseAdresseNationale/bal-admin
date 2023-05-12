@@ -5,32 +5,54 @@ import {useMemo} from 'react'
 
 ChartJS.register(...registerables)
 
-const FirstPublicationEvolutionChart = ({firstPublicationEvolutionResponse}) => {
-  const data = useMemo(() => ({
-    labels: firstPublicationEvolutionResponse.map(({date}) => {
+const FirstPublicationEvolutionChart = ({firstPublicationEvolutionResponse, interval}) => {
+  const data = useMemo(() => {
+    let responseData = firstPublicationEvolutionResponse
+    if (interval) {
+      responseData = firstPublicationEvolutionResponse.filter((_data, index) => index % interval === 0)
+    }
+
+    const labels = responseData.map(({date}) => {
       const [year, month, day] = date.split('-')
-      return `${day}/${month}/${year}`
-    }),
-    datasets: [
-      {
-        label: 'BAL publiées',
-        data: firstPublicationEvolutionResponse.map(({totalCreations}) => totalCreations),
-        borderColor: '#36A2EB',
-        backgroundColor: '#9BD0F5',
-      }
-    ]
-  }), [firstPublicationEvolutionResponse])
+      return (interval && interval > 20) ? `${month}/${year}` : `${day}/${month}/${year}`
+    })
+
+    return {
+      labels,
+      datasets: [
+        {
+          type: 'line',
+          label: 'Cumul BAL publiées',
+          data: responseData.map(({totalCreations}) => totalCreations),
+          borderColor: '#36A2EB',
+          backgroundColor: '#9BD0F5',
+          yAxisID: 'y1',
+        },
+        {
+          type: 'bar',
+          label: 'BAL publiées',
+          data: responseData
+            .map(({totalCreations}, index) => {
+              if (index === 0) {
+                return 0
+              }
+
+              return totalCreations - responseData[index - 1].totalCreations
+            }),
+          borderColor: '#f4a4b3',
+          backgroundColor: '#fbe2e6',
+          yAxisID: 'y2',
+        }
+      ]
+    }
+  }, [firstPublicationEvolutionResponse, interval])
 
   return (
     <Chart
-      type='line'
       data={data}
       options={{
         responsive: true,
         plugins: {
-          legend: {
-            display: false,
-          },
           title: {
             display: true,
             text: 'Évolution du nombre de BAL publiées pour la première fois',
@@ -39,6 +61,17 @@ const FirstPublicationEvolutionChart = ({firstPublicationEvolutionResponse}) => 
             },
           },
         },
+        scales: {
+          y1: {
+            type: 'linear',
+            position: 'left'
+          },
+          y2: {
+            type: 'linear',
+            position: 'right',
+          },
+          x: {}
+        }
       }}
     />
   )
@@ -46,6 +79,7 @@ const FirstPublicationEvolutionChart = ({firstPublicationEvolutionResponse}) => 
 
 FirstPublicationEvolutionChart.propTypes = {
   firstPublicationEvolutionResponse: PropTypes.array.isRequired,
+  interval: PropTypes.number,
 }
 
 export default FirstPublicationEvolutionChart

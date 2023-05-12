@@ -19,7 +19,7 @@ const PublicationPerDepartmentChart = ({publicationsResponse}) => {
           acc
           + selectedCommunes.reduce(
             (selectedCommunesCount, codeCommunes) =>
-              selectedCommunesCount + publishedBAL[codeCommunes],
+              selectedCommunesCount + publishedBAL[codeCommunes].total,
             0
           )
         )
