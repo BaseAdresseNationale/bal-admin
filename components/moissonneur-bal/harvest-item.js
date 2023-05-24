@@ -6,8 +6,10 @@ import Badge from '@codegouvfr/react-dsfr/Badge'
 
 import Tooltip from '../tooltip'
 import {formatDate} from '@/lib/util/date'
-
 import {getFile} from '@/lib/api-moissonneur-bal'
+
+import UpdateStatusBadge from '@/components/update-status-badge'
+import MongoId from '@/components/mongo-id'
 
 const StatusBadge = ({status, error}) => {
   if (status === 'active') {
@@ -32,30 +34,7 @@ StatusBadge.propTypes = {
   error: PropTypes.string
 }
 
-const UpdateStatusBadge = ({updateStatus, updateRejectionReason}) => {
-  if (updateStatus === 'unchanged') {
-    return <Badge severity='info' noIcon>Aucun changement</Badge>
-  }
-
-  if (updateStatus === 'rejected') {
-    return (
-      <Tooltip text={updateRejectionReason}>
-        <Badge severity='error' noIcon>Rejeté</Badge>
-      </Tooltip>
-    )
-  }
-
-  if (updateStatus === 'updated') {
-    return <Badge severity='success' noIcon>Mis à jour</Badge>
-  }
-}
-
-UpdateStatusBadge.propTypes = {
-  updateStatus: PropTypes.oneOf(['unchanged', 'rejected', 'updated']),
-  updateRejectionReason: PropTypes.string
-}
-
-const HarvestItem = ({startedAt, finishedAt, status, error, updateStatus, updateRejectionReason, fileId}) => {
+const HarvestItem = ({_id, startedAt, finishedAt, status, error, updateStatus, updateRejectionReason, fileId}) => {
   const downloadFile = async () => {
     const file = await getFile(fileId)
     Router.push(file.url)
@@ -63,6 +42,9 @@ const HarvestItem = ({startedAt, finishedAt, status, error, updateStatus, update
 
   return (
     <tr>
+      <td className='fr-col fr-my-1v'>
+        <MongoId id={_id} />
+      </td>
       <td className='fr-col fr-my-1v'>
         <a>{formatDate(startedAt)}</a>
       </td>
@@ -94,11 +76,12 @@ const HarvestItem = ({startedAt, finishedAt, status, error, updateStatus, update
 }
 
 HarvestItem.propTypes = {
+  _id: PropTypes.string.isRequired,
   startedAt: PropTypes.string.isRequired,
   finishedAt: PropTypes.string,
   status: PropTypes.string,
   error: PropTypes.string,
-  updateStatus: PropTypes.string,
+  updateStatus: PropTypes.oneOf(['unchanged', 'rejected', 'updated']),
   updateRejectionReason: PropTypes.string,
   fileId: PropTypes.string
 }

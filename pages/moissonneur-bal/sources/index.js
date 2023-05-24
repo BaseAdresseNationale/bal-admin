@@ -1,15 +1,15 @@
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import PropTypes from 'prop-types'
 
 import Card from '@codegouvfr/react-dsfr/Card'
 import Button from '@codegouvfr/react-dsfr/Button'
 import Alert from '@codegouvfr/react-dsfr/Alert'
+import Pagination from 'react-js-pagination'
 
 import {getSource, udpateSource, getSourceHarvests, harvestSource, getSourceCurrentRevisions, publishRevision} from '@/lib/api-moissonneur-bal'
 import {getClient} from '@/lib/api-depot'
 
 import {useUser} from '@/hooks/user'
-
 import Main from '@/layouts/main'
 
 import MongoId from '@/components/mongo-id'
@@ -17,31 +17,48 @@ import Loader from '@/components/loader'
 import HarvestItem from '@/components/moissonneur-bal/harvest-item'
 import RevisionItem from '@/components/moissonneur-bal/revision-item'
 
-const MoissoneurBAL = ({initialSource, initialHarvests, initialRevisions}) => {
+const limit = 10
+
+const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount, initialRevisions}) => {
   const [isAdmin, isLoading] = useUser()
 
   const [source, setSource] = useState(initialSource)
   const [harvests, setHarvests] = useState(initialHarvests)
+  const [totalCount, setTotalCount] = useState(initialTotalCount)
+  const [currentPage, setCurrentPage] = useState(1)
   const [revisions, setRevisions] = useState(initialRevisions)
   const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState(null)
 
   const interval = useRef()
 
+  const updateHarvest = useCallback(async page => {
+    const {results, count} = await getSourceHarvests(source._id, limit, page)
+    setHarvests(results)
+    setTotalCount(count)
+  }, [source._id, setHarvests, setTotalCount])
+
   const refresh = useCallback(async () => {
     async function update() {
       const freshSource = await getSource(source._id)
       setSource(freshSource)
-
       if (!freshSource.harvesting.asked) {
-        const freshHarvests = await getSourceHarvests(source._id)
         clearInterval(interval.current)
-        setHarvests(freshHarvests)
+        updateHarvest(currentPage)
+        const revisions = await getRevisionsWithPublicationData(source._id)
+        setRevisions(revisions)
       }
     }
 
     await update()
-    interval.current = setInterval(update, 5000)
-  }, [source])
+    interval.current = setInterval(async () => {
+      await update()
+    }, 5000)
+  }, [source._id, currentPage, updateHarvest])
+
+  const onPageChange = useCallback(async page => {
+    setCurrentPage(page)
+    updateHarvest(page)
+  }, [setCurrentPage, updateHarvest])
 
   const askHarvest = async () => {
     await harvestSource(source._id)
@@ -65,12 +82,6 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialRevisions}) => {
       setForcePublishRevisionStatus('error')
     }
   }
-
-  useEffect(() => {
-    if (source.harvesting.asked && !interval.current) {
-      refresh()
-    }
-  }, [source, refresh])
 
   return (
     <Main isAdmin={isAdmin}>
@@ -141,6 +152,7 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialRevisions}) => {
                 <table>
                   <thead>
                     <tr>
+                      <th scope='col'>Id</th>
                       <th scope='col'>Début du moissonnage</th>
                       <th scope='col'>Fin du moissonnage</th>
                       <th scope='col'>État du moissonnage</th>
@@ -155,6 +167,25 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialRevisions}) => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              <div className='pagination fr-mx-auto fr-my-2w'>
+                <nav role='navigation' className='fr-pagination' aria-label='Pagination'>
+                  <Pagination
+                    activePage={currentPage}
+                    itemsCountPerPage={limit}
+                    totalItemsCount={totalCount}
+                    pageRangeDisplayed={5}
+                    onChange={onPageChange}
+                    innerClass='fr-pagination__list'
+                    activeLinkClass=''
+                    linkClass='fr-pagination__link'
+                    linkClassFirst='fr-pagination__link--first'
+                    linkClassPrev='fr-pagination__link--prev'
+                    linkClassNext='fr-pagination__link--next'
+                    linkClassLast='fr-pagination__link--last'
+                  />
+                </nav>
               </div>
             </div>
 
@@ -172,9 +203,11 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialRevisions}) => {
                 <table>
                   <thead>
                     <tr>
+                      <th scope='col'>Id</th>
                       <th scope='col'>Commune</th>
                       <th scope='col'>Nombre de ligne</th>
                       <th scope='col'>Nombre de ligne en erreur</th>
+                      <th scope='col'>Status</th>
                       <th scope='col'>Publication</th>
                       <th scope='col'>Fichier</th>
                       <th scope='col'>Actions</th>
@@ -213,7 +246,8 @@ MoissoneurBAL.propTypes = {
     harvesting: PropTypes.object.isRequired
   }).isRequired,
   initialHarvests: PropTypes.array.isRequired,
-  initialRevisions: PropTypes.array.isRequired
+  initialRevisions: PropTypes.array.isRequired,
+  initialTotalCount: PropTypes.number.isRequired,
 }
 
 async function getRevisionsWithPublicationData(sourceId) {
@@ -248,13 +282,13 @@ async function getRevisionsWithPublicationData(sourceId) {
 
 export async function getServerSideProps({query}) {
   const source = await getSource(query.sourceId)
-  const harvests = await getSourceHarvests(query.sourceId)
+  const {results, count} = await getSourceHarvests(query.sourceId, limit)
   const revisions = await getRevisionsWithPublicationData(query.sourceId)
-
   return {
     props: {
       initialSource: source,
-      initialHarvests: harvests,
+      initialHarvests: results,
+      initialTotalCount: count,
       initialRevisions: revisions,
     }
   }
