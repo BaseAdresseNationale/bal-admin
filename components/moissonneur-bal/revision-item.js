@@ -6,6 +6,9 @@ import Badge from '@codegouvfr/react-dsfr/Badge'
 
 import Tooltip from '../tooltip'
 
+import MongoId from '@/components/mongo-id'
+import UpdateStatusBadge from '@/components/update-status-badge'
+
 import {getFile} from '@/lib/api-moissonneur-bal'
 import {getCommune} from '@/lib/cog'
 
@@ -55,7 +58,7 @@ RevisionPublication.propTypes = {
   currentClientName: PropTypes.string
 }
 
-const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publication, onForcePublishRevision, isForcePublishRevisionLoading}) => {
+const RevisionItem = ({_id, codeCommune, fileId, nbRows, nbRowsWithErrors, updateStatus, updateRejectionReason, publication, onForcePublishRevision, isForcePublishRevisionLoading}) => {
   const commune = getCommune(codeCommune)
 
   const downloadFile = async () => {
@@ -68,6 +71,9 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
   return (
     <tr>
       <td className='fr-col fr-my-1v'>
+        <MongoId id={_id} />
+      </td>
+      <td className='fr-col fr-my-1v'>
         <a>{commune.nom} ({codeCommune})</a>
       </td>
       <td className='fr-col fr-my-1v'>
@@ -75,6 +81,12 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
       </td>
       <td className='fr-col fr-my-1v'>
         <a>{nbRowsWithErrors}</a>
+      </td>
+      <td className='fr-col fr-my-1v'>
+        <UpdateStatusBadge
+          updateStatus={updateStatus}
+          updateRejectionReason={updateRejectionReason}
+        />
       </td>
       <td className='fr-col fr-my-1v'>
         <RevisionPublication {...publication} />
@@ -105,13 +117,17 @@ const RevisionItem = ({codeCommune, fileId, nbRows, nbRowsWithErrors, publicatio
 }
 
 RevisionItem.default = {
-  publication: null
+  publication: null,
+  updateRejectionReason: null
 }
 
 RevisionItem.propTypes = {
+  _id: PropTypes.string.isRequired,
   codeCommune: PropTypes.string.isRequired,
   nbRows: PropTypes.number.isRequired,
   nbRowsWithErrors: PropTypes.number.isRequired,
+  updateStatus: PropTypes.string.isRequired,
+  updateRejectionReason: PropTypes.string,
   publication: PropTypes.object,
   fileId: PropTypes.string,
   onForcePublishRevision: PropTypes.func,
