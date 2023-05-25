@@ -91,7 +91,7 @@ const CreationCount = ({creationsResponse, interval}) => {
         plugins: {
           title: {
             display: true,
-            text: 'Nombre de créations',
+            text: 'Créations de BAL via mes-adresses',
             font: {
               size: 18,
             },
