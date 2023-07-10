@@ -1,13 +1,13 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {useRouter} from 'next/router'
 import {pick} from 'lodash'
 import Pagination from 'react-js-pagination'
-import SearchBar from '@codegouvfr/react-dsfr/SearchBar'
+import allCommunes from '@etalab/decoupage-administratif/data/communes.json'
+import {SearchBar} from '@codegouvfr/react-dsfr/SearchBar'
 
 import {searchBasesLocales} from '@/lib/api-mes-adresses'
 import {STATUSES} from '@/lib/bal-status'
-import {isCommune} from '@/lib/cog'
 
 import Main from '@/layouts/main'
 
@@ -16,65 +16,56 @@ import {useUser} from '@/hooks/user'
 import BaseLocaleItem from '@/components/mes-adresses/base-locale-item'
 import Loader from '@/components/loader'
 import SelectInput from '@/components/select-input'
+import SearchInput from '@/components/search-input'
+
+const allOptions = allCommunes
+  .filter(c => ['commune-actuelle', 'arrondissement-municipal'].includes(c.type))
+  .map(c => ({label: `${c.nom} / ${c.code}`, value: c.code}))
 
 const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
   const [isAdmin, isLoading] = useUser()
   const router = useRouter()
 
-  const [input, setInput] = useState(query?.commune || query?.email || '')
-  const [inputCommune, setInputCommune] = useState(query.commune)
-  const [inputEmail, setInputEmail] = useState(query.email)
   const [status, setStatus] = useState(query.status || '')
   const [deleted, setDeleted] = useState(false)
-  const [isInputError, setIsInputError] = useState()
+
+  const [inputValue, setInputValue] = useState('')
+  const [options, setOptions] = useState([])
 
   const currentPage = Math.ceil((offset - 1) / limit) + 1
 
-  const computeQuery = useCallback(page => {
+  const computeQuery = useCallback((page, commune) => {
     const query = {page, limit, deleted: deleted ? 1 : 0}
 
     if (status !== '') {
       query.status = status
     }
 
-    if (inputEmail) {
-      query.email = inputEmail
-    }
-
-    if (inputCommune) {
-      query.commune = inputCommune
+    if (commune) {
+      query.commune = commune.value
     }
 
     return query
-  }, [limit, inputEmail, inputCommune, deleted, status])
+  }, [limit, deleted, status])
 
   const onPageChange = useCallback(page => {
     const query = computeQuery(page)
-
     router.push({pathname: '/mes-adresses', query})
   }, [router, computeQuery])
 
-  const submitInput = useCallback(event => {
-    event.preventDefault()
-
-    setIsInputError(false)
-    setInputCommune(null)
-    setInputEmail(null)
-
-    if (input.includes('@')) {
-      setInputEmail(input)
-    } else if (isCommune(input)) {
-      setInputCommune(input)
-    } else {
-      setIsInputError(true)
-    }
-  }, [input])
-
   useEffect(() => {
-    const query = computeQuery(1)
+    if (inputValue.length <= 2) {
+      setOptions([])
+    } else if (inputValue.length > 2) {
+      const newOptions = allOptions.filter(c => c.label.toLowerCase().includes(inputValue.toLowerCase()))
+      setOptions(newOptions.slice(0, 10))
+    }
+  }, [inputValue])
 
+  async function onChange(newValue) {
+    const query = computeQuery(1, newValue)
     router.push({pathname: '/mes-adresses', query})
-  }, [limit, inputEmail, inputCommune, deleted, status]) // eslint-disable-line react-hooks/exhaustive-deps
+  }
 
   return (
     <Main isAdmin={isAdmin}>
@@ -85,23 +76,19 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
               <h3>Recherche</h3>
               <div className='fr-grid-row fr-grid-row--gutters'>
                 <div className='fr-col'>
-                  <form onSubmit={submitInput}>
-                    <SearchBar
-                      label='Recherche code commune ou email'
-                      nativeInputProps={{
-                        value: input,
-                        id: 'search-input',
-                        name: 'search-input',
-                        onChange: e => setInput(e.target.value)
-                      }}
-                    />
-
-                    {isInputError && (
-                      <p id='text-input-error-desc-error' className='fr-error-text'>
-                        Veuillez indiquer un code commune ou une adresse email
-                      </p>
+                  <SearchBar
+                    renderInput={({className, id, placeholder, type}) => (
+                      <SearchInput
+                        options={options}
+                        className={className}
+                        id={id}
+                        placeholder={placeholder}
+                        type={type}
+                        onChange={newValue => onChange(newValue)}
+                        onInputChange={newValue => setInputValue(newValue)}
+                      />
                     )}
-                  </form>
+                  />
                 </div>
               </div>
 
@@ -125,50 +112,51 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
                 </div>
               </div>
             </div>
-            <div className='fr-table'>
-              <table>
-                <caption>Liste des bases adresses locales</caption>
-                <thead>
-                  <tr>
-                    <th scope='col'>Nom</th>
-                    <th scope='col'>Commune</th>
-                    <th scope='col'>Date de création</th>
-                    <th scope='col'>Date de mise à jour</th>
-                    <th scope='col'>Statut</th>
-                    <th scope='col'>Numéros certifiés</th>
-                    <th scope='col' />
-                  </tr>
-                </thead>
+            {basesLocales && basesLocales.length > 0 ? (
+              <div className='fr-table'>
+                <table>
+                  <caption>Liste des bases adresses locales</caption>
+                  <thead>
+                    <tr>
+                      <th scope='col'>Nom</th>
+                      <th scope='col'>Commune</th>
+                      <th scope='col'>Date de création</th>
+                      <th scope='col'>Date de mise à jour</th>
+                      <th scope='col'>Statut</th>
+                      <th scope='col'>Numéros certifiés</th>
+                      <th scope='col' />
+                    </tr>
+                  </thead>
 
-                <tbody>
-                  {basesLocales.length > 0 ? (
-                    basesLocales.map(baseLocale => (
+                  <tbody>
+                    {basesLocales.map(baseLocale => (
                       <BaseLocaleItem key={baseLocale._id} {...baseLocale} />
-                    ))) : (
-                    'Aucune base locale n’a été trouvée'
-                  )}
-                </tbody>
-              </table>
+                    ))}
+                  </tbody>
+                </table>
 
-              <div className='pagination fr-mx-auto fr-my-2w'>
-                <nav role='navigation' className='fr-pagination' aria-label='Pagination'>
-                  <Pagination
-                    activePage={currentPage}
-                    itemsCountPerPage={limit}
-                    totalItemsCount={count}
-                    pageRangeDisplayed={5}
-                    onChange={onPageChange}
-                    innerClass='fr-pagination__list'
-                    activeLinkClass=''
-                    linkClass='fr-pagination__link'
-                    linkClassFirst='fr-pagination__link--first'
-                    linkClassPrev='fr-pagination__link--prev fr-pagination__link--lg-label'
-                    linkClassNext='fr-pagination__link--next fr-pagination__link--lg-label'
-                    linkClassLast='fr-pagination__link--last'
-                  />
-                </nav>
+                <div className='pagination fr-mx-auto fr-my-2w'>
+                  <nav role='navigation' className='fr-pagination' aria-label='Pagination'>
+                    <Pagination
+                      activePage={currentPage}
+                      itemsCountPerPage={limit}
+                      totalItemsCount={count}
+                      pageRangeDisplayed={5}
+                      onChange={onPageChange}
+                      innerClass='fr-pagination__list'
+                      activeLinkClass=''
+                      linkClass='fr-pagination__link'
+                      linkClassFirst='fr-pagination__link--first'
+                      linkClassPrev='fr-pagination__link--prev fr-pagination__link--lg-label'
+                      linkClassNext='fr-pagination__link--next fr-pagination__link--lg-label'
+                      linkClassLast='fr-pagination__link--last'
+                    />
+                  </nav>
+                </div>
               </div>
-            </div>
+            ) : (
+              <p>Aucune base locale n’a été trouvée</p>
+            )}
           </div>
         )}
       </Loader>
@@ -192,7 +180,6 @@ MesAdresses.propTypes = {
   basesLocales: PropTypes.array.isRequired,
   query: PropTypes.shape({
     commune: PropTypes.string,
-    email: PropTypes.string,
     status: PropTypes.oneOf([...Object.keys(STATUSES), null])
   }),
   page: PropTypes.number,
@@ -212,7 +199,7 @@ export async function getServerSideProps({query}) {
     props: {
       ...result,
       basesLocales: result ? result.results : [],
-      query: pick(query, ['commune', 'email', 'status'])
+      query: pick(query, ['commune', 'status'])
     }
   }
 }
