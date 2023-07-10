@@ -12,7 +12,7 @@ import {getClient} from '@/lib/api-depot'
 import {useUser} from '@/hooks/user'
 import Main from '@/layouts/main'
 
-import MongoId from '@/components/mongo-id'
+import CopyToClipBoard from '@/components/copy-to-clipboard'
 import Loader from '@/components/loader'
 import HarvestItem from '@/components/moissonneur-bal/harvest-item'
 import RevisionItem from '@/components/moissonneur-bal/revision-item'
@@ -92,7 +92,7 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount, initi
               <div className='fr-grid-row fr-grid-row--gutters'>
                 <div className='fr-col-10'>
                   <h1>{source.title}</h1>
-                  <MongoId id={source._id} />
+                  <CopyToClipBoard text={source._id} title='Id' />
                   <ul className='fr-tags-group'>
                     <li>
                       <p className='fr-tag'>{source.license}</p>
