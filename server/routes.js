@@ -54,6 +54,7 @@ module.exports = app => {
   router.use('/proxy-api-depot', require('./proxy-api-depot'))
   router.use('/proxy-api-depot-demo', setDemoClient, require('./proxy-api-depot'))
   router.use('/proxy-api-moissonneur-bal', require('./proxy-api-moissonneur-bal'))
+  router.use('/proxy-mes-adresses-api', require('./proxy-mes-adresses-api'))
 
   router.get('*', (req, res) => {
     app.render(req, res, req.params[0], req.query)

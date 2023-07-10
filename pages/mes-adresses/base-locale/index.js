@@ -13,12 +13,12 @@ import {useUser} from '@/hooks/user'
 import Main from '@/layouts/main'
 
 import Loader from '@/components/loader'
-import MongoId from '@/components/mongo-id'
+import CopyToClipBoard from '@/components/copy-to-clipboard'
 
 const NEXT_PUBLIC_MES_ADRESSES_URL = process.env.NEXT_PUBLIC_MES_ADRESSES_URL || 'http://mes-adresses.data.gouv.fr'
 
 const BaseLocale = ({baseLocale}) => {
-  const {_id, nom, commune, status, sync, enableComplement, nbNumerosCertifies, nbNumeros, _created, _updated, _deleted} = baseLocale
+  const {_id, nom, commune, status, sync, enableComplement, nbNumerosCertifies, nbNumeros, _created, _updated, _deleted, token} = baseLocale
   const [isAdmin, isLoading] = useUser()
 
   const computedStatus = computeStatus(status, sync)
@@ -42,8 +42,8 @@ const BaseLocale = ({baseLocale}) => {
               <div className='fr-grid-row fr-grid-row--gutters'>
                 <div className='fr-col-10'>
                   <h1>{nom} ({commune})</h1>
-                  <MongoId id={_id} />
-
+                  <CopyToClipBoard text={_id} title='Id' />
+                  {token && <CopyToClipBoard text={token} title='Token' /> }
                   <div className='fr-my-4v'>
                     <Badge severity={computedStatus.intent} noIcon>{computedStatus.label}</Badge>
                   </div>
@@ -63,8 +63,14 @@ const BaseLocale = ({baseLocale}) => {
 
                 <div className='fr-col-2'>
                   <div className='fr-container'>
-                    <Link href={`${NEXT_PUBLIC_MES_ADRESSES_URL}/bal/${_id}`}>
-                      <a className='fr-link fr-fi-arrow-right-line fr-link--icon-right'>Consulter</a>
+                    <Link href={`${NEXT_PUBLIC_MES_ADRESSES_URL}/bal/${_id}/${token}`}>
+                      <a
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='fr-link fr-fi-arrow-right-line fr-link--icon-right'
+                      >
+                        Consulter
+                      </a>
                     </Link>
                   </div>
                 </div>
@@ -102,13 +108,13 @@ BaseLocale.propTypes = {
     nbNumerosCertifies: PropTypes.number.isRequired,
     isAllCertified: PropTypes.bool.isRequired,
     commentedNumeros: PropTypes.array.isRequired,
+    token: PropTypes.array,
     sync: PropTypes.object
   }).isRequired
 }
 
 export async function getServerSideProps({query}) {
   const baseLocale = await getBaseLocale(query.baseLocaleId)
-
   return {
     props: {
       baseLocale
