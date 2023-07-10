@@ -13,7 +13,7 @@ import {useUser} from '@/hooks/user'
 import Main from '@/layouts/main'
 
 import Loader from '@/components/loader'
-import MongoId from '@/components/mongo-id'
+import CopyToClipBoard from '@/components/copy-to-clipboard'
 
 const NEXT_PUBLIC_MES_ADRESSES_URL = process.env.NEXT_PUBLIC_MES_ADRESSES_URL || 'http://mes-adresses.data.gouv.fr'
 
@@ -42,8 +42,8 @@ const BaseLocale = ({baseLocale}) => {
               <div className='fr-grid-row fr-grid-row--gutters'>
                 <div className='fr-col-10'>
                   <h1>{nom} ({commune})</h1>
-                  <MongoId id={_id} />
-                  token: {token}
+                  <CopyToClipBoard text={_id} title='Id' />
+                  <CopyToClipBoard text={token} title='Token' />
                   <div className='fr-my-4v'>
                     <Badge severity={computedStatus.intent} noIcon>{computedStatus.label}</Badge>
                   </div>

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 import {getEPCI, getDepartement, getCommune} from '@/lib/cog'
 
-import MongoId from '@/components/mongo-id'
+import CopyToClipBoard from '@/components/copy-to-clipboard'
 
 function getPerimeters(perimetre) {
   return perimetre ? perimetre.map(p => {
@@ -34,8 +34,8 @@ const ChefDeFile = ({hasChefDeFile, _id, nom, email, perimetre, signataireCharte
           <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--middle'>
             <div className='fr-col-10'>
               <h3>{nom}</h3>
-              <MongoId id={_id} />
-              <a href={`emailTo:${email}`}>{email}</a>
+              <CopyToClipBoard text={_id} title='Id' />
+              <CopyToClipBoard text={email} title='Email' />
             </div>
 
             <div className='fr-col'>

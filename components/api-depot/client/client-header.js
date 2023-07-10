@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import MongoId from '@/components/mongo-id'
+import CopyToClipBoard from '@/components/copy-to-clipboard'
 
 const ClientHeader = ({id, nom, token}) => (
   <div className='fr-py-4v'>
@@ -9,8 +9,8 @@ const ClientHeader = ({id, nom, token}) => (
       <div className='fr-grid-row fr-grid-row--gutters'>
         <div className='fr-col-10'>
           <h2>{nom}</h2>
-          <MongoId id={id} />
-          token: {token}
+          <CopyToClipBoard text={id} title='Id' />
+          <CopyToClipBoard text={token} title='Token' />
         </div>
       </div>
     </div>

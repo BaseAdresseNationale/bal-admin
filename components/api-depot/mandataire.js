@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import MongoId from '@/components/mongo-id'
+import CopyToClipBoard from '@/components/copy-to-clipboard'
 
 const Mandataire = ({_id, nom, email}) => (
   <div className='fr-py-4v'>
@@ -9,8 +9,8 @@ const Mandataire = ({_id, nom, email}) => (
       <div className='fr-grid-row fr-grid-row--gutters'>
         <div className='fr-col'>
           <h3>{nom}</h3>
-          <MongoId id={_id} />
-          <a href={`emailTo:${email}`}>{email}</a>
+          <CopyToClipBoard text={_id} title='Id' />
+          <CopyToClipBoard text={email} title='Email' />
         </div>
       </div>
     </div>
