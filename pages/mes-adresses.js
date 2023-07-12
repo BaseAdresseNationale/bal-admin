@@ -1,4 +1,4 @@
-import {useCallback, useState, useEffect} from 'react'
+import {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {useRouter} from 'next/router'
 import {pick} from 'lodash'
@@ -20,7 +20,7 @@ import SearchInput from '@/components/search-input'
 
 const allOptions = allCommunes
   .filter(c => ['commune-actuelle', 'arrondissement-municipal'].includes(c.type))
-  .map(c => ({label: `${c.nom} / ${c.code}`, value: c.code}))
+  .map(c => ({label: `${c.nom} (${c.code})`, value: c.code}))
 
 const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
   const [isAdmin, isLoading] = useUser()
@@ -29,29 +29,30 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
   const [status, setStatus] = useState(query.status || '')
   const [deleted, setDeleted] = useState(false)
 
+  const [value, setValue] = useState(null)
   const [inputValue, setInputValue] = useState('')
   const [options, setOptions] = useState([])
 
   const currentPage = Math.ceil((offset - 1) / limit) + 1
 
-  const computeQuery = useCallback((page, commune) => {
+  const computeQuery = page => {
     const query = {page, limit, deleted: deleted ? 1 : 0}
 
     if (status !== '') {
       query.status = status
     }
 
-    if (commune) {
-      query.commune = commune.value
+    if (value) {
+      query.commune = value.value
     }
 
     return query
-  }, [limit, deleted, status])
+  }
 
-  const onPageChange = useCallback(page => {
+  const onPageChange = page => {
     const query = computeQuery(page)
     router.push({pathname: '/mes-adresses', query})
-  }, [router, computeQuery])
+  }
 
   useEffect(() => {
     if (inputValue.length <= 2) {
@@ -62,10 +63,10 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
     }
   }, [inputValue])
 
-  async function onChange(newValue) {
-    const query = computeQuery(1, newValue)
+  useEffect(() => {
+    const query = computeQuery(1)
     router.push({pathname: '/mes-adresses', query})
-  }
+  }, [value, deleted, status])
 
   return (
     <Main isAdmin={isAdmin}>
@@ -84,7 +85,7 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
                         id={id}
                         placeholder={placeholder}
                         type={type}
-                        onChange={newValue => onChange(newValue)}
+                        onChange={newValue => setValue(newValue)}
                         onInputChange={newValue => setInputValue(newValue)}
                       />
                     )}
