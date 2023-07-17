@@ -221,6 +221,7 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount, initi
                         onForcePublishRevision={() => onForcePublishRevision(revision._id)}
                         isForcePublishRevisionLoading={forcePublishRevisionStatus === 'loading'}
                         {...revision}
+                        ignoreFields={['sourceId']}
                       />
                     ))}
                   </tbody>

@@ -16,7 +16,6 @@ const Tooltip = ({text, children}) => (
         /* Tooltip text */
         .tooltip .tooltip-text {
             visibility: hidden;
-            width: 120px;
             background-color: black;
             color: #fff;
             text-align: center;
