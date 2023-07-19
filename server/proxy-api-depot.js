@@ -127,6 +127,11 @@ async function getRevisionsByCommune(req, res) {
   forward(response, res)
 }
 
+async function deleteRevision(req, res) {
+  const response = await req.client.delete(`revisions/${req.params.revisionId}`)
+  forward(response, res)
+}
+
 const app = new express.Router()
 
 app.use(express.json())
@@ -155,6 +160,7 @@ app.get('/stats/firsts-publications', w(getStatFirstPublicationEvolution))
 app.get('/stats/publications', w(getStatPublications))
 
 app.get('/communes/:codeCommune/revisions/all', w(getRevisionsByCommune))
+app.delete('/revisions/:revisionId', w(deleteRevision))
 
 module.exports = app
 

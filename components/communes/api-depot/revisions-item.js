@@ -6,7 +6,7 @@ import {formatDate} from '@/lib/util/date'
 import MongoId from '@/components/mongo-id'
 import Tooltip from '@/components/tooltip'
 
-const RevisionItem = ({_id, status, current, client, validation, createdAt, publishedAt}) => (
+const RevisionItem = ({_id, status, current, client, validation, createdAt, publishedAt, onDelete}) => (
   <tr>
     <td className='fr-col fr-my-1v'>
       <MongoId id={_id} />
@@ -39,12 +39,16 @@ const RevisionItem = ({_id, status, current, client, validation, createdAt, publ
     <td className='fr-col fr-my-1v'>
       {publishedAt ? formatDate(publishedAt) : 'inconnu'}
     </td>
+    <td>
+      {current && <button className='fr-btn' type='button' title='Supprimer' onClick={() => onDelete()}>Supprimer</button>}
+    </td>
   </tr>
 )
 
 RevisionItem.defaultProps = {
   publishedAt: '',
   current: false,
+  onDelete: null
 }
 
 RevisionItem.propTypes = {
@@ -55,6 +59,7 @@ RevisionItem.propTypes = {
   validation: PropTypes.object.isRequired,
   createdAt: PropTypes.string.isRequired,
   publishedAt: PropTypes.string,
+  onDelete: PropTypes.func,
 }
 
 export default RevisionItem
