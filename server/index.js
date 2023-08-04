@@ -2,6 +2,7 @@
 const express = require('express')
 const next = require('next')
 require('dotenv').config()
+const mongoClient = require('./utils/mongo-client')
 
 const createApiRoutes = require('./routes')
 
@@ -14,6 +15,13 @@ async function main() {
   const nextApp = next({dev})
   await nextApp.prepare()
 
+  await mongoClient.connect()
+
+  server.use(express.json({limit: '5mb'}))
+  server.use(express.urlencoded({
+    extended: true,
+    limit: '5mb'
+  }))
   server.use('/api', createApiRoutes())
 
   server.get('*', (req, res) => {

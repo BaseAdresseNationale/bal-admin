@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import {useRouter} from 'next/router'
 import {pick} from 'lodash'
 import Pagination from 'react-js-pagination'
-import allCommunes from '@etalab/decoupage-administratif/data/communes.json'
-import {SearchBar} from '@codegouvfr/react-dsfr/SearchBar'
 
 import {searchBasesLocales} from '@/lib/api-mes-adresses'
 import {STATUSES} from '@/lib/bal-status'
@@ -16,11 +14,7 @@ import {useUser} from '@/hooks/user'
 import BaseLocaleItem from '@/components/mes-adresses/base-locale-item'
 import Loader from '@/components/loader'
 import SelectInput from '@/components/select-input'
-import SearchInput from '@/components/search-input'
-
-const allOptions = allCommunes
-  .filter(c => ['commune-actuelle', 'arrondissement-municipal'].includes(c.type))
-  .map(c => ({label: `${c.nom} (${c.code})`, value: c.code}))
+import {CommuneInput} from '@/components/commune-input'
 
 const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
   const [isAdmin, isLoading] = useUser()
@@ -30,8 +24,6 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
   const [deleted, setDeleted] = useState(false)
 
   const [value, setValue] = useState(null)
-  const [inputValue, setInputValue] = useState('')
-  const [options, setOptions] = useState([])
 
   const currentPage = Math.ceil((offset - 1) / limit) + 1
 
@@ -43,7 +35,7 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
     }
 
     if (value) {
-      query.commune = value.value
+      query.commune = value
     }
 
     return query
@@ -53,15 +45,6 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
     const query = computeQuery(page)
     router.push({pathname: '/mes-adresses', query})
   }
-
-  useEffect(() => {
-    if (inputValue.length <= 2) {
-      setOptions([])
-    } else if (inputValue.length > 2) {
-      const newOptions = allOptions.filter(c => c.label.toLowerCase().includes(inputValue.toLowerCase()))
-      setOptions(newOptions.slice(0, 10))
-    }
-  }, [inputValue])
 
   useEffect(() => {
     const query = computeQuery(1)
@@ -77,19 +60,7 @@ const MesAdresses = ({basesLocales, query, limit, offset, count}) => {
               <h3>Recherche</h3>
               <div className='fr-grid-row fr-grid-row--gutters'>
                 <div className='fr-col'>
-                  <SearchBar
-                    renderInput={({className, id, placeholder, type}) => (
-                      <SearchInput
-                        options={options}
-                        className={className}
-                        id={id}
-                        placeholder={placeholder}
-                        type={type}
-                        onChange={newValue => setValue(newValue)}
-                        onInputChange={newValue => setInputValue(newValue)}
-                      />
-                    )}
-                  />
+                  <CommuneInput onChange={commune => setValue(commune?.code)} />
                 </div>
               </div>
 
