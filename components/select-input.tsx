@@ -1,6 +1,19 @@
-import PropTypes from 'prop-types'
+type SelectInputProps = {
+  label: string;
+  value?: string | string[];
+  hint?: string;
+  options: Array<{
+    label: string;
+    value: string;
+    isDisabled?: boolean;
+  }>;
+  defaultOption?: string;
+  isDisabled?: boolean;
+  handleChange: (value: string | string[]) => void;
+  isMultiple?: boolean;
+}
 
-const SelectInput = ({label, value, hint, options, defaultOption, isDisabled, handleChange}) => (
+const SelectInput = ({label, value, hint, options, defaultOption, isDisabled, handleChange, isMultiple}: SelectInputProps) => (
   <div className={`fr-select-group ${isDisabled ? 'fr-select-group--disabled' : ''}`}>
     <label className='fr-label' htmlFor={`select-${label}`}>
       {label}
@@ -13,7 +26,10 @@ const SelectInput = ({label, value, hint, options, defaultOption, isDisabled, ha
       name={`select-${label}`}
       value={value}
       disabled={isDisabled}
-      onChange={event => handleChange(event.target.value)}
+      onChange={event => {
+        handleChange(event.target.value)
+      }}
+      multiple={isMultiple}
     >
       {defaultOption && <option value=''>{defaultOption}</option>}
       {options.map(option => (
@@ -29,25 +45,5 @@ const SelectInput = ({label, value, hint, options, defaultOption, isDisabled, ha
   </div>
 
 )
-
-SelectInput.defaultProps = {
-  value: '',
-  hint: null,
-  isDisabled: false
-}
-
-SelectInput.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.string,
-  hint: PropTypes.string,
-  options: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired,
-    isDisabled: PropTypes.bool
-  })).isRequired,
-  defaultOption: PropTypes.string,
-  isDisabled: PropTypes.bool,
-  handleChange: PropTypes.func.isRequired
-}
 
 export default SelectInput

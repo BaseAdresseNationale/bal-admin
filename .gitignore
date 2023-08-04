@@ -107,3 +107,6 @@ dist
 *.DS_Store
 .AppleDouble
 .LSOverride
+
+# Migration files
+server/migrations/data/
