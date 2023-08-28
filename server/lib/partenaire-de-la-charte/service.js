@@ -83,7 +83,11 @@ async function createOne(payload, options = {}) {
   await mongoClient.insertOne(collectionName, newRecord)
 
   if (isCandidate) {
-    await sendMail('candidature-partenaire-de-la-charte')
+    try {
+      await sendMail('candidature-partenaire-de-la-charte')
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return newRecord
