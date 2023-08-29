@@ -40,6 +40,12 @@ async function publishRevision(req, res) {
   forward(response, res)
 }
 
+async function getRevisionsByCommune(req, res) {
+  const {codeCommune} = req.params
+  const response = await client.get(`communes/${codeCommune}/revisions`)
+  forward(response, res)
+}
+
 const app = new express.Router()
 
 app.use(express.json())
@@ -48,5 +54,6 @@ app.use(express.json())
 app.post('/sources/:sourceId/harvest', w(harvestSource))
 app.put('/sources/:sourceId', w(updateSource))
 app.post('/revisions/:revisionId/publish', w(publishRevision))
+app.get('/communes/:codeCommune/revisions', w(getRevisionsByCommune))
 
 module.exports = app

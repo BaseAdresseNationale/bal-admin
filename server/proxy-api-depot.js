@@ -122,6 +122,11 @@ async function getStatPublications(req, res) {
   forward(response, res)
 }
 
+async function getAllRevisionsByCommune(req, res) {
+  const response = await req.client.get(`communes/${req.params.codeCommune}/revisions?status=all`)
+  forward(response, res)
+}
+
 const app = new express.Router()
 
 app.use(express.json())
@@ -148,6 +153,8 @@ app.get('/chefs-de-file/:chefDeFileId', w(getChefDeFile))
 // Dashboard
 app.get('/stats/firsts-publications', w(getStatFirstPublicationEvolution))
 app.get('/stats/publications', w(getStatPublications))
+
+app.get('/communes/:codeCommune/revisions', w(getAllRevisionsByCommune))
 
 module.exports = app
 
