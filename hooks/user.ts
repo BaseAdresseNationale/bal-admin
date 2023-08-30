@@ -1,8 +1,8 @@
 import {useState, useEffect} from 'react'
 import Router from 'next/router'
-import {getUser} from '@/lib/user'
+import {getUser} from '../lib/user'
 
-export function useUser() {
+export function useUser(): [boolean, boolean] {
   const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -11,15 +11,15 @@ export function useUser() {
       setIsLoading(true)
       const user = await getUser()
 
-      if (user && user.isAdmin) {
+      if (user?.isAdmin) {
         setIsAdmin(user.isAdmin)
         setIsLoading(false)
       } else {
-        Router.push('/login')
+        await Router.push('/login')
       }
     }
 
-    fetchAdmin()
+    void fetchAdmin()
   }, [])
 
   return [isAdmin, isLoading]

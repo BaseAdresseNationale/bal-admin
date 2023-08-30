@@ -77,6 +77,11 @@ const Header = ({isLoggedIn}) => (
                 <a className='fr-nav__link' target='_self'>Communes</a>
               </Link>
             </li>
+             <li className='fr-nav__item'>
+              <Link href='/partenaires-de-la-charte'>
+                <a className='fr-nav__link' target='_self'>Partenaires de la charte</a>
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
