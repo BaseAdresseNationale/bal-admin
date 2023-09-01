@@ -36,7 +36,7 @@ const MandataireForm = ({selectedMandataire, mandataires, onSelect}) => {
     if (nom && email && isEmailValid) {
       onSelect({nom, email})
     }
-  }, [nom, email, isEmailValid, onSelect])
+  }, [nom, email, isEmailValid])
 
   return (
     <div className='fr-my-4w'>
@@ -91,12 +91,16 @@ const MandataireForm = ({selectedMandataire, mandataires, onSelect}) => {
   )
 }
 
+MandataireForm.defaultProps = {
+  mandataires: []
+}
+
 MandataireForm.propTypes = {
   selectedMandataire: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,
   ]),
-  mandataires: PropTypes.array.isRequired,
+  mandataires: PropTypes.array,
   onSelect: PropTypes.func.isRequired
 }
 

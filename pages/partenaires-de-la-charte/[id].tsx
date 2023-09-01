@@ -5,10 +5,7 @@ import type {PartenaireDeLaChartType} from 'types/partenaire-de-la-charte'
 import {useRouter} from 'next/router'
 import {Button} from '@codegouvfr/react-dsfr/Button'
 import {createModal} from '@codegouvfr/react-dsfr/Modal'
-import {useUser} from '../../hooks/user'
 
-import Main from '../../layouts/main'
-import Loader from '../../components/loader'
 import {PartenaireForm} from '@/components/partenaires-de-la-charte/partenaire-form'
 import {
   deletePartenaireDeLaCharte,
@@ -28,7 +25,6 @@ const deletePartenaireModale = createModal({
 const PartenaireDeLaChartePage = ({
   partenaireDeLaCharte,
 }: PartenaireDeLaChartePageProps) => {
-  const [isAdmin, isLoading] = useUser()
   const isCandidate = !partenaireDeLaCharte.signatureDate
 
   const router = useRouter()
@@ -72,46 +68,40 @@ const PartenaireDeLaChartePage = ({
   }
 
   return (
-    <Main isAdmin={isAdmin}>
-      <Loader isLoading={isLoading}>
-        {isAdmin && (
-          <div className='fr-container'>
-            <PartenaireForm
-              title={<h3>{partenaireDeLaCharte.name} {isCandidate && '(candidat)'}</h3>}
-              data={partenaireDeLaCharte}
-              onSubmit={onUpdate}
-              submitLabel={isCandidate ? 'Enregistrer et accepter la candidature' : 'Enregistrer les modifications'}
-              controls={
-                <Button
-                  type='button'
-                  priority='tertiary'
-                  onClick={() => {
-                    deletePartenaireModale.open()
-                  }}
-                >
-                  Supprimer
-                </Button>
-              }
-            />
-            <deletePartenaireModale.Component title='Suppression'>
-              <p>Êtes-vous sûr de vouloir supprimer ce {isCandidate ? 'candidat' : 'partenaire'}?</p>
-              <div>
-                <Button onClick={onDelete}>Supprimer</Button>
-                <Button
-                  style={{marginLeft: '1rem'}}
-                  priority='tertiary'
-                  onClick={() => {
-                    deletePartenaireModale.close()
-                  }}
-                >
-                  Annuler
-                </Button>
-              </div>
-            </deletePartenaireModale.Component>
-          </div>
-        )}
-      </Loader>
-    </Main>
+    <div className='fr-container'>
+      <PartenaireForm
+        title={<h3>{partenaireDeLaCharte.name} {isCandidate && '(candidat)'}</h3>}
+        data={partenaireDeLaCharte}
+        onSubmit={onUpdate}
+        submitLabel={isCandidate ? 'Enregistrer et accepter la candidature' : 'Enregistrer les modifications'}
+        controls={
+          <Button
+            type='button'
+            priority='tertiary'
+            onClick={() => {
+              deletePartenaireModale.open()
+            }}
+          >
+            Supprimer
+          </Button>
+        }
+      />
+      <deletePartenaireModale.Component title='Suppression'>
+        <p>Êtes-vous sûr de vouloir supprimer ce {isCandidate ? 'candidat' : 'partenaire'}?</p>
+        <div>
+          <Button onClick={onDelete}>Supprimer</Button>
+          <Button
+            style={{marginLeft: '1rem'}}
+            priority='tertiary'
+            onClick={() => {
+              deletePartenaireModale.close()
+            }}
+          >
+            Annuler
+          </Button>
+        </div>
+      </deletePartenaireModale.Component>
+    </div>
   )
 }
 

@@ -48,7 +48,7 @@ const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
         signataireCharte: isSignataireCharte
       })
     }
-  }, [nom, email, isEmailValid, perimeters, isSignataireCharte, onSelect])
+  }, [nom, email, isEmailValid, perimeters, isSignataireCharte])
 
   return (
     <div className='fr-my-4w'>
@@ -112,12 +112,16 @@ const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
   )
 }
 
+ChefDeFileForm.defaultProps = {
+  chefsDeFile: []
+}
+
 ChefDeFileForm.propTypes = {
   selectedChefDeFile: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,
   ]),
-  chefsDeFile: PropTypes.array.isRequired,
+  chefsDeFile: PropTypes.array,
   onSelect: PropTypes.func.isRequired
 }
 

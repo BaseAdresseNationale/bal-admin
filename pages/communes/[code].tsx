@@ -1,12 +1,10 @@
 import {useState, useEffect, useMemo} from 'react'
+import {useRouter} from 'next/router'
 import type {RevisionMoissoneur} from '../../types/moissoneur'
 import type {RevisionApiDepot} from '../../types/api-depot'
 import type {Page} from '../../types/page'
 import type {Bals} from '../../types/mes-adresses'
-import {useUser} from '@/hooks/user'
-import Main from '@/layouts/main'
 import {getCommune} from '@/lib/cog'
-import Loader from '@/components/loader'
 
 import {getAllRevisionByCommune} from '@/lib/api-depot'
 import {searchBasesLocales} from '@/lib/api-mes-adresses'
@@ -19,16 +17,15 @@ import {BalsItem} from '@/components/communes/bals-item'
 
 type CommuneSourcePageProps = {
   code: string;
-  initialRevisionsApiDepot: RevisionApiDepot[];
-  initialRevisionsMoissonneur: RevisionMoissoneur[];
   balsPage: Page<Bals>;
 }
 
 const CommuneSource = (
-  {code, initialRevisionsApiDepot, initialRevisionsMoissonneur, balsPage}: CommuneSourcePageProps,
+  {code, balsPage}: CommuneSourcePageProps,
 ) => {
-  const [isAdmin, isLoading] = useUser()
   const [bals, setBals] = useState(balsPage.results)
+  const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<RevisionApiDepot[]>([])
+  const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] = useState<RevisionMoissoneur[]>([])
 
   const [pageApiDepot, setPageApiDepot] = useState({
     limit: 5,
@@ -61,6 +58,17 @@ const CommuneSource = (
   }
 
   useEffect(() => {
+    const fetchData = async () => {
+      const initialRevisionsApiDepot = await getAllRevisionByCommune(code)
+      const initialRevisionsMoissonneur = await getRevisionsByCommune(code)
+      setInitialRevisionsApiDepot(initialRevisionsApiDepot)
+      setInitialRevisionsMoissonneur(initialRevisionsMoissonneur)
+    }
+
+    fetchData().catch(console.error)
+  }, [code])
+
+  useEffect(() => {
     const fetchBals = async (commune: string) => {
       const res = await searchBasesLocales({commune, page: pageMesAdresses.current, limit: pageMesAdresses.limit})
       setBals(res.results)
@@ -82,48 +90,40 @@ const CommuneSource = (
   }, [pageMoissonneur, initialRevisionsMoissonneur])
 
   return (
-    <Main isAdmin={isAdmin}>
-      <Loader isLoading={isLoading}>
-        {isAdmin && (
-          <div className='fr-container fr-my-4w'>
-            <h1>{getCommune(code).nom} ({code})</h1>
+    <div className='fr-container fr-my-4w'>
+      <h1>{getCommune(code).nom} ({code})</h1>
 
-            <EditableList
-              headers={['Id', 'Client', 'Status', 'Date création', 'Date mise à jour', '']}
-              caption='Bals mes adresses'
-              data={bals}
-              renderItem={BalsItem}
-              page={{...pageMesAdresses, onPageChange: onPageMesAdressesChange}}
-            />
+      <EditableList
+        headers={['Id', 'Client', 'Status', 'Date création', 'Date mise à jour', '']}
+        caption='Bals mes adresses'
+        data={bals}
+        renderItem={BalsItem}
+        page={{...pageMesAdresses, onPageChange: onPageMesAdressesChange}}
+      />
 
-            <EditableList
-              headers={['Id', 'Source', 'Nb lignes', 'Nb lignes erreurs', 'Status', 'Publication']}
-              caption='Révisions Moissoneur'
-              data={revisionsMoissoneur}
-              renderItem={RevisionItemMoissoneur}
-              page={{...pageMoissonneur, onPageChange: onPageMoissonneurChange}}
-            />
+      <EditableList
+        headers={['Id', 'Source', 'Nb lignes', 'Nb lignes erreurs', 'Status', 'Publication']}
+        caption='Révisions Moissoneur'
+        data={revisionsMoissoneur}
+        renderItem={RevisionItemMoissoneur}
+        page={{...pageMoissonneur, onPageChange: onPageMoissonneurChange}}
+      />
 
-            <EditableList
-              headers={['Id', 'Client', 'Status', 'Current', 'Validation', 'Date création', 'Date publication']}
-              caption='Révisions Api Depot'
-              data={revisionsApiDepot}
-              renderItem={RevisionItemApiDepot}
-              page={{...pageApiDepot, onPageChange: onPageApiDepotChange}}
-            />
-          </div>
-        )}
-      </Loader>
-    </Main>
+      <EditableList
+        headers={['Id', 'Client', 'Status', 'Current', 'Validation', 'Date création', 'Date publication']}
+        caption='Révisions Api Depot'
+        data={revisionsApiDepot}
+        renderItem={RevisionItemApiDepot}
+        page={{...pageApiDepot, onPageChange: onPageApiDepotChange}}
+      />
+    </div>
   )
 }
 
 export async function getServerSideProps({params}) {
   const {code} = params
-  const initialRevisionsApiDepot = await getAllRevisionByCommune(code)
-  const initialRevisionsMoissonneur = await getRevisionsByCommune(code)
   const balsPage = await searchBasesLocales({commune: code, page: 1, limit: 5})
-  return {props: {code, initialRevisionsApiDepot, initialRevisionsMoissonneur, balsPage}}
+  return {props: {code, balsPage}}
 }
 
 export default CommuneSource

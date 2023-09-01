@@ -3,70 +3,58 @@ import Link from 'next/link'
 import Button from '@codegouvfr/react-dsfr/Button'
 import Tabs from '@codegouvfr/react-dsfr/Tabs'
 
-import Main from '@/layouts/main'
-import {useUser} from '@/hooks/user'
-import Loader from '@/components/loader'
 import ClientsList from '@/components/api-depot/clients-list'
 
-const APIDepot = () => {
-  const [isAdmin, isLoading] = useUser()
+const APIDepot = () => (
 
-  return (
-    <Main isAdmin={isAdmin}>
-      <Loader isLoading={isLoading}>
+  <div className='fr-container'>
+    <Tabs
+      className='fr-container fr-my-2w'
+      tabs={[
+        {label: 'Production', iconId: 'fr-icon-plant-fill', content: (
+          <div className='fr-container fr-py-12v'>
 
-        {isAdmin && (
-          <div className='fr-container'>
-            <Tabs
-              className='fr-container fr-my-2w'
-              tabs={[
-                {label: 'Production', iconId: 'fr-icon-plant-fill', content: (
-                  <div className='fr-container fr-py-12v'>
+            <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--right'>
+              <div className='fr-col-2'>
+                <Link passHref href={{
+                  pathname: '/api-depot/client/client-form',
+                }}
+                >
+                  <Button iconId='fr-icon-add-line'>
+                    Ajouter un client
+                  </Button>
+                </Link>
+              </div>
+            </div>
 
-                    <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--right'>
-                      <div className='fr-col-2'>
-                        <Link passHref href={{
-                          pathname: '/api-depot/client/client-form',
-                        }}
-                        >
-                          <Button iconId='fr-icon-add-line'>
-                            Ajouter un client
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
+            <ClientsList />
+          </div>
+        )},
+        {label: 'Démonstration', iconId: 'fr-icon-seedling-fill', content: (
 
-                    <ClientsList />
-                  </div>
-                )},
-                {label: 'Démonstration', iconId: 'fr-icon-seedling-fill', content: (
+          <div className='fr-container fr-py-12v'>
 
-                  <div className='fr-container fr-py-12v'>
+            <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--right'>
+              <div className='fr-col-2'>
+                <Link passHref href={{
+                  pathname: '/api-depot/client/client-form',
+                  query: {demo: 1}
+                }}
+                >
+                  <Button iconId='fr-icon-add-line'>
+                    Ajouter un client
+                  </Button>
+                </Link>
+              </div>
+            </div>
 
-                    <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--right'>
-                      <div className='fr-col-2'>
-                        <Link passHref href={{
-                          pathname: '/api-depot/client/client-form',
-                          query: {demo: 1}
-                        }}
-                        >
-                          <Button iconId='fr-icon-add-line'>
-                            Ajouter un client
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-
-                    <ClientsList isDemo />
-                  </div>
-                )}
-              ]}
-            />
+            <ClientsList isDemo />
           </div>
         )}
-      </Loader>
-    </Main>
-  )
-}
+      ]}
+    />
+  </div>
+
+)
 
 export default APIDepot

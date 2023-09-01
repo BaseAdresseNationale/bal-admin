@@ -11,6 +11,9 @@ module.exports = withTM({
   images: {
     domains: ['static.data.gouv.fr']
   },
+  compiler: {
+    styledComponents: true
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.woff2$/,

@@ -32,9 +32,9 @@ const SelectInput = ({label, value, hint, options, defaultOption, isDisabled, ha
       multiple={isMultiple}
     >
       {defaultOption && <option value=''>{defaultOption}</option>}
-      {options.map(option => (
+      {options.map((option, index) => (
         <option
-          key={option.label}
+          key={option.value}
           value={option.value}
           disabled={isDisabled}
         >
