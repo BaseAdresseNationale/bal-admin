@@ -9,19 +9,13 @@ import Pagination from 'react-js-pagination'
 import {getSource, udpateSource, getSourceHarvests, harvestSource, getSourceCurrentRevisions, publishRevision} from '@/lib/api-moissonneur-bal'
 import {getClient} from '@/lib/api-depot'
 
-import {useUser} from '@/hooks/user'
-import Main from '@/layouts/main'
-
 import CopyToClipBoard from '@/components/copy-to-clipboard'
-import Loader from '@/components/loader'
 import HarvestItem from '@/components/moissonneur-bal/harvest-item'
 import RevisionItem from '@/components/moissonneur-bal/revision-item'
 
 const limit = 10
 
 const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount, initialRevisions}) => {
-  const [isAdmin, isLoading] = useUser()
-
   const [source, setSource] = useState(initialSource)
   const [harvests, setHarvests] = useState(initialHarvests)
   const [totalCount, setTotalCount] = useState(initialTotalCount)
@@ -84,154 +78,147 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount, initi
   }
 
   return (
-    <Main isAdmin={isAdmin}>
-      <Loader isLoading={isLoading}>
-        {isAdmin && (
-          <>
-            <div className='fr-container fr-py-12v'>
-              <div className='fr-grid-row fr-grid-row--gutters'>
-                <div className='fr-col-10'>
-                  <h1>{source.title}</h1>
-                  <CopyToClipBoard text={source._id} title='Id' />
-                  <ul className='fr-tags-group'>
-                    <li>
-                      <p className='fr-tag'>{source.license}</p>
-                    </li>
-                    <li>
-                      <p className='fr-tag'>{source.type}</p>
-                    </li>
-                  </ul>
-                </div>
+    <>
+      <div className='fr-container fr-py-12v'>
+        <div className='fr-grid-row fr-grid-row--gutters'>
+          <div className='fr-col-10'>
+            <h1>{source.title}</h1>
+            <CopyToClipBoard text={source._id} title='Id' />
+            <ul className='fr-tags-group'>
+              <li>
+                <p className='fr-tag'>{source.license}</p>
+              </li>
+              <li>
+                <p className='fr-tag'>{source.type}</p>
+              </li>
+            </ul>
+          </div>
 
-                <div className='fr-col-2'>
-                  <div className='fr-container'>
-                    <div className='fr-toggle'>
-                      <input type='checkbox' className='fr-toggle__input' aria-describedby='toggle-source-hint-text' id='toggle-source' checked={source.enabled} onChange={enabledSource} />
-                      <label className='fr-toggle__label' htmlFor='toggle-source' data-fr-checked-label='Activé' data-fr-unchecked-label='Désactivé' />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <div className='fr-col-2'>
             <div className='fr-container'>
-              <p>{source.description}</p>
-            </div>
-
-            <div className='fr-container'>
-              <h2>Organisation</h2>
-              {source.organization ? (
-                <Card
-                  desc=''
-                  enlargeLink
-                  horizontal
-                  imageAlt={`Logo de l'organisation ${source.organization.name}`}
-                  imageUrl={source.organization.logo}
-                  linkProps={{
-                    href: source.organization.page
-                  }}
-                  title={source.organization.name}
-                />
-              ) : (
-                <div>Aucune information</div>
-              )}
-            </div>
-
-            <div className='fr-container fr-my-12v'>
-              <h2>Moissonnages</h2>
-
-              <Button
-                iconId={source.harvesting.asked || !source.enabled ? '' : 'fr-icon-flashlight-fill'}
-                iconPosition='right'
-                disabled={source.harvesting.asked || !source.enabled} onClick={askHarvest}
-              >
-                {source.harvesting.asked ? 'Moissonnage en cours…' : 'Lancer le moissonnage'}
-              </Button>
-
-              <div className='fr-table'>
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope='col'>Id</th>
-                      <th scope='col'>Début du moissonnage</th>
-                      <th scope='col'>Fin du moissonnage</th>
-                      <th scope='col'>État du moissonnage</th>
-                      <th scope='col'>État de la mise à jour</th>
-                      <th scope='col'>Fichier moissonné</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {harvests.map(harvest => (
-                      <HarvestItem key={harvest._id} {...harvest} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className='pagination fr-mx-auto fr-my-2w'>
-                <nav role='navigation' className='fr-pagination' aria-label='Pagination'>
-                  <Pagination
-                    activePage={currentPage}
-                    itemsCountPerPage={limit}
-                    totalItemsCount={totalCount}
-                    pageRangeDisplayed={5}
-                    onChange={onPageChange}
-                    innerClass='fr-pagination__list'
-                    activeLinkClass=''
-                    linkClass='fr-pagination__link'
-                    linkClassFirst='fr-pagination__link--first'
-                    linkClassPrev='fr-pagination__link--prev'
-                    linkClassNext='fr-pagination__link--next'
-                    linkClassLast='fr-pagination__link--last'
-                  />
-                </nav>
+              <div className='fr-toggle'>
+                <input type='checkbox' className='fr-toggle__input' aria-describedby='toggle-source-hint-text' id='toggle-source' checked={source.enabled} onChange={enabledSource} />
+                <label className='fr-toggle__label' htmlFor='toggle-source' data-fr-checked-label='Activé' data-fr-unchecked-label='Désactivé' />
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div className='fr-container fr-my-12v'>
-              <h2>Révisions par commune</h2>
-
-              {revisions.length === 0 && (
-                <div>Aucune révisions</div>
-              )}
-
-              {forcePublishRevisionStatus === 'error' && <Alert title='Erreur' description='La publication de la révision a échoué' severity='error' closable small />}
-              {forcePublishRevisionStatus === 'success' && <Alert title='Succès' description='La révision a bien été publiée' severity='success' closable small />}
-
-              <div className='fr-table'>
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope='col'>Id</th>
-                      <th scope='col'>Commune</th>
-                      <th scope='col'>Nombre de ligne</th>
-                      <th scope='col'>Nombre de ligne en erreur</th>
-                      <th scope='col'>Status</th>
-                      <th scope='col'>Publication</th>
-                      <th scope='col'>Fichier</th>
-                      <th scope='col'>Actions</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {revisions.map(revision => (
-                      <RevisionItem
-                        key={revision._id}
-                        onForcePublishRevision={() => onForcePublishRevision(revision._id)}
-                        isForcePublishRevisionLoading={forcePublishRevisionStatus === 'loading'}
-                        {...revision}
-                        ignoreFields={['sourceId']}
-                      />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </>
+      <div className='fr-container'>
+        <p>{source.description}</p>
+      </div>
+      <div className='fr-container'>
+        <h2>Organisation</h2>
+        {source.organization ? (
+          <Card
+            desc=''
+            enlargeLink
+            horizontal
+            imageAlt={`Logo de l'organisation ${source.organization.name}`}
+            imageUrl={source.organization.logo}
+            linkProps={{
+              href: source.organization.page
+            }}
+            title={source.organization.name}
+          />
+        ) : (
+          <div>Aucune information</div>
         )}
-      </Loader>
-    </Main>
+      </div>
+
+      <div className='fr-container fr-my-12v'>
+        <h2>Moissonnages</h2>
+
+        <Button
+          iconId={source.harvesting.asked || !source.enabled ? '' : 'fr-icon-flashlight-fill'}
+          iconPosition='right'
+          disabled={source.harvesting.asked || !source.enabled} onClick={askHarvest}
+        >
+          {source.harvesting.asked ? 'Moissonnage en cours…' : 'Lancer le moissonnage'}
+        </Button>
+
+        <div className='fr-table'>
+          <table>
+            <thead>
+              <tr>
+                <th scope='col'>Id</th>
+                <th scope='col'>Début du moissonnage</th>
+                <th scope='col'>Fin du moissonnage</th>
+                <th scope='col'>État du moissonnage</th>
+                <th scope='col'>État de la mise à jour</th>
+                <th scope='col'>Fichier moissonné</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {harvests.map(harvest => (
+                <HarvestItem key={harvest._id} {...harvest} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className='pagination fr-mx-auto fr-my-2w'>
+          <nav role='navigation' className='fr-pagination' aria-label='Pagination'>
+            <Pagination
+              activePage={currentPage}
+              itemsCountPerPage={limit}
+              totalItemsCount={totalCount}
+              pageRangeDisplayed={5}
+              onChange={onPageChange}
+              innerClass='fr-pagination__list'
+              activeLinkClass=''
+              linkClass='fr-pagination__link'
+              linkClassFirst='fr-pagination__link--first'
+              linkClassPrev='fr-pagination__link--prev'
+              linkClassNext='fr-pagination__link--next'
+              linkClassLast='fr-pagination__link--last'
+            />
+          </nav>
+        </div>
+      </div>
+
+      <div className='fr-container fr-my-12v'>
+        <h2>Révisions par commune</h2>
+
+        {revisions.length === 0 && (
+          <div>Aucune révisions</div>
+        )}
+
+        {forcePublishRevisionStatus === 'error' && <Alert title='Erreur' description='La publication de la révision a échoué' severity='error' closable small />}
+        {forcePublishRevisionStatus === 'success' && <Alert title='Succès' description='La révision a bien été publiée' severity='success' closable small />}
+
+        <div className='fr-table'>
+          <table>
+            <thead>
+              <tr>
+                <th scope='col'>Id</th>
+                <th scope='col'>Commune</th>
+                <th scope='col'>Nombre de ligne</th>
+                <th scope='col'>Nombre de ligne en erreur</th>
+                <th scope='col'>Status</th>
+                <th scope='col'>Publication</th>
+                <th scope='col'>Fichier</th>
+                <th scope='col'>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {revisions.map(revision => (
+                <RevisionItem
+                  key={revision._id}
+                  onForcePublishRevision={() => onForcePublishRevision(revision._id)}
+                  isForcePublishRevisionLoading={forcePublishRevisionStatus === 'loading'}
+                  {...revision}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+
   )
 }
 

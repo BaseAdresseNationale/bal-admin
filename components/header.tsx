@@ -1,7 +1,12 @@
-import PropTypes from 'prop-types'
 import Link from 'next/link'
+import {signIn, signOut} from 'next-auth/react'
+import type {Session} from 'next-auth'
 
-const Header = ({isLoggedIn}) => (
+type HeaderProps = {
+  session: Session;
+}
+
+const Header = ({session}: HeaderProps) => (
   <header role='banner' className='fr-header'>
     <div className='fr-header__body'>
       <div className='fr-container'>
@@ -34,15 +39,18 @@ const Header = ({isLoggedIn}) => (
           <div className='fr-header__tools'>
             <div className='fr-header__tools-links'>
               <ul className='fr-btns-group'>
-                {isLoggedIn && (
-                  <li>
-                    <Link href='/api/logout'>
-                      <a className='fr-btn fr-icon-logout-box-r-line' >
-                        Déconnexion
-                      </a>
-                    </Link>
-                  </li>
-                )}
+                <li style={{alignItems: 'center'}}>
+                  {session ? (<>
+                    <div style={{marginRight: 10}}>{session?.user?.name}</div>
+                    <button onClick={async () => signOut()} type='button' style={{margin: 0}} className='fr-btn fr-icon-logout-box-r-line' >
+                      Déconnexion
+                    </button>
+                  </>
+                  )
+                    : <button onClick={async () => signIn()} type='button' style={{margin: 0}} className='fr-btn fr-icon-logout-box-r-line' >
+                      Connexion
+                    </button>}
+                </li>
               </ul>
             </div>
           </div>
@@ -88,9 +96,5 @@ const Header = ({isLoggedIn}) => (
     </div>
   </header>
 )
-
-Header.propTypes = {
-  isLoggedIn: PropTypes.bool.isRequired
-}
 
 export default Header

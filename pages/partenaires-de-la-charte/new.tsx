@@ -3,15 +3,11 @@ import {toast} from 'react-toastify'
 
 import {useRouter} from 'next/router'
 import type {PartenaireDeLaCharteCommuneType, PartenaireDeLaCharteOrganismeType, PartenaireDeLaCharteEntrepriseType} from 'types/partenaire-de-la-charte'
-import {useUser} from '../../hooks/user'
 
-import Main from '../../layouts/main'
-import Loader from '../../components/loader'
 import {PartenaireForm} from '@/components/partenaires-de-la-charte/partenaire-form'
 import {createPartenaireDeLaCharte} from '@/lib/partenaires-de-la-charte'
 
 const NewPartenaireDeLaChartePage = () => {
-  const [isAdmin, isLoading] = useUser()
   const router = useRouter()
 
   const onCreate = async (formData: Partial<PartenaireDeLaCharteCommuneType | PartenaireDeLaCharteOrganismeType | PartenaireDeLaCharteEntrepriseType>) => {
@@ -26,19 +22,13 @@ const NewPartenaireDeLaChartePage = () => {
   }
 
   return (
-    <Main isAdmin={isAdmin}>
-      <Loader isLoading={isLoading}>
-        {isAdmin && (
-          <div className='fr-container'>
-            <PartenaireForm
-              title={<h3>Création d&apos;un nouveau partenaire</h3>}
-              onSubmit={onCreate}
-              submitLabel='Créer le partenaire'
-              isCreation />
-          </div>
-        )}
-      </Loader>
-    </Main>
+    <div className='fr-container'>
+      <PartenaireForm
+        title={<h3>Création d&apos;un nouveau partenaire</h3>}
+        onSubmit={onCreate}
+        submitLabel='Créer le partenaire'
+        isCreation />
+    </div>
   )
 }
 
