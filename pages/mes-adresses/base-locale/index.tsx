@@ -5,7 +5,7 @@ import {useRouter} from 'next/router'
 import {Badge} from '@codegouvfr/react-dsfr/Badge'
 
 import {Alert} from '@codegouvfr/react-dsfr/Alert'
-import type {BaseLocaleType} from 'types/base-locale'
+import type {BaseLocaleType} from 'types/mes-adresses'
 import {getBaseLocale} from '@/lib/api-mes-adresses'
 import {computeStatus} from '@/lib/bal-status'
 import {formatDate} from '@/lib/util/date'

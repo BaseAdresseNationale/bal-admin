@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import {Badge} from '@codegouvfr/react-dsfr/Badge'
 
-import type {RevisionApiDepot} from '../../types/api-depot'
+import type {RevisionApiDepotType} from '../../types/api-depot'
 import {formatDate} from '@/lib/util/date'
 import MongoId from '@/components/mongo-id'
 import Tooltip from '@/components/tooltip'
 
 export const RevisionItemApiDepot = (
-  {_id, status, current = false, client, validation, createdAt, publishedAt = ''}: RevisionApiDepot,
+  {_id, status, current = false, client, validation, createdAt, publishedAt = ''}: RevisionApiDepotType,
 ) => (
   <tr key={_id}>
     <td className='fr-col fr-my-1v'>
