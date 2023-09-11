@@ -1,9 +1,9 @@
 import {useState, useEffect, useMemo} from 'react'
 import {useRouter} from 'next/router'
-import type {RevisionMoissoneur} from '../../types/moissoneur'
-import type {RevisionApiDepot} from '../../types/api-depot'
-import type {Page} from '../../types/page'
-import type {Bals} from '../../types/mes-adresses'
+import type {RevisionMoissoneurType} from '../../types/moissoneur'
+import type {RevisionApiDepotType} from '../../types/api-depot'
+import type {PageType} from '../../types/page'
+import type {BaseLocaleType} from '../../types/mes-adresses'
 import {getCommune} from '@/lib/cog'
 
 import {getAllRevisionByCommune} from '@/lib/api-depot'
@@ -17,15 +17,15 @@ import {BalsItem} from '@/components/communes/bals-item'
 
 type CommuneSourcePageProps = {
   code: string;
-  balsPage: Page<Bals>;
+  balsPage: PageType<BaseLocaleType>;
 }
 
 const CommuneSource = (
   {code, balsPage}: CommuneSourcePageProps,
 ) => {
   const [bals, setBals] = useState(balsPage.results)
-  const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<RevisionApiDepot[]>([])
-  const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] = useState<RevisionMoissoneur[]>([])
+  const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<RevisionApiDepotType[]>([])
+  const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] = useState<RevisionMoissoneurType[]>([])
 
   const [pageApiDepot, setPageApiDepot] = useState({
     limit: 5,

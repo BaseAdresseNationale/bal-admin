@@ -4,7 +4,7 @@ import {Button} from '@codegouvfr/react-dsfr/Button'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
 
-import type {ClientApiDepot, MandataireApiDepot, ChefDeFileApiDepot} from 'types/api-depot'
+import type {ClientApiDepotType, MandataireApiDepotType, ChefDeFileApiDepotType} from 'types/api-depot'
 import Loader from '@/components/loader'
 import {getChefDeFile, getClient, getMandataire} from '@/lib/api-depot'
 
@@ -16,9 +16,9 @@ const Client = () => {
   const router = useRouter()
   const {clientId, demo} = router.query
   const isDemo = demo === '1'
-  const [client, setClient] = useState<ClientApiDepot>(null)
-  const [chefDeFile, setChefDeFile] = useState<ChefDeFileApiDepot>(null)
-  const [mandataire, setMandataire] = useState<MandataireApiDepot>(null)
+  const [client, setClient] = useState<ClientApiDepotType>(null)
+  const [chefDeFile, setChefDeFile] = useState<ChefDeFileApiDepotType>(null)
+  const [mandataire, setMandataire] = useState<MandataireApiDepotType>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {

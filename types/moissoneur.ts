@@ -12,14 +12,7 @@ export enum UpdateStatusEnum {
   UPDATED = 'updated',
 }
 
-export type ClientApiDepot = {
-  _id: string;
-  chefDeFile: string;
-  mandataire: string;
-  nom: string;
-}
-
-export type PublicationMoissoneur = {
+export type PublicationMoissoneurType = {
   status: RevisionStatusMoissoneurEnum;
   publishedRevisionId?: string | undefined;
   errorMessage?: string;
@@ -27,7 +20,7 @@ export type PublicationMoissoneur = {
   currentSourceId?: string;
 }
 
-export type RevisionMoissoneur = {
+export type RevisionMoissoneurType = {
   _id: string;
   sourceId?: string;
   codeCommune?: string;
@@ -39,7 +32,7 @@ export type RevisionMoissoneur = {
   nbRows?: number;
   nbRowsWithErrors?: number;
   uniqueErrors?: string[];
-  publication?: PublicationMoissoneur;
+  publication?: PublicationMoissoneurType;
   current?: boolean;
 }
 

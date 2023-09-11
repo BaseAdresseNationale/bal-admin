@@ -4,18 +4,18 @@ export enum RevisionStatusApiDepotEnum {
   PENDING = 'pending',
 }
 
-export enum ClientApiDepotAuthorizationStrategy {
+export enum ClientApiDepotAuthorizationStrategyEnum {
   HABILITATION = 'habilitation',
   CHEF_DE_FILE = 'chef-de-file',
   INTERNAL = 'internal',
 }
 
-export type ClientApiDepot = {
+export type ClientApiDepotType = {
   _id: string;
   _createdAt: string;
   _updatedAt: string;
   active: boolean;
-  authorizationStrategy: ClientApiDepotAuthorizationStrategy;
+  authorizationStrategy: ClientApiDepotAuthorizationStrategyEnum;
   mandataire: string;
   nom: string;
   token: string;
@@ -25,7 +25,7 @@ export type ClientApiDepot = {
   };
 }
 
-export type RevisionApiDepot = {
+export type RevisionApiDepotType = {
   _id: string;
   codeCommune?: string;
   context?: any;
@@ -36,7 +36,7 @@ export type RevisionApiDepot = {
     infos: string[];
     rowsCount: number;
   };
-  client?: ClientApiDepot;
+  client?: ClientApiDepotType;
   status?: RevisionStatusApiDepotEnum;
   createdAt?: string;
   updatedAt?: string;
@@ -45,20 +45,20 @@ export type RevisionApiDepot = {
   habilitation?: any;
 }
 
-export type ChefDeFileApiDepot = {
+export type ChefDeFileApiDepotType = {
   _id: string;
-  _createdAt: string;
-  _updatedAt: string;
-  nom: string;
-  email: string;
-  perimetre: string[];
-  signataireCharte: boolean;
+  nom?: string;
+  email?: string;
+  perimetre?: string[];
+  signataireCharte?: boolean;
+  _createdAt?: string;
+  _updatedAt?: string;
 }
 
-export type MandataireApiDepot = {
+export type MandataireApiDepotType = {
   _id: string;
-  _createdAt: string;
-  _updatedAt: string;
-  email: string;
-  nom: string;
+  email?: string;
+  nom?: string;
+  _createdAt?: string;
+  _updatedAt?: string;
 }

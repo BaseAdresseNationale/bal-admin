@@ -4,7 +4,7 @@ import {Alert} from '@codegouvfr/react-dsfr/Alert'
 import {ToggleSwitch} from '@codegouvfr/react-dsfr/ToggleSwitch'
 import {useRouter} from 'next/router'
 
-import type {ChefDeFileApiDepot, MandataireApiDepot} from 'types/api-depot'
+import type {ChefDeFileApiDepotType, MandataireApiDepotType} from 'types/api-depot'
 
 import {createClient, updateClient, createMandataire, createChefDeFile, getChefsDeFile, getClient, getMandataires} from '@/lib/api-depot'
 import Loader from '@/components/loader'
@@ -35,8 +35,8 @@ const ClientForm = () => {
   const [isFormValid, setIsFormValid] = useState(false)
   const [submitError, setSubmitError] = useState()
   const [isLoading, setIsLoading] = useState(true)
-  const [chefsDeFileOptions, setChefsDeFileOptions] = useState<ChefDeFileApiDepot[]>(null)
-  const [mandatairesOptions, setMandatairesOptions] = useState<MandataireApiDepot[]>(null)
+  const [chefsDeFileOptions, setChefsDeFileOptions] = useState<ChefDeFileApiDepotType[]>(null)
+  const [mandatairesOptions, setMandatairesOptions] = useState<MandataireApiDepotType[]>(null)
   const [formData, setFormData] = useState(null)
 
   useEffect(() => {

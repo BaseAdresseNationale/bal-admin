@@ -1,9 +1,9 @@
 import {Badge} from '@codegouvfr/react-dsfr/Badge'
 
-import type {PublicationMoissoneur} from '../types/moissoneur'
+import type {PublicationMoissoneurType} from '../types/moissoneur'
 import Tooltip from './tooltip'
 
-export const RevisionPublication = ({status, errorMessage, currentSourceId, currentClientId}: PublicationMoissoneur) => {
+export const RevisionPublication = ({status, errorMessage, currentSourceId, currentClientId}: PublicationMoissoneurType) => {
   if (status === 'provided-by-other-client') {
     return (
       <Tooltip text={currentClientId || 'inconnu'}>

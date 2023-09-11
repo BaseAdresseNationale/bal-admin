@@ -1,13 +1,13 @@
 import Link from 'next/link'
 
-import type {RevisionMoissoneur} from '../../types/moissoneur'
+import type {RevisionMoissoneurType} from '../../types/moissoneur'
 import UpdateStatusBadge from '@/components/update-status-badge'
 import {RevisionPublication} from '@/components/revision-publication'
 import MongoId from '@/components/mongo-id'
 import Tooltip from '@/components/tooltip'
 
 export const RevisionItemMoissoneur = (
-  {_id, sourceId, nbRows, nbRowsWithErrors, updateStatus, updateRejectionReason, publication}: RevisionMoissoneur,
+  {_id, sourceId, nbRows, nbRowsWithErrors, updateStatus, updateRejectionReason, publication}: RevisionMoissoneurType,
 ) => (
   <tr key={_id}>
     <td className='fr-col fr-my-1v'>
