@@ -34,6 +34,7 @@ export type PartenaireDeLaChartType = {
   link?: string;
   charteURL?: string;
   signatureDate?: string;
+  dataGouvOrganizationId?: string;
 }
 
 export type PartenaireDeLaCharteCommuneType = PartenaireDeLaChartType & {
