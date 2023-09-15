@@ -11,6 +11,7 @@ const createBaseSchema = {
   link: {isRequired: false, type: 'string'},
   codeDepartement: {isRequired: false, type: 'array'},
   services: {isRequired: false, type: 'array'},
+  dataGouvOrganizationId: {isRequired: false, type: 'string'},
 }
 
 const createCommuneSchema = {

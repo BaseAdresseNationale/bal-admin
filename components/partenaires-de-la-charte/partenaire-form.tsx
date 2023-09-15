@@ -12,6 +12,7 @@ import {MultiSelectInput} from '../multi-select-input'
 import type {CommuneType} from '../commune-input'
 import {CommuneInput} from '../commune-input'
 import SelectInput from '@/components/select-input'
+import Tooltip from '@/components/tooltip'
 import {capitalize} from '@/lib/util/string'
 
 type PartenaireFormProps = {
@@ -76,6 +77,7 @@ const newPartenaireForm = {
   balURL: '',
   infos: '',
   perimeter: '',
+  dataGouvOrganizationId: '',
 }
 
 export const PartenaireForm = ({title, data, onSubmit, submitLabel, controls, isCreation}: PartenaireFormProps) => {
@@ -358,6 +360,26 @@ export const PartenaireForm = ({title, data, onSubmit, submitLabel, controls, is
               </div>
             </>
           )}
+        </div>
+      </section>
+      <section>
+        <h4>Moissonnage</h4>
+        <div className='fr-col-6'>
+          <Input
+            label={
+              <Tooltip width='320px' text={
+                <div>
+                  <p>L&apos;ID de l&apos;organisation data.gouv du partenaire permet de moissonner les données fournies par ce partenaire.</p>
+                  <p>Si ce champ n&apos;est pas renseigné, le partenaire ne sera pas moissonné.</p>
+                  <p>Attention, l&apos;organisation doit être certifiée par data.gouv pour que le moissonnage fonctionne.</p>
+                </div>
+              }
+              >Data.gouv organization ID</Tooltip>
+            }
+            nativeInputProps={{
+              value: formData.dataGouvOrganizationId,
+              onChange: handleEdit('dataGouvOrganizationId')}}
+          />
         </div>
       </section>
       <div className='form-controls'>
