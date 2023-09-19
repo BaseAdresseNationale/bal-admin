@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useRef, useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 
 import Card from '@codegouvfr/react-dsfr/Card'
@@ -9,20 +9,62 @@ import Pagination from 'react-js-pagination'
 import {getSource, udpateSource, getSourceHarvests, harvestSource, getSourceCurrentRevisions, publishRevision} from '@/lib/api-moissonneur-bal'
 import {getClient} from '@/lib/api-depot'
 
+import Loader from '@/components/loader'
 import CopyToClipBoard from '@/components/copy-to-clipboard'
 import HarvestItem from '@/components/moissonneur-bal/harvest-item'
 import RevisionItem from '@/components/moissonneur-bal/revision-item'
 
 const limit = 10
 
-const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount, initialRevisions}) => {
+const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount}) => {
   const [source, setSource] = useState(initialSource)
   const [harvests, setHarvests] = useState(initialHarvests)
   const [totalCount, setTotalCount] = useState(initialTotalCount)
   const [currentPage, setCurrentPage] = useState(1)
-  const [revisions, setRevisions] = useState(initialRevisions)
+  const [revisionsIsLoading, setRevisionsIsLoading] = useState(false)
+  const [revisions, setRevisions] = useState([])
   const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState(null)
   const interval = useRef()
+
+  async function getRevisionsWithPublicationData(sourceId) {
+    setRevisionsIsLoading(true)
+    const revisions = await getSourceCurrentRevisions(sourceId)
+    const revisionsWithPublicationData = await Promise.all(revisions.map(async revision => {
+      if (revision.publication) {
+        if (revision.publication.status === 'provided-by-other-source') {
+          const currentSource = await getSource(revision.publication.currentSourceId)
+          revision.publication = {
+            ...revision.publication,
+            currentSourceName: currentSource.organization.name
+          }
+        } else if (revision.publication.status === 'provided-by-other-client') {
+          let currentClientName = null
+          if (revision.publication.currentClientId) {
+            const currentClient = await getClient(revision.publication.currentClientId, false)
+            currentClientName = currentClient.nom
+          }
+
+          revision.publication = {
+            ...revision.publication,
+            currentClientName
+          }
+        }
+      }
+
+      return revision
+    }))
+    setRevisionsIsLoading(false)
+    return revisionsWithPublicationData
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      const initialRevisions = await getRevisionsWithPublicationData(source._id)
+      setRevisions(initialRevisions)
+    }
+
+    fetchData()
+  }, [source._id])
 
   const updateHarvest = useCallback(async page => {
     const {results, count} = await getSourceHarvests(source._id, limit, page)
@@ -180,41 +222,42 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount, initi
 
       <div className='fr-container fr-my-12v'>
         <h2>Révisions par commune</h2>
+        <Loader isLoading={revisionsIsLoading}>
+          {revisions.length === 0 && (
+            <div>Aucune révisions</div>
+          )}
 
-        {revisions.length === 0 && (
-          <div>Aucune révisions</div>
-        )}
+          {forcePublishRevisionStatus === 'error' && <Alert title='Erreur' description='La publication de la révision a échoué' severity='error' closable small />}
+          {forcePublishRevisionStatus === 'success' && <Alert title='Succès' description='La révision a bien été publiée' severity='success' closable small />}
 
-        {forcePublishRevisionStatus === 'error' && <Alert title='Erreur' description='La publication de la révision a échoué' severity='error' closable small />}
-        {forcePublishRevisionStatus === 'success' && <Alert title='Succès' description='La révision a bien été publiée' severity='success' closable small />}
+          <div className='fr-table'>
+            <table>
+              <thead>
+                <tr>
+                  <th scope='col'>Id</th>
+                  <th scope='col'>Commune</th>
+                  <th scope='col'>Nombre de ligne</th>
+                  <th scope='col'>Nombre de ligne en erreur</th>
+                  <th scope='col'>Status</th>
+                  <th scope='col'>Publication</th>
+                  <th scope='col'>Fichier</th>
+                  <th scope='col'>Actions</th>
+                </tr>
+              </thead>
 
-        <div className='fr-table'>
-          <table>
-            <thead>
-              <tr>
-                <th scope='col'>Id</th>
-                <th scope='col'>Commune</th>
-                <th scope='col'>Nombre de ligne</th>
-                <th scope='col'>Nombre de ligne en erreur</th>
-                <th scope='col'>Status</th>
-                <th scope='col'>Publication</th>
-                <th scope='col'>Fichier</th>
-                <th scope='col'>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {revisions.map(revision => (
-                <RevisionItem
-                  key={revision._id}
-                  onForcePublishRevision={() => onForcePublishRevision(revision._id)}
-                  isForcePublishRevisionLoading={forcePublishRevisionStatus === 'loading'}
-                  {...revision}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
+              <tbody>
+                {revisions.map(revision => (
+                  <RevisionItem
+                    key={revision._id}
+                    onForcePublishRevision={() => onForcePublishRevision(revision._id)}
+                    isForcePublishRevisionLoading={forcePublishRevisionStatus === 'loading'}
+                    {...revision}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Loader>
       </div>
     </>
 
@@ -233,50 +276,17 @@ MoissoneurBAL.propTypes = {
     harvesting: PropTypes.object.isRequired
   }).isRequired,
   initialHarvests: PropTypes.array.isRequired,
-  initialRevisions: PropTypes.array.isRequired,
   initialTotalCount: PropTypes.number.isRequired,
-}
-
-async function getRevisionsWithPublicationData(sourceId) {
-  const revisions = await getSourceCurrentRevisions(sourceId)
-  const revisionsWithPublicationData = await Promise.all(revisions.map(async revision => {
-    if (revision.publication) {
-      if (revision.publication.status === 'provided-by-other-source') {
-        const currentSource = await getSource(revision.publication.currentSourceId)
-        revision.publication = {
-          ...revision.publication,
-          currentSourceName: currentSource.organization.name
-        }
-      } else if (revision.publication.status === 'provided-by-other-client') {
-        let currentClientName = null
-        if (revision.publication.currentClientId) {
-          const currentClient = await getClient(revision.publication.currentClientId)
-          currentClientName = currentClient.nom
-        }
-
-        revision.publication = {
-          ...revision.publication,
-          currentClientName
-        }
-      }
-    }
-
-    return revision
-  }))
-
-  return revisionsWithPublicationData
 }
 
 export async function getServerSideProps({query}) {
   const source = await getSource(query.sourceId)
   const {results, count} = await getSourceHarvests(query.sourceId, limit)
-  const revisions = await getRevisionsWithPublicationData(query.sourceId)
   return {
     props: {
       initialSource: source,
       initialHarvests: results,
       initialTotalCount: count,
-      initialRevisions: revisions,
     }
   }
 }
