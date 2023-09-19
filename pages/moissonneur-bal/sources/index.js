@@ -22,7 +22,6 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount, initi
   const [currentPage, setCurrentPage] = useState(1)
   const [revisions, setRevisions] = useState(initialRevisions)
   const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState(null)
-
   const interval = useRef()
 
   const updateHarvest = useCallback(async page => {
@@ -116,7 +115,7 @@ const MoissoneurBAL = ({initialSource, initialHarvests, initialTotalCount, initi
             enlargeLink
             horizontal
             imageAlt={`Logo de l'organisation ${source.organization.name}`}
-            imageUrl={source.organization.logo}
+            imageUrl={source.organization.logo || undefined}
             linkProps={{
               href: source.organization.page
             }}
