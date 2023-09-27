@@ -294,6 +294,7 @@ export const PartenaireForm = ({title, data, onSubmit, submitLabel, controls, is
               label='Lien vers la charte*'
               nativeInputProps={{
                 value: formData.charteURL,
+                type: 'url',
                 onChange: handleEdit('charteURL'),
                 required: true,
               }}
@@ -303,6 +304,7 @@ export const PartenaireForm = ({title, data, onSubmit, submitLabel, controls, is
             <Input
               label='Lien vers le site'
               nativeInputProps={{
+                type: 'url',
                 value: formData.link,
                 onChange: handleEdit('link')}}
             />
@@ -314,6 +316,7 @@ export const PartenaireForm = ({title, data, onSubmit, submitLabel, controls, is
                   label='Lien vers le témoignage'
                   nativeInputProps={{
                     value: formData.testimonyURL,
+                    type: 'url',
                     onChange: handleEdit('testimonyURL')}}
                 />
               </div>
@@ -322,6 +325,7 @@ export const PartenaireForm = ({title, data, onSubmit, submitLabel, controls, is
                   label='Lien vers la BAL'
                   nativeInputProps={{
                     value: formData.balURL,
+                    type: 'url',
                     onChange: handleEdit('balURL')}}
                 />
               </div>
@@ -332,6 +336,7 @@ export const PartenaireForm = ({title, data, onSubmit, submitLabel, controls, is
                 label='Lien vers le témoignage'
                 nativeInputProps={{
                   value: formData.testimonyURL,
+                  type: 'url',
                   onChange: handleEdit('testimonyURL')}}
               />
             </div>
