@@ -66,11 +66,10 @@ const Header = ({session}: HeaderProps) => (
         <nav className='fr-nav' id='navigation-494' role='navigation' aria-label='Menu principal'>
           <ul className='fr-nav__list'>
             <li className='fr-nav__item'>
-              <Link href='/mes-adresses'>
-                <a className='fr-nav__link' target='_self'>Mes Adresses</a>
+              <Link href='/communes'>
+                <a className='fr-nav__link' target='_self'>Communes</a>
               </Link>
-            </li>
-            <li className='fr-nav__item'>
+            </li>            <li className='fr-nav__item'>
               <Link href='/api-depot'>
                 <a className='fr-nav__link' target='_self'>API Dépôt</a>
               </Link>
@@ -85,11 +84,7 @@ const Header = ({session}: HeaderProps) => (
                 <a className='fr-nav__link' target='_self'>Partenaires de la charte</a>
               </Link>
             </li>
-            <li className='fr-nav__item'>
-              <Link href='/communes'>
-                <a className='fr-nav__link' target='_self'>Communes</a>
-              </Link>
-            </li>
+
           </ul>
         </nav>
       </div>
