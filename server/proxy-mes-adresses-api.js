@@ -24,11 +24,17 @@ async function getBal(req, res) {
   forward(response, res)
 }
 
+async function removeBal(req, res) {
+  const response = await client.delete(`bases-locales/${req.params.baseLocaleId}`)
+  forward(response, res)
+}
+
 const app = new express.Router()
 
 app.use(express.json())
 
 app.get('/bases-locales/:baseLocaleId', w(getBal))
+app.delete('/bases-locales/:baseLocaleId', w(removeBal))
 
 module.exports = app
 

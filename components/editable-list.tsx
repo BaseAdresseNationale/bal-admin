@@ -6,7 +6,7 @@ type EditableListProps<T> = {
   caption: string;
   headers: string[];
   data: T[];
-  renderItem: (item: T) => React.ReactNode;
+  renderItem: (item: T, actions?: Record<string, (item: T) => void>) => React.ReactNode;
   filter?: {
     placeholder?: string;
     property: string;
@@ -17,6 +17,7 @@ type EditableListProps<T> = {
     count: number;
     onPageChange: (page: number) => void;
   };
+  actions?: Record<string, (item: T) => void>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
@@ -28,6 +29,7 @@ export const EditableList = <T extends unknown>({
   renderItem,
   filter,
   page,
+  actions,
 }: EditableListProps<T>) => {
   const [filterInput, setFilterInput] = useState('')
 
@@ -65,7 +67,7 @@ export const EditableList = <T extends unknown>({
               </tr>
             </thead>
             <tbody>
-              {filteredData.map(item => renderItem(item))}
+              {filteredData.map(item => renderItem(item, actions))}
             </tbody>
           </table>
         ) : <p>Aucun résultat</p>}

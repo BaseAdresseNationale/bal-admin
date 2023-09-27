@@ -1,13 +1,13 @@
-import {useState, useEffect, useMemo} from 'react'
-import {useRouter} from 'next/router'
+import {useState, useEffect, useMemo, useCallback} from 'react'
 import type {RevisionMoissoneurType} from '../../types/moissoneur'
 import type {RevisionApiDepotType} from '../../types/api-depot'
 import type {PageType} from '../../types/page'
 import type {BaseLocaleType} from '../../types/mes-adresses'
 import {getCommune} from '@/lib/cog'
 
+import {ModalAlert} from '@/components/modal-alerte'
 import {getAllRevisionByCommune} from '@/lib/api-depot'
-import {searchBasesLocales} from '@/lib/api-mes-adresses'
+import {searchBasesLocales, removeBaseLocale} from '@/lib/api-mes-adresses'
 import {getRevisionsByCommune} from '@/lib/api-moissonneur-bal'
 
 import {EditableList} from '@/components/editable-list'
@@ -26,6 +26,7 @@ const CommuneSource = (
   const [bals, setBals] = useState(balsPage.results)
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<RevisionApiDepotType[]>([])
   const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] = useState<RevisionMoissoneurType[]>([])
+  const [balToDeleted, setBalToDeleted] = useState(null)
 
   const [pageApiDepot, setPageApiDepot] = useState({
     limit: 5,
@@ -57,6 +58,11 @@ const CommuneSource = (
     setPageApiDepot(pageApiDepot => ({...pageApiDepot, current: newPage}))
   }
 
+  const fetchBals = async (commune: string) => {
+    const res = await searchBasesLocales({commune, page: pageMesAdresses.current, limit: pageMesAdresses.limit})
+    setBals(res.results)
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       const initialRevisionsApiDepot = await getAllRevisionByCommune(code)
@@ -69,11 +75,6 @@ const CommuneSource = (
   }, [code])
 
   useEffect(() => {
-    const fetchBals = async (commune: string) => {
-      const res = await searchBasesLocales({commune, page: pageMesAdresses.current, limit: pageMesAdresses.limit})
-      setBals(res.results)
-    }
-
     fetchBals(code).catch(console.error)
   }, [pageMesAdresses, code])
 
@@ -89,16 +90,31 @@ const CommuneSource = (
     return initialRevisionsMoissonneur.slice(start, end)
   }, [pageMoissonneur, initialRevisionsMoissonneur])
 
+  const onDeleteBal = useCallback(async () => {
+    await removeBaseLocale(balToDeleted._id)
+    await fetchBals(code).catch(console.error)
+    setBalToDeleted(null)
+  }, [balToDeleted, code, fetchBals, setBalToDeleted])
+
+  const actionsBals = {
+    delete(item: BaseLocaleType) {
+      setBalToDeleted(item)
+    },
+  }
+
   return (
     <div className='fr-container fr-my-4w'>
+      <ModalAlert item={balToDeleted} onAction={onDeleteBal} title='Voulez vous vraiment supprimer cette bal ?' />
+
       <h1>{getCommune(code).nom} ({code})</h1>
 
       <EditableList
-        headers={['Id', 'Client', 'Status', 'Date création', 'Date mise à jour', '']}
+        headers={['Id', 'Client', 'Status', 'Date création', 'Date mise à jour', 'Consulter', 'Supprimer']}
         caption='Bals mes adresses'
         data={bals}
         renderItem={BalsItem}
         page={{...pageMesAdresses, onPageChange: onPageMesAdressesChange}}
+        actions={actionsBals}
       />
 
       <EditableList
