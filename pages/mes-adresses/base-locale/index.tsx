@@ -22,7 +22,7 @@ const BaseLocale = () => {
 
   useEffect(() => {
     async function fetchBaseLocale() {
-      const baseLocale = await getBaseLocale(baseLocaleId)
+      const baseLocale = await getBaseLocale(baseLocaleId as string)
       setBaseLocale(baseLocale)
     }
 
