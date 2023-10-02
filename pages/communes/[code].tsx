@@ -1,4 +1,5 @@
 import {useState, useEffect, useMemo, useCallback} from 'react'
+import {toast} from 'react-toastify'
 import type {RevisionMoissoneurType} from '../../types/moissoneur'
 import type {RevisionApiDepotType} from '../../types/api-depot'
 import type {PageType} from '../../types/page'
@@ -91,9 +92,17 @@ const CommuneSource = (
   }, [pageMoissonneur, initialRevisionsMoissonneur])
 
   const onDeleteBal = useCallback(async () => {
-    await removeBaseLocale(balToDeleted._id)
-    await fetchBals(code).catch(console.error)
-    setBalToDeleted(null)
+    try {
+      await removeBaseLocale(balToDeleted._id)
+      await fetchBals(code).catch(console.error)
+      setBalToDeleted(null)
+      toast('La BAL a bien été archivé', {type: 'success'})
+    } catch (e: unknown) {
+      console.error(e)
+      if (e instanceof Error) {
+        toast(e.message, {type: 'error'})
+      }
+    }
   }, [balToDeleted, code, fetchBals, setBalToDeleted])
 
   const actionsBals = {
@@ -104,7 +113,7 @@ const CommuneSource = (
 
   return (
     <div className='fr-container fr-my-4w'>
-      <ModalAlert item={balToDeleted} onAction={onDeleteBal} title='Voulez vous vraiment supprimer cette bal ?' />
+      <ModalAlert item={balToDeleted} setItem={setBalToDeleted} onAction={onDeleteBal} title='Voulez vous vraiment supprimer cette bal ?' />
 
       <h1>{getCommune(code).nom} ({code})</h1>
 

@@ -6,7 +6,7 @@ const NEXT_PUBLIC_API_MES_ADRESSES = process.env.NEXT_PUBLIC_API_MES_ADRESSES ||
 const NEXT_PUBLIC_BAL_ADMIN_URL = process.env.NEXT_PUBLIC_BAL_ADMIN_URL || 'http://localhost:3000'
 const PROXY_MES_ADRESSES_API = NEXT_PUBLIC_BAL_ADMIN_URL + '/api/proxy-mes-adresses-api'
 
-export type SearchBasesLocalesQuery = {
+export type SearchBasesLocalesParams = {
   commune: string;
   page: number;
   limit: number;
@@ -19,7 +19,11 @@ async function processReponse(res: Response) {
     throw new Error(error.message)
   }
 
-  return res.json()
+  try {
+    return await res.json()
+  } catch {
+    return res
+  }
 }
 
 export async function getBaseLocale(baseLocaleId: string): Promise<BaseLocaleType> {
@@ -34,7 +38,7 @@ export async function removeBaseLocale(baseLocaleId: string) {
   return processReponse(res)
 }
 
-export async function searchBasesLocales(query: SearchBasesLocalesQuery): Promise<PageType<BaseLocaleType>> {
+export async function searchBasesLocales(query: SearchBasesLocalesParams): Promise<PageType<BaseLocaleType>> {
   const {page = 1, limit = 20, deleted = 0} = query
   const offset = (page - 1) * limit
   const params = {...query, offset, limit, deleted}

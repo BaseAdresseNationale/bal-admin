@@ -1,7 +1,6 @@
-import {useState, useEffect, useMemo} from 'react'
-import {useRouter} from 'next/router'
+import {useEffect} from 'react'
 import {createModal} from '@codegouvfr/react-dsfr/Modal'
-import {Alert} from '@codegouvfr/react-dsfr/Alert'
+import {useIsModalOpen} from '@codegouvfr/react-dsfr/Modal/useIsModalOpen'
 
 const modal = createModal({
   id: 'modal-alert',
@@ -10,27 +9,26 @@ const modal = createModal({
 
 type ModalAlertProps<T> = {
   item: T;
+  setItem: (item: T) => void;
   onAction: () => Promise<void>;
   title: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
-export const ModalAlert = <T extends unknown>({item, onAction, title}: ModalAlertProps<T>) => {
-  const [error, setError] = useState(null)
+export const ModalAlert = <T extends unknown>({item, setItem, onAction, title}: ModalAlertProps<T>) => {
+  const isOpen = useIsModalOpen(modal)
+
   useEffect(() => {
     if (modal && item) {
       modal.open()
     }
   }, [item])
 
-  async function onClickAction() {
-    try {
-      await onAction()
-      modal.close()
-    } catch (e: unknown) {
-      setError(e)
+  useEffect(() => {
+    if (!isOpen) {
+      setItem(null)
     }
-  }
+  }, [isOpen, setItem])
 
   return (
     <modal.Component
@@ -44,7 +42,8 @@ export const ModalAlert = <T extends unknown>({item, onAction, title}: ModalAler
           {
             doClosesModal: false,
             async onClick() {
-              await onClickAction()
+              await onAction()
+              modal.close()
             },
             children: 'Supprimer',
           },
@@ -52,14 +51,6 @@ export const ModalAlert = <T extends unknown>({item, onAction, title}: ModalAler
       }
     >
       Attention, cette action est irréversible.
-      {error && <Alert
-        className='fr-my-2w'
-        title='Erreur'
-        description={error.message}
-        severity='error'
-        closable={false}
-        small
-      />}
     </modal.Component>
   )
 }
