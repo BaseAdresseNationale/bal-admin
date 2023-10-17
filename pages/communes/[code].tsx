@@ -30,19 +30,19 @@ const CommuneSource = (
   const [balToDeleted, setBalToDeleted] = useState(null)
 
   const [pageApiDepot, setPageApiDepot] = useState({
-    limit: 5,
-    count: initialRevisionsApiDepot.length,
+    limit: 10,
+    count: 0,
     current: 1,
   })
 
   const [pageMoissonneur, setPageMoissonneur] = useState({
-    limit: 5,
-    count: initialRevisionsMoissonneur.length,
+    limit: 10,
+    count: 0,
     current: 1,
   })
 
   const [pageMesAdresses, setPageMesAdresses] = useState({
-    limit: 5,
+    limit: 10,
     count: balsPage.count,
     current: 1,
   })
@@ -59,17 +59,22 @@ const CommuneSource = (
     setPageApiDepot(pageApiDepot => ({...pageApiDepot, current: newPage}))
   }
 
-  const fetchBals = async (commune: string) => {
+  const fetchBals = useCallback(async (commune: string) => {
     const res = await searchBasesLocales({commune, page: pageMesAdresses.current, limit: pageMesAdresses.limit})
     setBals(res.results)
-  }
+  }, [pageMesAdresses])
 
   useEffect(() => {
     const fetchData = async () => {
-      const initialRevisionsApiDepot = await getAllRevisionByCommune(code)
-      const initialRevisionsMoissonneur = await getRevisionsByCommune(code)
-      setInitialRevisionsApiDepot(initialRevisionsApiDepot)
-      setInitialRevisionsMoissonneur(initialRevisionsMoissonneur)
+      const initialRevisionsApiDepot: RevisionApiDepotType[] = await getAllRevisionByCommune(code)
+      const initialRevisionsMoissonneur: RevisionMoissoneurType[] = await getRevisionsByCommune(code)
+
+      // Show the last revisions first
+      setInitialRevisionsApiDepot(initialRevisionsApiDepot.reverse())
+      setPageApiDepot(pageApiDepot => ({...pageApiDepot, count: initialRevisionsApiDepot.length}))
+
+      setInitialRevisionsMoissonneur(initialRevisionsMoissonneur.reverse())
+      setPageMoissonneur(pageMoissonneur => ({...pageMoissonneur, count: initialRevisionsMoissonneur.length}))
     }
 
     fetchData().catch(console.error)
@@ -77,7 +82,7 @@ const CommuneSource = (
 
   useEffect(() => {
     fetchBals(code).catch(console.error)
-  }, [pageMesAdresses, code])
+  }, [pageMesAdresses, code, fetchBals])
 
   const revisionsApiDepot = useMemo(() => {
     const start = (pageApiDepot.current - 1) * pageApiDepot.limit

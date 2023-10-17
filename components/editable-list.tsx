@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react'
+import React, {useState, useMemo, useEffect} from 'react'
 import Pagination from 'react-js-pagination'
 
 type EditableListProps<T> = {
@@ -32,6 +32,7 @@ export const EditableList = <T extends unknown>({
   actions,
 }: EditableListProps<T>) => {
   const [filterInput, setFilterInput] = useState('')
+  const pageinationRef = React.createRef<HTMLDivElement>()
 
   const filteredData = useMemo(() => {
     if (!filterInput || !filter?.property) {
@@ -40,6 +41,19 @@ export const EditableList = <T extends unknown>({
 
     return data.filter(item => item[filter.property].toLowerCase().includes(filterInput.toLowerCase()))
   }, [data, filterInput, filter])
+
+  useEffect(() => {
+    if (pageinationRef.current) {
+      const paginationLinks = pageinationRef.current.querySelectorAll('.fr-pagination__link')
+      paginationLinks.forEach((link: HTMLAnchorElement, index) => {
+        if (index - 1 === page?.current) {
+          link.setAttribute('aria-current', 'page')
+        } else {
+          link.removeAttribute('aria-current')
+        }
+      })
+    }
+  }, [pageinationRef, page])
 
   return (
     <div className='fr-container fr-py-12v'>
@@ -73,7 +87,7 @@ export const EditableList = <T extends unknown>({
         ) : <p>Aucun résultat</p>}
         {(page !== undefined && filteredData.length > 0) && (
           <div className='pagination fr-mx-auto fr-my-2w'>
-            <nav role='navigation' className='fr-pagination' aria-label='Pagination'>
+            <nav ref={pageinationRef} role='navigation' className='fr-pagination' aria-label='Pagination'>
               <Pagination
                 activePage={page.current}
                 itemsCountPerPage={page.limit}
