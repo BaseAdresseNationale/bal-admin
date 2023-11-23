@@ -3,13 +3,13 @@ const got = require('got')
 
 const w = require('./w')
 
-const API_MES_ADRESSES_URL = process.env.NEXT_PUBLIC_API_MES_ADRESSES || 'https://api-bal.adresse.data.gouv.fr/v1'
+const API_MES_ADRESSES_URL = process.env.NEXT_PUBLIC_API_MES_ADRESSES || 'https://api-bal.adresse.data.gouv.fr/v2'
 const API_MES_ADDRESSES_TOKEN = process.env.API_MES_ADDRESSES_TOKEN || ''
 
 const client = got.extend({
   prefixUrl: API_MES_ADRESSES_URL,
   headers: {
-    authorization: `Token ${API_MES_ADDRESSES_TOKEN}`
+    authorization: `Bearer ${API_MES_ADDRESSES_TOKEN}`
   },
   throwHttpErrors: false,
   responseType: 'json'
