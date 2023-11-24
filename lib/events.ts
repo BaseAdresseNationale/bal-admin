@@ -29,6 +29,17 @@ export async function getEvents() {
   return events as EventType[];
 }
 
+export async function massImportEvents(payload) {
+  const response = await fetch(`${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/mass-import`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const event = await processResponse(response);
+
+  return event as EventType;
+}
+
 export async function createEvent(payload) {
   const response = await fetch(`${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/`, {
     method: "POST",

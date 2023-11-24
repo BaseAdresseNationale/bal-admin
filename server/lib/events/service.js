@@ -40,6 +40,16 @@ async function createOne(payload) {
   return newRecord
 }
 
+async function createMany(events) {
+  // Check first that all events are valid
+  for (const event of events) {
+    validPayload(event, createSchema)
+  }
+  for await (const event of events) {
+    await createOne(event)
+  }
+}
+
 async function updateOne(id, payload) {
   const newRecord = validPayload(payload, createSchema)
   await findOneOrFail(id)
@@ -57,6 +67,7 @@ module.exports = {
   findMany,
   findOneOrFail,
   createOne,
+  createMany,
   updateOne,
   deleteOne,
 }

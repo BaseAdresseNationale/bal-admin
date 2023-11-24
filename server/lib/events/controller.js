@@ -28,6 +28,17 @@ eventsRoutes.post('/', routeGuard, async (req, res) => {
   }
 })
 
+eventsRoutes.post('/mass-import', routeGuard, async (req, res) => {
+  try {
+    const events = JSON.parse(req.body.data)
+    await EventsService.createMany(events)
+    res.json(true)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({error: err.message})
+  }
+})
+
 eventsRoutes.get('/:id', async (req, res) => {
   try {
     const event = await EventsService.findOneOrFail(req.params.id)

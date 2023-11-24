@@ -5,13 +5,6 @@ export enum EventTypeTypeEnum {
   ADRESSE_REGION = "adresse-region",
 }
 
-export enum EventTypeTargetEnum {
-  COMMUNE = "commune",
-  PARTENAIRES = "partenaires",
-  UTILISATEURS_TECHNIQUES = "utilisateurs techniques",
-  UTILISATEURS_DE_LA_DONNEE_ADRESSE = "utilisateurs de la donnée adresse",
-}
-
 export enum EventTypeTagEnum {
   PROGRAMME_BAL = "Programme Base Adresse Locale",
   BAL = "Base Adresse Locale",
@@ -35,7 +28,7 @@ export type EventType = {
   subtitle: string;
   description: string;
   type: EventTypeTypeEnum;
-  target: EventTypeTargetEnum;
+  target: string;
   date: string;
   tags: EventTypeTagEnum[];
   isOnlineOnly: boolean;

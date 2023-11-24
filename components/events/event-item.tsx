@@ -8,13 +8,15 @@ import Link from "next/link";
 const getEventTypeColor = (type: EventTypeTypeEnum) => {
   switch (type) {
     case EventTypeTypeEnum.FORMATION:
-      return "new";
+      return "rgb(15, 111, 0)";
     case EventTypeTypeEnum.PARTENAIRE:
-      return "warning";
+      return "rgb(0, 83, 179)";
     case EventTypeTypeEnum.ADRESSE_LAB:
-      return "info";
+      return "rgb(209, 51, 91)";
+    case EventTypeTypeEnum.ADRESSE_REGION:
+      return "rgb(130, 0, 191)";
     default:
-      return "success";
+      return 'black';
   }
 };
 
@@ -23,7 +25,7 @@ const getDate = (date: string) => {
 };
 
 const getHours = (startHour: string, endHour: string) => {
-  return `${startHour} - ${endHour}`;
+  return `${startHour.replace(':', 'h')} à ${endHour.replace(':', 'h')}`;
 };
 
 export const EventItem = ({
@@ -36,7 +38,7 @@ export const EventItem = ({
 }: EventType) => (
   <tr key={_id}>
     <td className="fr-col fr-my-1v">
-      <Badge severity={getEventTypeColor(type)} noIcon>
+      <Badge style={{background: getEventTypeColor(type), color: 'white'}} noIcon>
         {type}
       </Badge>
     </td>
@@ -47,7 +49,7 @@ export const EventItem = ({
       <Link
         passHref
         href={{
-          pathname: `/partenaires-de-la-charte/${_id}`,
+          pathname: `/events/${_id}`,
         }}
       >
         <Button iconId="fr-icon-arrow-right-line" iconPosition="right">

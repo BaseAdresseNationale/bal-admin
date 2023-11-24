@@ -2,7 +2,7 @@ const {validDate, validTime} = require('../../utils/payload')
 
 const createSchema = {
   title: {isRequired: true, type: 'string'},
-  subtitle: {isRequired: true, type: 'string'},
+  subtitle: {isRequired: false, type: 'string'},
   description: {isRequired: true, type: 'string'},
   type: {isRequired: true, type: 'string'},
   target: {isRequired: true, type: 'string'},

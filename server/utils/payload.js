@@ -35,7 +35,7 @@ function validSchema(payload, schema) {
   const filteredPayload = pick(payload, Object.keys(schema))
 
   Object.keys(schema).forEach(key => {
-    if (schema[key].isRequired && !filteredPayload[key]) {
+    if (schema[key].isRequired && filteredPayload[key] === undefined) {
       addError(error, key, `Le champ ${key} est obligatoire`)
     } else if (filteredPayload[key] && !isValidValueType(filteredPayload[key], schema[key].type)) {
       addError(error, key, `Le champ ${key} doit être de type "${schema[key].type}"`)
