@@ -41,7 +41,7 @@ async function findMany(query = {}) {
 }
 
 async function findOneOrFail(id) {
-  const record = mongoClient.findOneById(collectionName, id)
+  const record = await mongoClient.findOneById(collectionName, id)
 
   if (!record) {
     throw new Error(`Partenaire de la charte ${id} introuvable`)

@@ -76,6 +76,22 @@ function validEmail(email, error) {
   }
 }
 
+function validDate(date, error) {
+  const regex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/
+
+  if (!regex.test(date)) {
+    addError(error, 'date', 'La date doit être au format YYYY-MM-DD')
+  }
+}
+
+function validTime(time, error) {
+  const regex = /^[0-9]{2}:[0-9]{2}$/
+
+  if (!regex.test(time)) {
+    addError(error, 'time', 'L’heure doit être au format HH:MM')
+  }
+}
+
 module.exports = {
   addError,
   validSchema,
@@ -83,5 +99,7 @@ module.exports = {
   validPayload,
   validNom,
   validEmail,
-  ValidationError
+  ValidationError,
+  validDate,
+  validTime
 }
