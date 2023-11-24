@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import type { BaseLocaleType } from "../types/mes-adresses";
 import type { PageType } from "../types/page";
 

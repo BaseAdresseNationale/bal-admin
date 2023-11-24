@@ -1,6 +1,5 @@
 import type {PartenaireDeLaChartType} from 'types/partenaire-de-la-charte'
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const NEXT_PUBLIC_BAL_ADMIN_URL = process.env.NEXT_PUBLIC_BAL_ADMIN_URL || 'http://localhost:3000'
 
 async function processResponse(response) {

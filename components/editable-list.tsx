@@ -20,7 +20,6 @@ type EditableListProps<T> = {
   actions?: Record<string, (item: T) => void>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 export const EditableList = <T extends unknown>({
   createBtn,
   headers,
@@ -45,7 +44,7 @@ export const EditableList = <T extends unknown>({
   useEffect(() => {
     if (pageinationRef.current) {
       const paginationLinks = pageinationRef.current.querySelectorAll('.fr-pagination__link')
-      paginationLinks.forEach((link: HTMLAnchorElement, index) => {
+      paginationLinks.forEach((link: Element, index) => {
         if (index - 1 === page?.current) {
           link.setAttribute('aria-current', 'page')
         } else {

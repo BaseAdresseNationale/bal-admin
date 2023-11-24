@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-array-reduce */
 import {Chart} from 'react-chartjs-2'
 import PropTypes from 'prop-types'
 import {Chart as ChartJS, registerables} from 'chart.js'

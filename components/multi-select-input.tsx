@@ -30,7 +30,6 @@ const StyledAutocomplete = styled(Autocomplete)`
     }
 `
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 export const MultiSelectInput = <T extends unknown>({label, placeholder, options, onChange, value, hint, isDisabled}: MultiSelectInputProps<T>) => {
   const [searchValue, setSearchValue] = useState('')
 
