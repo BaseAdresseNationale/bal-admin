@@ -1,6 +1,5 @@
 import type { EventType } from "types/event";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const NEXT_PUBLIC_BAL_ADMIN_URL =
   process.env.NEXT_PUBLIC_BAL_ADMIN_URL || "http://localhost:3000";
 
@@ -30,11 +29,14 @@ export async function getEvents() {
 }
 
 export async function massImportEvents(payload) {
-  const response = await fetch(`${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/mass-import`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  const response = await fetch(
+    `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/mass-import`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: payload }),
+    }
+  );
   const event = await processResponse(response);
 
   return event as EventType;

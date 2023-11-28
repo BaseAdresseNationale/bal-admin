@@ -29,6 +29,7 @@ const EventsPage = ({ incommingEvents, pastEvents }: EventsPageProps) => {
     try {
       await massImportEvents(massImportData);
       toast("Les évènements ont bien été importés", { type: "success" });
+      massImportEventsModale.close();
     } catch (error: unknown) {
       toast(
         "Un problème est survenu pendant l'import, aucun évènement n'a été importé",
@@ -36,8 +37,10 @@ const EventsPage = ({ incommingEvents, pastEvents }: EventsPageProps) => {
       );
       console.log(error);
     }
+  };
 
-    return (
+  return (
+    <>
       <div className="fr-container">
         <Tabs
           className="fr-container fr-my-2w"
@@ -115,33 +118,33 @@ const EventsPage = ({ incommingEvents, pastEvents }: EventsPageProps) => {
             },
           ]}
         />
-        <massImportEventsModale.Component title="Import en masse">
-          <p>
-            Vous pouvez importer des évènements en masse en collant le contenu
-            d&apos;un fichier JSON dans le champ ci-dessous.
-          </p>
-          <textarea
-            style={{ width: "100%", height: "10rem" }}
-            placeholder="Coller le contenu du fichier JSON"
-            value={massImportData}
-            onChange={(e) => setMassImportData(e.target.value)}
-          />
-          <div>
-            <Button onClick={onMassImport}>Importer</Button>
-            <Button
-              style={{ marginLeft: "1rem" }}
-              priority="tertiary"
-              onClick={() => {
-                massImportEventsModale.close();
-              }}
-            >
-              Annuler
-            </Button>
-          </div>
-        </massImportEventsModale.Component>
       </div>
-    );
-  };
+      <massImportEventsModale.Component title="Import en masse">
+        <p>
+          Vous pouvez importer des évènements en masse en collant le contenu
+          d&apos;un fichier JSON dans le champ ci-dessous.
+        </p>
+        <textarea
+          style={{ width: "100%", height: "10rem", border: "1px solid #ccc" }}
+          placeholder="Coller le contenu du fichier JSON"
+          value={massImportData}
+          onChange={(e) => setMassImportData(e.target.value)}
+        />
+        <div style={{ marginTop: "1rem" }}>
+          <Button onClick={onMassImport}>Importer</Button>
+          <Button
+            style={{ marginLeft: "1rem" }}
+            priority="tertiary"
+            onClick={() => {
+              massImportEventsModale.close();
+            }}
+          >
+            Annuler
+          </Button>
+        </div>
+      </massImportEventsModale.Component>
+    </>
+  );
 };
 
 export async function getServerSideProps() {
