@@ -6,6 +6,9 @@ async function main() {
   await mongoClient.connect()
 
   for await (const event of events) {
+    if (event.type === "adresselab" || event.type === "adresse-region") {
+      continue
+    }
     await EventsService.createOne({
       ...event,
       isSubscriptionClosed: !!event.isSubscriptionClosed,
@@ -17,9 +20,7 @@ async function main() {
 
 main().catch(error => {
   console.error(error)
-  // eslint-disable-next-line unicorn/no-process-exit
   process.exit(1)
 }).then(() => {
-  // eslint-disable-next-line unicorn/no-process-exit
   process.exit(0)
 })
