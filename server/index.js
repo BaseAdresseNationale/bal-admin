@@ -38,7 +38,9 @@ async function main() {
   // Some Partenaire de la charte routes are public, others are protected by routeGuard
   server.use('/api/partenaires-de-la-charte', require('./lib/partenaire-de-la-charte/controller'))
   server.use('/api/events', require('./lib/events/controller'))
+  server.use('/api/bal-widget', require('./lib/bal-widget/controller'))
 
+  
   server.use(async (req, res) => {
     // Authentification is handled by the next app using next-auth module
     await nextAppRequestHandler(req, res)
