@@ -30,7 +30,7 @@ export const RevisionItemApiDepot = (
       {validation.valid ? (
         <input type='checkbox' id='checkbox' name='checkbox' checked disabled />
       ) : (
-        <Tooltip text={validation.errors.join(',')}>
+        <Tooltip text={validation?.errors?.join(',') || 'Erreur inconnue'}>
           <input type='checkbox' id='checkbox' name='checkbox' disabled />
         </Tooltip>
       )}
