@@ -1,7 +1,7 @@
 const {ObjectId} = require('mongodb')
 const mongoClient = require('../../utils/mongo-client')
 const {validPayload} = require('../../utils/payload')
-const {sendMail} = require('../mailer/service')
+const {sendTemplateMail} = require('../mailer/service')
 const {createCommuneSchema, createOrganismeSchema, createEntrepriseSchema} = require('./schemas')
 
 const collectionName = 'partenaires-de-la-charte'
@@ -84,7 +84,7 @@ async function createOne(payload, options = {}) {
 
   if (isCandidate) {
     try {
-      await sendMail('candidature-partenaire-de-la-charte')
+      await sendTemplateMail('candidature-partenaire-de-la-charte')
     } catch (error) {
       console.error(error)
     }
