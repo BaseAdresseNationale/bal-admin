@@ -1,7 +1,4 @@
-const { ObjectId } = require("mongodb");
 const mongoClient = require("../../utils/mongo-client");
-const { validPayload } = require("../../utils/payload");
-const { sendMail } = require("../mailer/service");
 
 const collectionName = "bal-widget";
 
