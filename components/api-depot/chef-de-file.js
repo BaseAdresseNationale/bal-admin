@@ -24,7 +24,7 @@ function getPerimeters(perimetre) {
   }) : null
 }
 
-const ChefDeFile = ({hasChefDeFile, _id, nom, email, perimetre, signataireCharte}) => {
+const ChefDeFile = ({hasChefDeFile, _id, nom, email, isEmailPublic, perimetre, signataireCharte}) => {
   const perimeters = getPerimeters(perimetre)
   return (
     <div className='fr-py-4v'>
@@ -36,6 +36,10 @@ const ChefDeFile = ({hasChefDeFile, _id, nom, email, perimetre, signataireCharte
               <h3>{nom}</h3>
               <CopyToClipBoard text={_id} title='Id' />
               <CopyToClipBoard text={email} title='Email' />
+              <div className='fr-col'>
+                <input type='checkbox' id='checkbox' name='checkbox' checked={isEmailPublic} disabled />
+                <label className='fr-label' htmlFor='checkbox'>Email Public</label>
+              </div>
             </div>
 
             <div className='fr-col'>
@@ -72,6 +76,7 @@ ChefDeFile.propTypes = {
   _id: PropTypes.string,
   nom: PropTypes.string,
   email: PropTypes.string,
+  isEmailPublic: PropTypes.bool,
   perimetre: PropTypes.array,
   signataireCharte: PropTypes.bool
 }

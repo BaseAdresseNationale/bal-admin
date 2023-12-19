@@ -13,6 +13,7 @@ import ChefDeFilePerimeter from '@/components/api-depot/client/client-form/chef-
 const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
   const [nom, setNom] = useState('')
   const [email, setEmail] = useState('')
+  const [isEmailPublic, setIsEmailPublic] = useState(true)
   const [isEmailValid, setIsEmailValid] = useState()
   const [perimeters, setPerimeters] = useState([{type: 'epci', code: '', key: uniqueId('perimeter_')}])
   const [isSignataireCharte, setIsSignataireCharte] = useState(true)
@@ -44,11 +45,12 @@ const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
       onSelect({
         nom,
         email,
+        isEmailPublic,
         perimetre: perimeters.map(({type, code}) => `${type}-${code}`),
         signataireCharte: isSignataireCharte
       })
     }
-  }, [nom, email, isEmailValid, perimeters, isSignataireCharte])
+  }, [nom, email, isEmailPublic, isEmailValid, perimeters, isSignataireCharte])
 
   return (
     <div className='fr-my-4w'>
@@ -74,6 +76,13 @@ const ChefDeFileForm = ({selectedChefDeFile, chefsDeFile, onSelect}) => {
                 onChange={e => setEmail(e.target.value)}
                 state={isEmailValid === false ? 'error' : 'default'}
                 stateRelatedMessage='L’email n’est pas valide'
+              />
+            </div>
+            <div className='fr-col-4'>
+              <ToggleSwitch
+                label='Email public'
+                checked={isEmailPublic}
+                onChange={setIsEmailPublic}
               />
             </div>
           </div>
