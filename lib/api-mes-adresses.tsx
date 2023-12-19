@@ -60,7 +60,7 @@ export async function removeBaseLocale(baseLocaleId: string) {
 export async function searchBasesLocales(
   query: SearchBasesLocalesParams
 ): Promise<PageType<BaseLocaleType>> {
-  const { page = 1, limit = 20, deleted = 0 } = query;
+  const { page = 1, limit = 20, deleted = false } = query;
   const offset = (page - 1) * limit;
   const params = { ...query, offset, limit, deleted };
   const queryString: string = Object.keys(params)
