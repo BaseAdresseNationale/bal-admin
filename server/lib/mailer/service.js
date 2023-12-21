@@ -44,15 +44,19 @@ async function sendTemplateMail(templateKey) {
   return true
 }
 
-async function checkReCaptcha(reCaptchaToken) {
-  const response = await fetch(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RE_CAPTCHA_SECRET_KEY}&response=${reCaptchaToken}`, {
-    method: 'POST'
+async function checkCaptcha(captchaToken) {
+  const response = await fetch(`https://api.hcaptcha.com/siteverify`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `response=${captchaToken}&secret=${process.env.HCAPTCHA_SECRET_KEY}`,
   })
 
   const json = await response.json()
 
   if (!json.success) {
-    throw new Error('Le reCaptcha est invalide')
+    throw new Error('Le captcha est invalide')
   }
 
   return json.success
@@ -60,9 +64,9 @@ async function checkReCaptcha(reCaptchaToken) {
 
 async function sendFormContactMail(payload) {
   const validatedPayload = validPayload(payload, mailSchema)
-  const {reCaptchaToken, ...emailData } = validatedPayload
+  const {captchaToken, ...emailData } = validatedPayload
 
-  await checkReCaptcha(reCaptchaToken)
+  await checkCaptcha(captchaToken)
 
   const contactTemplate = templates.contact(emailData)
 
