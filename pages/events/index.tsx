@@ -54,45 +54,42 @@ const EventsPage = ({ incommingEvents, pastEvents }: EventsPageProps) => {
                   {`Évènement${incommingEvents.length > 1 ? "s" : ""} à venir`}
                 </>
               ),
-              content:
-                incommingEvents.length === 0 ? (
-                  "Aucun évènement à venir"
-                ) : (
-                  <EditableList
-                    headers={["Type", "Nom", "Date", "Horaires", ""]}
-                    caption="Liste des évènements"
-                    data={incommingEvents}
-                    filter={{
-                      placeholder: "Filtrer par nom",
-                      property: "name",
-                    }}
-                    createBtn={
-                      <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
-                        <div className="fr-col-2">
-                          <Button
-                            onClick={() => massImportEventsModale.open()}
-                            iconId="fr-icon-add-line"
-                          >
-                            Import en masse
-                          </Button>
-                        </div>
-                        <div className="fr-col-2">
-                          <Link
-                            passHref
-                            href={{
-                              pathname: "/events/new",
-                            }}
-                          >
-                            <Button iconId="fr-icon-add-line">
-                              Créer un évènement
-                            </Button>
-                          </Link>
-                        </div>
+              content: (
+                <EditableList
+                  headers={["Type", "Nom", "Date", "Horaires", ""]}
+                  caption="Liste des évènements"
+                  data={incommingEvents}
+                  filter={{
+                    placeholder: "Filtrer par nom",
+                    property: "name",
+                  }}
+                  createBtn={
+                    <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
+                      <div className="fr-col-2">
+                        <Button
+                          onClick={() => massImportEventsModale.open()}
+                          iconId="fr-icon-add-line"
+                        >
+                          Import en masse
+                        </Button>
                       </div>
-                    }
-                    renderItem={EventItem}
-                  />
-                ),
+                      <div className="fr-col-2">
+                        <Link
+                          passHref
+                          href={{
+                            pathname: "/events/new",
+                          }}
+                        >
+                          <Button iconId="fr-icon-add-line">
+                            Créer un évènement
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  }
+                  renderItem={EventItem}
+                />
+              ),
             },
             {
               label: (
@@ -151,14 +148,26 @@ export async function getServerSideProps() {
   const events = await getEvents();
 
   const incommingEvents =
-    events.filter((event) => {
-      return new Date(event.date) > new Date();
-    }) || [];
+    events
+      .filter((event) => {
+        return new Date(event.date) > new Date();
+      })
+      .sort((eventA, eventB) => {
+        return (
+          new Date(eventA.date).getTime() - new Date(eventB.date).getTime()
+        );
+      }) || [];
 
   const pastEvents =
-    events.filter((event) => {
-      return new Date(event.date) < new Date();
-    }) || [];
+    events
+      .filter((event) => {
+        return new Date(event.date) < new Date();
+      })
+      .sort((eventA, eventB) => {
+        return (
+          new Date(eventB.date).getTime() - new Date(eventA.date).getTime()
+        );
+      }) || [];
 
   return {
     props: {

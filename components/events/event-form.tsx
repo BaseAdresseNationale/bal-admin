@@ -62,7 +62,7 @@ const newEventForm = {
   startHour: "",
   endHour: "",
   isOnlineOnly: true,
-  adresse: {},
+  address: {},
   isSubscriptionClosed: false,
   instructions: "",
   tags: [],

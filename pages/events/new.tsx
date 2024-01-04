@@ -14,7 +14,7 @@ const NewEventPage = () => {
     try {
       const newEvent = await createEvent(formData);
       toast("Evènement créé", { type: "success" });
-      await router.push(`/events/${newEvent._id}`);
+      await router.push("/events");
     } catch (error: unknown) {
       console.log(error);
       toast("Erreur lors de la création de l'évènement", { type: "error" });

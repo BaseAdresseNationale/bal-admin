@@ -33,11 +33,11 @@ export type EventType = {
   tags: EventTypeTagEnum[];
   isOnlineOnly: boolean;
   address?: {
-    nom: string;
-    numero: string;
-    voie: string;
-    codePostal: string;
-    commune: string;
+    nom?: string;
+    numero?: string;
+    voie?: string;
+    codePostal?: string;
+    commune?: string;
   };
   href?: string;
   isSubscriptionClosed: boolean;

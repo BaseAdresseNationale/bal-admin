@@ -9,7 +9,7 @@ const createSchema = {
   date: {valid: validDate, isRequired: true, type: 'string'},
   tags: {isRequired: true, type: 'array'},
   isOnlineOnly: {isRequired: true, type: 'boolean'},
-  address: {isRequired: false, type: 'object'},
+  address: {isRequired: true, type: 'object'},
   href: {isRequired: false, type: 'string'},
   isSubscriptionClosed: {isRequired: true, type: 'boolean'},
   instructions: {isRequired: false, type: 'string'},
