@@ -10,7 +10,6 @@ ChartJS.register(...registerables)
 const PublicationPerDepartmentChart = ({publicationsResponse}) => {
   const data = useMemo(() => {
     const sortedDepartments = departements.map(({nom, code}) => {
-      // eslint-disable-next-line unicorn/no-array-reduce
       const count = publicationsResponse.reduce((acc, {publishedBAL}) => {
         const selectedCommunes = Object.keys(publishedBAL).filter(
           codeCommune => codeCommune.slice(0, code.length) === code

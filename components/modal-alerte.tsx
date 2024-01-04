@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import React, {useEffect} from 'react'
 import {createModal} from '@codegouvfr/react-dsfr/Modal'
 import {useIsModalOpen} from '@codegouvfr/react-dsfr/Modal/useIsModalOpen'
 
@@ -9,12 +9,11 @@ const modal = createModal({
 
 type ModalAlertProps<T> = {
   item: T;
-  setItem: (item: T) => void;
+  setItem: (item: T | null) => void;
   onAction: () => Promise<void>;
   title: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 export const ModalAlert = <T extends unknown>({item, setItem, onAction, title}: ModalAlertProps<T>) => {
   const isOpen = useIsModalOpen(modal)
 

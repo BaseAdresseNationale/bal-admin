@@ -12,7 +12,6 @@ import {formatDate} from '@/lib/util/date'
 
 import CopyToClipBoard from '@/components/copy-to-clipboard'
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const NEXT_PUBLIC_MES_ADRESSES_URL = process.env.NEXT_PUBLIC_MES_ADRESSES_URL || 'http://mes-adresses.data.gouv.fr'
 
 const BaseLocale = () => {
