@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, { useState, useMemo } from "react";
 import styled from "styled-components";
 import { Input } from "@codegouvfr/react-dsfr/Input";
