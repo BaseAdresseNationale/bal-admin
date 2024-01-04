@@ -72,7 +72,7 @@ export async function getStatCreations({
   to: string;
 }) {
   const res = await fetch(
-    `${NEXT_PUBLIC_API_MES_ADRESSES}/stats/creations?from=${from}&to=${to}`
+    `${NEXT_PUBLIC_API_MES_ADRESSES}/stats/bals/creations?from=${from}&to=${to}`
   );
   return processReponse(res);
 }
