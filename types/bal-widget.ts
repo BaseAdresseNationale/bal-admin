@@ -9,6 +9,10 @@ export interface BALWidgetConfig {
     hideWidget: boolean;
     showOnPages: string[];
   };
+  communes: {
+    outdatedApiDepotClients: string[];
+    outdatedHarvestSources: string[];
+  };
   gitbook: {
     welcomeBlockTitle: string;
     topArticles: BALWidgetLink[];

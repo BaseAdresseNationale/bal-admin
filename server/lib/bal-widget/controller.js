@@ -39,15 +39,4 @@ BALWidgetRoutes.post("/send-mail", async (req, res) => {
   }
 });
 
-BALWidgetRoutes.get("/commune/:code", async (req, res) => {
-  try {
-    const { code } = req.params;
-    const response = await BALWidgetService.getCommuneInfos(code);
-    res.json(response);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
 module.exports = BALWidgetRoutes;

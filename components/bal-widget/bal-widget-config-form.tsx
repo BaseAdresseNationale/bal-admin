@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import styled from "styled-components";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -7,6 +7,11 @@ import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { BALWidgetConfig } from "../../types/bal-widget";
 import { MultiStringInput } from "../multi-string-input";
 import { MultiLinkInput } from "../multi-link-input";
+import { MultiSelectInput } from "../multi-select-input";
+import { ClientApiDepotType } from "types/api-depot";
+import { SourceMoissoneurType } from "types/moissoneur";
+import { getClients } from "@/lib/api-depot";
+import { getSources } from "@/lib/api-moissonneur-bal";
 
 type BALWidgetConfigFormProps = {
   config: BALWidgetConfig;
@@ -20,7 +25,7 @@ const StyledForm = styled.form`
   }
 
   section {
-    margin: 1rem 0;
+    margin: 1.5rem 0;
   }
 
   .form-controls {
@@ -39,6 +44,10 @@ const defaultConfig: BALWidgetConfig = {
     hideWidget: false,
     showOnPages: [],
   },
+  communes: {
+    outdatedApiDepotClients: [],
+    outdatedHarvestSources: [],
+  },
   gitbook: {
     welcomeBlockTitle: "Ces articles pourraient vous aider",
     topArticles: [],
@@ -53,12 +62,40 @@ export const BALWidgetConfigForm = ({
   onSubmit,
   config: baseConfig,
 }: BALWidgetConfigFormProps) => {
-  const initialConfig = baseConfig ? { ...baseConfig } : { ...defaultConfig };
+  const initialConfig = useMemo(
+    () => (baseConfig ? { ...baseConfig } : { ...defaultConfig }),
+    [baseConfig]
+  );
+
   const [formData, setFormData] = useState<BALWidgetConfig>(initialConfig);
+  const [apiDepotClients, setApiDepotClients] = useState<ClientApiDepotType[]>(
+    []
+  );
+  const [harvestSources, setHarvestSources] = useState<SourceMoissoneurType[]>(
+    []
+  );
 
   const canPublish = useMemo(() => {
     return JSON.stringify(formData) !== JSON.stringify(initialConfig);
   }, [formData, initialConfig]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [clients, sources] = await Promise.all([
+          getClients(),
+          getSources(),
+        ]);
+
+        setApiDepotClients(clients);
+        setHarvestSources(sources);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   const handleEdit =
     (section: keyof BALWidgetConfig, property: string) =>
@@ -123,6 +160,45 @@ export const BALWidgetConfigForm = ({
           value={formData.global.showOnPages}
           onChange={(value) =>
             handleEdit("global", "showOnPages")({ target: { value } } as any)
+          }
+        />
+      </section>
+      <section>
+        <h4>Aide aux communes</h4>
+        <MultiSelectInput
+          label="Clients API Dépôt caducs"
+          value={formData.communes.outdatedApiDepotClients}
+          options={apiDepotClients.map((client) => ({
+            value: client._id,
+            label: client.nom,
+          }))}
+          placeholder="Sélectionner les clients API Dépôt caducs"
+          onChange={(value) =>
+            setFormData((state) => ({
+              ...state,
+              communes: {
+                ...state.communes,
+                outdatedApiDepotClients: value,
+              },
+            }))
+          }
+        />
+        <MultiSelectInput
+          label="Sources moissonnées caduques"
+          value={formData.communes.outdatedHarvestSources}
+          options={harvestSources.map((source) => ({
+            value: source._id,
+            label: source.title,
+          }))}
+          placeholder="Sélectionner les sources moissonnées caduques"
+          onChange={(value) =>
+            setFormData((state) => ({
+              ...state,
+              communes: {
+                ...state.communes,
+                outdatedHarvestSources: value,
+              },
+            }))
           }
         />
       </section>

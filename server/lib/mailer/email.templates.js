@@ -10,7 +10,7 @@ module.exports = {
     return {
       from: process.env.SMTP_FROM || "adresse@data.gouv.fr",
       to: "adresse@data.gouv.fr",
-      subject,
+      subject: `BAL Widget - ${subject}`,
       text: `Bonjour,\n\nVous avez reçu un nouveau message via le formulaire de contact de BAL Widget.\n\nNom: ${lastName}\nPrénom: ${firstName}\nEmail: ${email}\n\nMessage:\n${message}\n\nBonne journée,\n\nL’équipe BAL`,
       html: `<p>Bonjour,</p><p>Vous avez reçu un nouveau message via le formulaire de contact de la BAL Widget.</p><p>Nom: ${lastName}</p><p>Prénom: ${firstName}</p><p>Email: ${email}</p><p>Message:</p><p>${message}</p><p>Bonne journée,</p><p>L’équipe BAL</p>`
     };
