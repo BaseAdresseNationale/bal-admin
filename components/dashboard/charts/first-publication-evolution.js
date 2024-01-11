@@ -9,7 +9,12 @@ const FirstPublicationEvolutionChart = ({firstPublicationEvolutionResponse, inte
   const data = useMemo(() => {
     let responseData = firstPublicationEvolutionResponse
     if (interval) {
-      responseData = firstPublicationEvolutionResponse.filter((_data, index) => index % interval === 0)
+      responseData = firstPublicationEvolutionResponse.reduce((acc, cur, index) => {
+        const curMonth = cur.date.split('-')[1]
+        const isLastOfMonth = index === firstPublicationEvolutionResponse.length - 1 || firstPublicationEvolutionResponse[index + 1].date.split('-')[1] !== curMonth
+        
+        return isLastOfMonth ? [...acc, cur] : acc
+      }, [])
     }
 
     const labels = responseData.map(({date}) => {
