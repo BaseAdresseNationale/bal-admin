@@ -38,6 +38,15 @@ export async function getBaseLocale(
   return processReponse(res);
 }
 
+export async function getBaseLocaleIsHabilitationValid(
+  baseLocaleId: string
+): Promise<boolean> {
+  const res: Response = await fetch(
+    `${NEXT_PUBLIC_API_MES_ADRESSES}/bases-locales/${baseLocaleId}/habilitation/is-valid`
+  );
+  return processReponse(res);
+}
+
 export async function removeBaseLocale(baseLocaleId: string) {
   const res: Response = await fetch(
     `${PROXY_MES_ADRESSES_API}/bases-locales/${baseLocaleId}`,
