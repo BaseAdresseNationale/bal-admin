@@ -290,12 +290,11 @@ export const PartenaireForm = ({title, data, onSubmit, submitLabel, controls, is
         <div className='fr-grid-row fr-grid-row--gutters'>
           <div className='fr-col-6'>
             <Input
-              label='Lien vers la charte*'
+              label='Lien vers la charte'
               nativeInputProps={{
                 value: formData.charteURL,
                 type: 'url',
                 onChange: handleEdit('charteURL'),
-                required: true,
               }}
             />
           </div>

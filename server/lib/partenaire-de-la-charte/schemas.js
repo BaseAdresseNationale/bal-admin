@@ -7,7 +7,7 @@ const createBaseSchema = {
   contactLastName: {isRequired: true, type: 'string'},
   contactEmail: {valid: validEmail, isRequired: true, type: 'string'},
   type: {isRequired: true, type: 'string'},
-  charteURL: {isRequired: true, type: 'string'},
+  charteURL: {isRequired: false, type: 'string'},
   link: {isRequired: false, type: 'string'},
   codeDepartement: {isRequired: false, type: 'array'},
   services: {isRequired: false, type: 'array'},
