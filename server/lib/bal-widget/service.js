@@ -9,9 +9,13 @@ async function getConfig(query = {}) {
     type: draft ? "draft" : "published",
   };
 
-  const {_id, _created, _updated, ...record} = await mongoClient.findOne(collectionName, mongoQuery);
+  try {
+    const {_id, _created, _updated, ...record} = await mongoClient.findOne(collectionName, mongoQuery);
 
-  return record;
+    return record;
+  } catch (error) {
+    return null
+  }
 }
 
 async function setConfig(payload) {
