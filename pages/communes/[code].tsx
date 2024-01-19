@@ -8,13 +8,19 @@ import {getCommune} from '@/lib/cog'
 
 import {ModalAlert} from '@/components/modal-alerte'
 import {getAllRevisionByCommune} from '@/lib/api-depot'
-import {searchBasesLocales, removeBaseLocale} from '@/lib/api-mes-adresses'
+import {searchBasesLocales, removeBaseLocale, getBaseLocaleIsHabilitationValid} from '@/lib/api-mes-adresses'
 import {getRevisionsByCommune} from '@/lib/api-moissonneur-bal'
 
 import {EditableList} from '@/components/editable-list'
 import {RevisionItemApiDepot} from '@/components/communes/revisions-item-api-depot'
 import {RevisionItemMoissoneur} from '@/components/communes/revisions-item-moissoneur'
 import {BalsItem} from '@/components/communes/bals-item'
+
+const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
+  for (const bal of bals) {
+    bal.habilitationIsValid = await getBaseLocaleIsHabilitationValid(bal._id)
+  }
+}
 
 type CommuneSourcePageProps = {
   code: string;
@@ -24,7 +30,7 @@ type CommuneSourcePageProps = {
 const CommuneSource = (
   {code, balsPage}: CommuneSourcePageProps,
 ) => {
-  const [bals, setBals] = useState(balsPage.results)
+  const [bals, setBals] = useState<BaseLocaleType[]>(balsPage.results)
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<RevisionApiDepotType[]>([])
   const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] = useState<RevisionMoissoneurType[]>([])
   const [balToDeleted, setBalToDeleted] = useState(null)
@@ -61,6 +67,7 @@ const CommuneSource = (
 
   const fetchBals = useCallback(async (commune: string) => {
     const res = await searchBasesLocales({commune, page: pageMesAdresses.current, limit: pageMesAdresses.limit})
+    await getBasesLocalesIsHabilitationValid(res.results)
     setBals(res.results)
   }, [pageMesAdresses])
 
@@ -152,7 +159,8 @@ const CommuneSource = (
 
 export async function getServerSideProps({params}) {
   const {code} = params
-  const balsPage = await searchBasesLocales({commune: code, page: 1, limit: 5})
+  const balsPage = await searchBasesLocales({commune: code, page: 1, limit: 10})
+  await getBasesLocalesIsHabilitationValid(balsPage.results)
   return {props: {code, balsPage}}
 }
 

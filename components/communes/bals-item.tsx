@@ -13,19 +13,9 @@ export const BalsItem = (
   item: BaseLocaleType,
   actions: Record<string, (item: BaseLocaleType) => void>
 ) => {
-  const { _id, nom, status, sync, _created, _updated } = item;
-  const [computedStatus, setComputedStatus] = useState<StatusInterface | null>(
-    null
-  );
+  const { _id, nom, status, sync, _created, _updated, habilitationIsValid } = item;
 
-  useEffect(() => {
-    async function initStatus() {
-      const habilitationIsValid = await getBaseLocaleIsHabilitationValid(_id);
-      setComputedStatus(computeStatus(status, sync, habilitationIsValid));
-    }
-
-    void initStatus();
-  }, [_id, status, sync]);
+  const computedStatus = computeStatus(status, sync, habilitationIsValid)
 
   return (
     <tr key={_id}>

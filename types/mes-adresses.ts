@@ -14,4 +14,5 @@ export type BaseLocaleType = {
   _created?: string;
   _updated?: string;
   _deleted?: string;
+  habilitationIsValid?: boolean;
 }
