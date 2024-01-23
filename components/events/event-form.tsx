@@ -215,6 +215,7 @@ export const EventForm = ({
                 required: true,
                 value: formData.href,
                 onChange: handleEdit("href"),
+                type: "url",
               }}
             />
           </div>
