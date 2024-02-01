@@ -82,12 +82,13 @@ export const BALWidgetConfigForm = ({
   useEffect(() => {
     async function fetchData() {
       try {
-        const [clients, sources] = await Promise.all([
-          getClients(),
-          getSources(),
-        ]);
-
+        const clients = await getClients();
         setApiDepotClients(clients);
+      } catch (error) {
+        console.log(error);
+      }
+      try {
+        const sources = await getSources();
         setHarvestSources(sources);
       } catch (error) {
         console.log(error);
