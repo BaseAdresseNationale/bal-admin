@@ -4,8 +4,6 @@ const next = require('next')
 require('dotenv').config()
 const mongoClient = require('./utils/mongo-client')
 const {routeGuard} = require('./route-guard')
-const {apiDepotProxy} = require('./proxy-api-depot')
-const {apiMoissonneurProxy} = require('./proxy-api-moissonneur-bal')
 
 function setDemoClient(req, res, next) {
   req.demo = 1
@@ -32,9 +30,9 @@ async function main() {
   }))
 
   // Proxy routes are protected by routeGuard
-  server.use('/api/proxy-api-depot', routeGuard, apiDepotProxy)
-  server.use('/api/proxy-api-depot-demo', routeGuard, setDemoClient, apiDepotProxy)
-  server.use('/api/proxy-api-moissonneur-bal', routeGuard, apiMoissonneurProxy)
+  server.use('/api/proxy-api-depot', routeGuard, require('./proxy-api-depot'))
+  server.use('/api/proxy-api-depot-demo', routeGuard, setDemoClient, require('./proxy-api-depot'))
+  server.use('/api/proxy-api-moissonneur-bal', routeGuard, require('./proxy-api-moissonneur-bal'))
   server.use('/api/proxy-mes-adresses-api', routeGuard, require('./proxy-mes-adresses-api'))
 
   // Some Partenaire de la charte routes are public, others are protected by routeGuard
@@ -42,7 +40,6 @@ async function main() {
   server.use('/api/events', require('./lib/events/controller'))
   server.use('/api/bal-widget', require('./lib/bal-widget/controller'))
 
-  
   server.use(async (req, res) => {
     // Authentification is handled by the next app using next-auth module
     await nextAppRequestHandler(req, res)

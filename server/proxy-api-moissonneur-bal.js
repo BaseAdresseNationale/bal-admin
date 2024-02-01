@@ -56,7 +56,4 @@ app.put('/sources/:sourceId', w(updateSource))
 app.post('/revisions/:revisionId/publish', w(publishRevision))
 app.get('/communes/:codeCommune/revisions', w(getRevisionsByCommune))
 
-module.exports = {
-  apiMoissonneurProxy: app,
-  apiMoissonneurClient: client
-}
+module.exports = app

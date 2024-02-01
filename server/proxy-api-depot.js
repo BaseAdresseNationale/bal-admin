@@ -156,8 +156,4 @@ app.get('/stats/publications', w(getStatPublications))
 
 app.get('/communes/:codeCommune/revisions', w(getAllRevisionsByCommune))
 
-module.exports = {
-  apiDepotProxy: app,
-  apiDepotClient: client
-}
-
+module.exports = app
