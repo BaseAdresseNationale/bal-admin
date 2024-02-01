@@ -5,6 +5,7 @@ import styled from "styled-components";
 type MultiStringInputProps = {
   label: string;
   value: string[];
+  placeholder?: string;
   onChange: (value: string[]) => void;
 };
 
@@ -24,6 +25,7 @@ export const MultiStringInput = ({
   label,
   value,
   onChange,
+  placeholder,
 }: MultiStringInputProps) => {
   const addValue = () => {
     onChange([...value, ""]);
@@ -56,7 +58,7 @@ export const MultiStringInput = ({
             type="text"
             value={page}
             onChange={(e) => handleChange(index, e.target.value)}
-            placeholder="https://example.com"
+            placeholder={placeholder}
           />
           <Button
             type="button"

@@ -161,6 +161,7 @@ export const BALWidgetConfigForm = ({
           onChange={(value) =>
             handleEdit("global", "showOnPages")({ target: { value } } as any)
           }
+          placeholder="Path de la page autorisée (/programme-bal)"
         />
       </section>
       <section>
@@ -214,6 +215,10 @@ export const BALWidgetConfigForm = ({
         />
         <MultiLinkInput
           label="Articles populaires :"
+          placeholders={[
+            "Comment puis-je obtenir une adresse ?",
+            "Path Gitbook de l'article (/utiliser-la-ban/mon-article)",
+          ]}
           value={formData.gitbook.topArticles}
           onChange={(value) =>
             handleEdit("gitbook", "topArticles")({ target: { value } } as any)
@@ -232,6 +237,7 @@ export const BALWidgetConfigForm = ({
         />
         <MultiStringInput
           label="Sujets du formulaire de contact :"
+          placeholder="Je souhaite publier une BAL"
           value={formData.contactUs.subjects}
           onChange={(value) =>
             handleEdit("contactUs", "subjects")({ target: { value } } as any)

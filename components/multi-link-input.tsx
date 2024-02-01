@@ -6,6 +6,7 @@ import { BALWidgetLink } from "../types/bal-widget";
 type MultiLinkInputProps = {
   label: string;
   value: BALWidgetLink[];
+  placeholders?: string[];
   onChange: (value: BALWidgetLink[]) => void;
 };
 
@@ -25,6 +26,7 @@ export const MultiLinkInput = ({
   label,
   value,
   onChange,
+  placeholders = [],
 }: MultiLinkInputProps) => {
   const addValue = () => {
     onChange([...value, { label: "", url: "" }]);
@@ -63,7 +65,7 @@ export const MultiLinkInput = ({
             type="text"
             value={label}
             onChange={(e) => handleChange(index, "label", e.target.value)}
-            placeholder="Comment puis-je obtenir une adresse ?"
+            placeholder={placeholders[0]}
           />
           <input
             required
@@ -71,7 +73,7 @@ export const MultiLinkInput = ({
             type="text"
             value={url}
             onChange={(e) => handleChange(index, "url", e.target.value)}
-            placeholder="https://example.com"
+            placeholder={placeholders[1]}
           />
           <Button
             type="button"
