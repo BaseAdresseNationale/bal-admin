@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer')
 const templates = require('./email.templates')
+const {mailSchema} = require('./schemas')
+const {validPayload} = require('../../utils/payload')
 
 function createTransport() {
   // Use mailhog in development
@@ -27,7 +29,7 @@ function createTransport() {
 
 const transport = createTransport()
 
-async function sendMail(templateKey) {
+async function sendTemplateMail(templateKey) {
   const template = templates[templateKey]
   if (!template) {
     throw new Error(`Le template ${templateKey} n'existe pas`)
@@ -42,6 +44,43 @@ async function sendMail(templateKey) {
   return true
 }
 
+async function checkCaptcha(captchaToken) {
+  const response = await fetch(`https://api.hcaptcha.com/siteverify`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `response=${captchaToken}&secret=${process.env.HCAPTCHA_SECRET_KEY}`,
+  })
+
+  const json = await response.json()
+
+  if (!json.success) {
+    throw new Error('Le captcha est invalide')
+  }
+
+  return json.success
+}
+
+async function sendFormContactMail(payload) {
+  const validatedPayload = validPayload(payload, mailSchema)
+  const {captchaToken, ...emailData } = validatedPayload
+
+  await checkCaptcha(captchaToken)
+
+  const contactTemplate = templates.contact(emailData)
+
+  const response = await transport.sendMail(contactTemplate)
+
+  if (!response) {
+    throw new Error('Une erreur est survenue lors de l\'envoi de l\'email')
+  }
+
+  return true
+}
+
+
 module.exports = {
-  sendMail
+  sendTemplateMail,
+  sendFormContactMail
 }

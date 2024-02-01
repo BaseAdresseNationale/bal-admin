@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { signIn, signOut } from "next-auth/react";
 import type { Session } from "next-auth";
@@ -135,6 +136,13 @@ const Header = ({ session }: HeaderProps) => (
               <Link href="/events">
                 <a className="fr-nav__link" target="_self">
                   Evènements
+                </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/bal-widget">
+                <a className="fr-nav__link" target="_self">
+                  BAL Widget
                 </a>
               </Link>
             </li>

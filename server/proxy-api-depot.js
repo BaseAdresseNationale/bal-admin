@@ -157,4 +157,3 @@ app.get('/stats/publications', w(getStatPublications))
 app.get('/communes/:codeCommune/revisions', w(getAllRevisionsByCommune))
 
 module.exports = app
-

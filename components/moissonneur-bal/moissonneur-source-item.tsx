@@ -11,7 +11,7 @@ interface MoissoneurSourceItemProps {
   model: string;
   type: string;
   _deleted: boolean;
-  _updated?: Date;
+  _updated?: string;
 }
 
 const MoissoneurSourceItem = ({

@@ -11,6 +11,38 @@ export enum UpdateStatusEnum {
   UPDATED = "updated",
 }
 
+export type SourceMoissoneurType = {
+  _id: string;
+  _updated: string;
+  _created: string;
+  _deleted: boolean;
+  url: string;
+  title: string;
+  type: string;
+  page: string;
+  organization: {
+    name: string;
+    page: string;
+    description: string;
+  };
+  model: string;
+  license: string;
+  harvesting: {
+    lastHarvest: string;
+    lastHarvestStatus: string;
+    lastHarvestError: string;
+  };
+  enabled: boolean;
+  description: string;
+  data: {
+    fileId: string;
+    harvestDate: string;
+    nbRows: number;
+    nbRowsWithErrors: number;
+    uniqueErrors: string[];
+  };
+};
+
 export type PublicationMoissoneurType = {
   status: RevisionStatusMoissoneurEnum;
   publishedRevisionId?: string | undefined;
@@ -33,22 +65,4 @@ export type RevisionMoissoneurType = {
   uniqueErrors?: string[];
   publication?: PublicationMoissoneurType;
   current?: boolean;
-};
-
-export type SourceMoissoneurType = {
-  _id: string;
-  _created: Date;
-  _deleted: boolean;
-  converter: any;
-  data: any;
-  description: string;
-  enabled: boolean;
-  harvesting: any;
-  license: string;
-  model: string;
-  organization: any;
-  page: string;
-  title: string;
-  type: string;
-  url: string;
 };

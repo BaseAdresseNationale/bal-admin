@@ -78,6 +78,10 @@ class Mongo {
     return this.db.collection(collectionName).findOne({_id: this.parseObjectId(id)})
   }
 
+  findOne(collectionName, options = {}) {
+    return this.db.collection(collectionName).findOne({_deleted: undefined, ...options})
+  }
+
   findMany(collectionName, options = {}) {
     return this.db.collection(collectionName).find({_deleted: undefined, ...options}).toArray()
   }
