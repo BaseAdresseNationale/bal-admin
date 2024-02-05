@@ -1,8 +1,6 @@
-import PropTypes from 'prop-types'
-
 import {Badge} from '@codegouvfr/react-dsfr/Badge'
 
-import type {UpdateStatusEnum} from '../types/moissoneur'
+import {UpdateStatusEnum} from '../types/moissoneur'
 import Tooltip from './tooltip'
 
 type UpdateStatusBadgeProps = {
@@ -11,26 +9,21 @@ type UpdateStatusBadgeProps = {
 }
 
 const UpdateStatusBadge = ({updateStatus, updateRejectionReason}: UpdateStatusBadgeProps) => {
-  if (updateStatus === 'unchanged') {
+  if (updateStatus === UpdateStatusEnum.UNCHANGED) {
     return <Badge severity='info' noIcon>Aucun changement</Badge>
   }
 
-  if (updateStatus === 'rejected') {
+  if (updateStatus === UpdateStatusEnum.REJECTED) {
     return (
-      <Tooltip text={updateRejectionReason}>
+      <Tooltip text={updateRejectionReason} width='200px'>
         <Badge severity='error' noIcon>Rejeté</Badge>
       </Tooltip>
     )
   }
 
-  if (updateStatus === 'updated') {
+  if (updateStatus === UpdateStatusEnum.UPDATED) {
     return <Badge severity='success' noIcon>Mis à jour</Badge>
   }
-}
-
-UpdateStatusBadge.propTypes = {
-  updateStatus: PropTypes.oneOf(['unchanged', 'rejected', 'updated']),
-  updateRejectionReason: PropTypes.string,
 }
 
 export default UpdateStatusBadge

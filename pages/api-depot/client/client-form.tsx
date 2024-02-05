@@ -11,6 +11,8 @@ import Loader from '@/components/loader'
 import SelectInput from '@/components/select-input'
 import TextInput from '@/components/text-input'
 import MandataireForm from '@/components/api-depot/client/client-form/mandataire-form'
+import ChefDeFileSelect from '@/components/api-depot/client/client-form/chef-de-file-select'
+import { object } from 'prop-types'
 import ChefDeFileForm from '@/components/api-depot/client/client-form/chef-de-file-form'
 
 const authorizationStrategyOptions = [
@@ -35,6 +37,8 @@ const ClientForm = () => {
   const [isFormValid, setIsFormValid] = useState(false)
   const [submitError, setSubmitError] = useState()
   const [isLoading, setIsLoading] = useState(true)
+  const [isformChefDeFileOpen, setIsformChefDeFileOpen] = useState<boolean>(false)
+  const [initialChefDeFileForm, setInitialChefDeFileForm] = useState<ChefDeFileApiDepotType>(null)
   const [chefsDeFileOptions, setChefsDeFileOptions] = useState<ChefDeFileApiDepotType[]>(null)
   const [mandatairesOptions, setMandatairesOptions] = useState<MandataireApiDepotType[]>(null)
   const [formData, setFormData] = useState(null)
@@ -42,6 +46,10 @@ const ClientForm = () => {
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true)
+      const mandataires: MandataireApiDepotType[] = await getMandataires(isDemo)
+      setMandatairesOptions(mandataires)
+      const chefsDeFile: ChefDeFileApiDepotType[] = await getChefsDeFile(isDemo)
+      setChefsDeFileOptions(chefsDeFile)
       if (clientId) {
         const client = await getClient(clientId, isDemo)
         setFormData({
@@ -56,10 +64,6 @@ const ClientForm = () => {
         setFormData(newClientFormData)
       }
 
-      const mandataires = await getMandataires(isDemo)
-      setMandatairesOptions(mandataires)
-      const chefsDeFile = await getChefsDeFile(isDemo)
-      setChefsDeFileOptions(chefsDeFile)
 
       setIsLoading(false)
     }
@@ -67,7 +71,7 @@ const ClientForm = () => {
     void fetchData()
   }, [clientId, isDemo])
 
-  const handleEdit = useCallback((property: string) => (value: string) => {
+  const handleEdit = useCallback((property: string) => (value: any) => {
     setFormData(state => ({...state, [property]: value}))
   }, [])
 
@@ -84,7 +88,7 @@ const ClientForm = () => {
       active: isActive,
       authorizationStrategy,
       mandataire: undefined,
-      chefDeFile: undefined,
+      chefDeFile,
     }
 
     try {
@@ -94,16 +98,6 @@ const ClientForm = () => {
         body.mandataire = newMandataire._id
       } else {
         body.mandataire = mandataire
-      }
-
-      // Gestion du chef de file sélectionné ou créé
-      if (authorizationStrategy === 'chef-de-file') {
-        if (typeof chefDeFile === 'object') {
-          const newChefDeFile = await createChefDeFile(chefDeFile, isDemo)
-          body.chefDeFile = newChefDeFile._id
-        } else if (chefDeFile) {
-          body.chefDeFile = chefDeFile
-        }
       }
 
       let _clientId = clientId
@@ -135,6 +129,19 @@ const ClientForm = () => {
 
     setIsFormValid(isFormValid)
   }, [formData])
+
+  const closeFormChefDeFile = async () => {
+    const chefsDeFile: ChefDeFileApiDepotType[] = await getChefsDeFile(isDemo)
+    setChefsDeFileOptions(chefsDeFile)
+    setInitialChefDeFileForm(null)
+    setIsformChefDeFileOpen(false)
+  }
+
+
+  const openFormChefDeFile = (initialId: string = null) => {
+    setInitialChefDeFileForm(chefsDeFileOptions.find(c => c._id == initialId))
+    setIsformChefDeFileOpen(true)
+  }
 
   return (
     <Loader isLoading={isLoading}>
@@ -178,11 +185,36 @@ const ClientForm = () => {
           />
 
           {formData.authorizationStrategy === 'chef-de-file' && (
-            <ChefDeFileForm
-              selectedChefDeFile={formData.chefDeFile}
-              chefsDeFile={chefsDeFileOptions}
-              onSelect={handleEdit('chefDeFile')}
-            />
+
+            <>
+              { isformChefDeFileOpen ? 
+                <ChefDeFileForm
+                  initialChefDeFile={initialChefDeFileForm}
+                  isDemo={isDemo}
+                  close={() => closeFormChefDeFile()}
+                  /> 
+                :
+                <>
+                <ChefDeFileSelect
+                  selectedChefDeFile={formData.chefDeFile}
+                  chefsDeFile={chefsDeFileOptions}
+                  onSelect={handleEdit('chefDeFile')}
+                />
+                <div className='fr-my-4w'>
+                  <div className='fr-grid-row'>
+                    <Button onClick={e => openFormChefDeFile()}>
+                      Créer
+                    </Button>
+                    <Button priority='secondary' onClick={e => openFormChefDeFile(formData.chefDeFile)}>
+                      Modifier
+                    </Button>
+                  </div>
+                </div>
+
+                </>
+                }
+            </>
+
           )}
 
           <Button

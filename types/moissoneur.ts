@@ -1,3 +1,5 @@
+import { PerimeterType } from "./api-depot";
+
 export enum RevisionStatusMoissoneurEnum {
   PROVIDED_BY_OTHER_CLIENT = "provided-by-other-client",
   PROVIDED_BY_OTHER_SOURCE = "provided-by-other-source",
@@ -11,6 +13,23 @@ export enum UpdateStatusEnum {
   UPDATED = "updated",
 }
 
+export enum HarvestStatus {
+  FAILED = "failed",
+  COMPLETED = "completed",
+  ACTIVE = "active",
+}
+
+export type HarvestMoissonneurType = {
+  _id: string;
+  startedAt: Date;
+  finishedAt: Date;
+  status: HarvestStatus;
+  error: string;
+  updateStatus: UpdateStatusEnum;
+  updateRejectionReason: string;
+  fileId: string;
+}
+
 export type SourceMoissoneurType = {
   _id: string;
   _updated: string;
@@ -21,13 +40,13 @@ export type SourceMoissoneurType = {
   type: string;
   page: string;
   organization: {
+    id: string;
     name: string;
-    page: string;
-    description: string;
   };
   model: string;
   license: string;
   harvesting: {
+    asked: boolean;
     lastHarvest: string;
     lastHarvestStatus: string;
     lastHarvestError: string;
@@ -65,4 +84,17 @@ export type RevisionMoissoneurType = {
   uniqueErrors?: string[];
   publication?: PublicationMoissoneurType;
   current?: boolean;
+};
+
+
+export type OrganizationMoissoneurType = {
+  _id: string;
+  name?: string;
+  page?: string;
+  logo?: string;
+  isActive?: boolean;
+  perimeters?: PerimeterType[];
+  _updated?: Date;
+  _created?: Date;
+  _deleted?: boolean;
 };

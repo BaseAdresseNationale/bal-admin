@@ -46,12 +46,21 @@ async function getRevisionsByCommune(req, res) {
   forward(response, res)
 }
 
+async function updateOrganization(req, res) {
+  const {organizationId} = req.params
+
+  const response = await client.put(`organizations/${organizationId}`, {json: req.body})
+  forward(response, res)
+}
+
+
 const app = new express.Router()
 
 app.use(express.json())
 
 // Sources
 app.post('/sources/:sourceId/harvest', w(harvestSource))
+app.put('/organizations/:organizationId', w(updateOrganization))
 app.put('/sources/:sourceId', w(updateSource))
 app.post('/revisions/:revisionId/publish', w(publishRevision))
 app.get('/communes/:codeCommune/revisions', w(getRevisionsByCommune))

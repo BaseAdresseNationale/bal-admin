@@ -1,7 +1,5 @@
 import { useCallback, useRef, useState, useEffect } from "react";
-import PropTypes from "prop-types";
 
-import Card from "@codegouvfr/react-dsfr/Card";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
@@ -21,23 +19,30 @@ import Loader from "@/components/loader";
 import CopyToClipBoard from "@/components/copy-to-clipboard";
 import HarvestItem from "@/components/moissonneur-bal/harvest-item";
 import RevisionItem from "@/components/moissonneur-bal/revision-item";
+import { HarvestMoissonneurType, SourceMoissoneurType, RevisionMoissoneurType } from "types/moissoneur";
+import Link from "next/link";
 
 const limit = 10;
 
-const MoissoneurBAL = ({
+interface MoissoneurSourceProps {
+  initialSource: SourceMoissoneurType;
+  initialHarvests: HarvestMoissonneurType[];
+  initialTotalCount: number;
+}
+
+const MoissoneurSource = ({
   initialSource,
   initialHarvests,
   initialTotalCount,
-}) => {
-  const [source, setSource] = useState(initialSource);
-  const [harvests, setHarvests] = useState(initialHarvests);
-  const [totalCount, setTotalCount] = useState(initialTotalCount);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [revisionsIsLoading, setRevisionsIsLoading] = useState(false);
-  const [revisions, setRevisions] = useState([]);
-  const [forcePublishRevisionStatus, setForcePublishRevisionStatus] =
-    useState(null);
-  const interval = useRef();
+}: MoissoneurSourceProps) => {
+  const [source, setSource] = useState<SourceMoissoneurType>(initialSource);
+  const [harvests, setHarvests] = useState<HarvestMoissonneurType[]>(initialHarvests);
+  const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [revisionsIsLoading, setRevisionsIsLoading] = useState<boolean>(false);
+  const [revisions, setRevisions] = useState<RevisionMoissoneurType[]>([]);
+  const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState<string | null>(null);
+  const interval = useRef<ReturnType<typeof setInterval> | undefined>();
 
   async function getRevisionsWithPublicationData(sourceId) {
     setRevisionsIsLoading(true);
@@ -175,20 +180,19 @@ const MoissoneurBAL = ({
           <div className="fr-col-2">
             <div className="fr-container">
               {source._deleted ? (
-                <Badge
-                  severity="error"
-                  style={{ marginRight: 2, marginBottom: 2 }}
-                >
+                <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
                   Supprimé
                 </Badge>
-              ) : (
-                <Badge
-                  severity="success"
-                  style={{ marginRight: 2, marginBottom: 2 }}
-                >
-                  Actif
-                </Badge>
-              )}
+              ) : source.enabled ? (
+                  <Badge severity="success" style={{ marginRight: 2, marginBottom: 2 }}>
+                    Activé
+                  </Badge>
+                ) : (
+                  <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
+                    Désactivé
+                  </Badge>
+                )
+              }
               <div className="fr-toggle">
                 <input
                   type="checkbox"
@@ -216,17 +220,12 @@ const MoissoneurBAL = ({
       <div className="fr-container">
         <h2>Organisation</h2>
         {source.organization ? (
-          <Card
-            desc=""
-            enlargeLink
-            horizontal
-            imageAlt={`Logo de l'organisation ${source.organization.name}`}
-            imageUrl={source.organization.logo || undefined}
-            linkProps={{
-              href: source.organization.page,
-            }}
-            title={source.organization.name}
-          />
+          <Link
+            href={{
+              pathname: `/moissonneur-bal/organizations/${source.organization.id}`,
+            }}>
+            {source.organization.name}
+          </Link>
         ) : (
           <div>Aucune information</div>
         )}
@@ -236,12 +235,6 @@ const MoissoneurBAL = ({
         <h2>Moissonnages</h2>
 
         <Button
-          iconId={
-            source.harvesting.asked || !source.enabled
-              ? ""
-              : "fr-icon-flashlight-fill"
-          }
-          iconPosition="right"
           disabled={source.harvesting.asked || !source.enabled}
           onClick={askHarvest}
         >
@@ -356,24 +349,9 @@ const MoissoneurBAL = ({
   );
 };
 
-MoissoneurBAL.propTypes = {
-  initialSource: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    enabled: PropTypes.bool.isRequired,
-    description: PropTypes.string,
-    organization: PropTypes.object,
-    license: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    harvesting: PropTypes.object.isRequired,
-  }).isRequired,
-  initialHarvests: PropTypes.array.isRequired,
-  initialTotalCount: PropTypes.number.isRequired,
-};
-
-export async function getServerSideProps({ query }) {
-  const source = await getSource(query.sourceId);
-  const { results, count } = await getSourceHarvests(query.sourceId, limit);
+export async function getServerSideProps({ params }) {
+  const source: SourceMoissoneurType = await getSource(params.id);
+  const { results, count } = await getSourceHarvests(params.id, limit);
   return {
     props: {
       initialSource: source,
@@ -383,4 +361,4 @@ export async function getServerSideProps({ query }) {
   };
 }
 
-export default MoissoneurBAL;
+export default MoissoneurSource;
