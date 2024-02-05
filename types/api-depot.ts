@@ -1,3 +1,4 @@
+import Perimeter from "@/components/api-depot/client/client-form/perimeter";
 
 export enum RevisionStatusApiDepotEnum {
   PUBLISHED = 'published',
@@ -8,6 +9,12 @@ export enum ClientApiDepotAuthorizationStrategyEnum {
   HABILITATION = 'habilitation',
   CHEF_DE_FILE = 'chef-de-file',
   INTERNAL = 'internal',
+}
+
+export enum TypePerimeterEnum {
+  EPCI = 'epci',
+  DEPARTEMENT = 'departement',
+  COMMUNE = 'commune',
 }
 
 export type ClientApiDepotType = {
@@ -45,12 +52,18 @@ export type RevisionApiDepotType = {
   habilitation?: any;
 }
 
+export type PerimeterType = {
+  type: TypePerimeterEnum;
+  code: string;
+}
+
 export type ChefDeFileApiDepotType = {
   _id: string;
   nom?: string;
   email?: string;
-  perimetre?: string[];
+  perimetre?: PerimeterType[];
   signataireCharte?: boolean;
+  isEmailPublic?: boolean;
   _createdAt?: string;
   _updatedAt?: string;
 }

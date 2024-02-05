@@ -85,6 +85,12 @@ async function getChefsDeFile(req, res) {
   forward(response, res)
 }
 
+async function updateChefDeFile(req, res) {
+  const response = await req.client.put(`chefs-de-file/${req.params.chefDeFileId}`, {json: req.body})
+  forward(response, res)
+}
+
+
 /*
   Retourne le nombre cumulé de première révision de BAL publiée pour chaque jours entre 'from' et 'to' inclus
   Exemple :
@@ -149,6 +155,7 @@ app.get('/mandataires/:mandataireId', w(getMandataire))
 app.post('/chefs-de-file', w(createChefDeFile))
 app.get('/chefs-de-file', w(getChefsDeFile))
 app.get('/chefs-de-file/:chefDeFileId', w(getChefDeFile))
+app.put('/chefs-de-file/:chefDeFileId', w(updateChefDeFile))
 
 // Dashboard
 app.get('/stats/firsts-publications', w(getStatFirstPublicationEvolution))

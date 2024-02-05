@@ -4,38 +4,34 @@ import Button from "@codegouvfr/react-dsfr/Button";
 
 import { formatDate } from "@/lib/util/date";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import { SourceMoissoneurType } from "types/moissoneur";
 
-interface MoissoneurSourceItemProps {
-  _id: string;
-  title: string;
-  model: string;
-  type: string;
-  _deleted: boolean;
-  _updated?: string;
-}
 
 const MoissoneurSourceItem = ({
   _id,
   title,
-  model,
-  type,
+  enabled,
   _deleted,
   _updated,
-}: MoissoneurSourceItemProps) => (
+}: SourceMoissoneurType) => (
   <tr>
+    <td className="fr-col fr-my-1v">{_id}</td>
     <td className="fr-col fr-my-1v">{title}</td>
-    <td className="fr-col fr-my-1v">{model}</td>
-    <td className="fr-col fr-my-1v">{type}</td>
     <td>
       {_deleted ? (
         <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
           Supprimé
         </Badge>
-      ) : (
-        <Badge severity="success" style={{ marginRight: 2, marginBottom: 2 }}>
-          Actif
-        </Badge>
-      )}
+      ) : enabled ? (
+          <Badge severity="success" style={{ marginRight: 2, marginBottom: 2 }}>
+            Activé
+          </Badge>
+        ) : (
+          <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
+            Désactivé
+          </Badge>
+        )
+      }
     </td>
     <td className="fr-col fr-my-1v">
       {_updated ? formatDate(_updated) : "inconnu"}
@@ -44,8 +40,7 @@ const MoissoneurSourceItem = ({
       <Link
         passHref
         href={{
-          pathname: "/moissonneur-bal/sources",
-          query: { sourceId: _id },
+          pathname: `/moissonneur-bal/sources/${_id}`,
         }}
       >
         <Button iconId="fr-icon-arrow-right-line" iconPosition="right">
