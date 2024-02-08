@@ -10,6 +10,7 @@ export interface BALWidgetConfig {
     showOnPages: string[];
   };
   communes: {
+    welcomeBlockTitle: string;
     outdatedApiDepotClients: string[];
     outdatedHarvestSources: string[];
   };

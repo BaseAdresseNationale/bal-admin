@@ -14,7 +14,9 @@ import { getClients } from "@/lib/api-depot";
 import { getSources } from "@/lib/api-moissonneur-bal";
 
 type BALWidgetConfigFormProps = {
-  config: BALWidgetConfig;
+  baseConfig: BALWidgetConfig;
+  formData: BALWidgetConfig;
+  setFormData: React.Dispatch<React.SetStateAction<BALWidgetConfig>>;
   onSubmit: (data: BALWidgetConfig) => Promise<void>;
 };
 
@@ -38,36 +40,12 @@ const StyledForm = styled.form`
   }
 `;
 
-const defaultConfig: BALWidgetConfig = {
-  global: {
-    title: "Centre d'aide Base Adresse Locale",
-    hideWidget: false,
-    showOnPages: [],
-  },
-  communes: {
-    outdatedApiDepotClients: [],
-    outdatedHarvestSources: [],
-  },
-  gitbook: {
-    welcomeBlockTitle: "Ces articles pourraient vous aider",
-    topArticles: [],
-  },
-  contactUs: {
-    welcomeBlockTitle: "Nous contacter",
-    subjects: [],
-  },
-};
-
 export const BALWidgetConfigForm = ({
   onSubmit,
-  config: baseConfig,
+  baseConfig,
+  formData,
+  setFormData,
 }: BALWidgetConfigFormProps) => {
-  const initialConfig = useMemo(
-    () => (baseConfig ? { ...baseConfig } : { ...defaultConfig }),
-    [baseConfig]
-  );
-
-  const [formData, setFormData] = useState<BALWidgetConfig>(initialConfig);
   const [apiDepotClients, setApiDepotClients] = useState<ClientApiDepotType[]>(
     []
   );
@@ -76,8 +54,8 @@ export const BALWidgetConfigForm = ({
   );
 
   const canPublish = useMemo(() => {
-    return JSON.stringify(formData) !== JSON.stringify(initialConfig);
-  }, [formData, initialConfig]);
+    return JSON.stringify(formData) !== JSON.stringify(baseConfig);
+  }, [formData, baseConfig]);
 
   useEffect(() => {
     async function fetchData() {
@@ -123,7 +101,7 @@ export const BALWidgetConfigForm = ({
     };
 
   const resetForm = () => {
-    setFormData(initialConfig);
+    setFormData(baseConfig);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -167,6 +145,14 @@ export const BALWidgetConfigForm = ({
       </section>
       <section>
         <h4>Aide aux communes</h4>
+        <Input
+          label="Titre sur la page d'accueil"
+          nativeInputProps={{
+            required: true,
+            value: formData.communes.welcomeBlockTitle,
+            onChange: handleEdit("communes", "welcomeBlockTitle"),
+          }}
+        />
         <MultiSelectInput
           label="Clients API Dépôt caducs"
           value={formData.communes.outdatedApiDepotClients}
