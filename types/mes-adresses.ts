@@ -10,6 +10,7 @@ export type BaseLocaleType = {
   isAllCertified?: boolean;
   commentedNumeros?: any;
   enableComplement?: boolean;
+  emails?: string[];
   sync?: any;
   _created?: string;
   _updated?: string;

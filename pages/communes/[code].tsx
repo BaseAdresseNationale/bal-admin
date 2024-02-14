@@ -24,13 +24,12 @@ const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
 
 type CommuneSourcePageProps = {
   code: string;
-  balsPage: PageType<BaseLocaleType>;
 }
 
 const CommuneSource = (
-  {code, balsPage}: CommuneSourcePageProps,
+  {code}: CommuneSourcePageProps,
 ) => {
-  const [bals, setBals] = useState<BaseLocaleType[]>(balsPage.results)
+  const [bals, setBals] = useState<BaseLocaleType[]>([])
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<RevisionApiDepotType[]>([])
   const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] = useState<RevisionMoissoneurType[]>([])
   const [balToDeleted, setBalToDeleted] = useState(null)
@@ -49,7 +48,7 @@ const CommuneSource = (
 
   const [pageMesAdresses, setPageMesAdresses] = useState({
     limit: 10,
-    count: balsPage.count,
+    count: 0,
     current: 1,
   })
 
@@ -130,7 +129,7 @@ const CommuneSource = (
       <h1>{getCommune(code).nom} ({code})</h1>
 
       <EditableList
-        headers={['Id', 'Client', 'Status', 'Date création', 'Date mise à jour', 'Consulter', 'Supprimer']}
+        headers={['Id', 'Client', 'Status', 'Date création', 'Date mise à jour', 'Emails', 'Consulter', 'Supprimer']}
         caption='Bals mes adresses'
         data={bals}
         renderItem={BalsItem}
@@ -159,9 +158,7 @@ const CommuneSource = (
 
 export async function getServerSideProps({params}) {
   const {code} = params
-  const balsPage = await searchBasesLocales({commune: code, page: 1, limit: 10})
-  await getBasesLocalesIsHabilitationValid(balsPage.results)
-  return {props: {code, balsPage}}
+  return {props: {code}}
 }
 
 export default CommuneSource
