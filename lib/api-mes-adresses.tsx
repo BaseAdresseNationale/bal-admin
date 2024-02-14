@@ -19,6 +19,7 @@ export type SearchBasesLocalesParams = {
 async function processReponse(res: Response) {
   if (!res.ok) {
     const error = await res.json();
+    console.log(error)
     throw new Error(error.message);
   }
 
@@ -67,8 +68,9 @@ export async function searchBasesLocales(
     .map((key: string) => `${key}=${String(params[key])}`)
     .join("&");
 
+  console.log(`${PROXY_MES_ADRESSES_API}/bases-locales/search?${queryString}`)
   const res: Response = await fetch(
-    `${NEXT_PUBLIC_API_MES_ADRESSES}/bases-locales/search?${queryString}`
+    `${PROXY_MES_ADRESSES_API}/bases-locales/search?${queryString}`
   );
   return processReponse(res);
 }

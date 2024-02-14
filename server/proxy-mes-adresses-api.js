@@ -24,6 +24,14 @@ async function getBal(req, res) {
   forward(response, res)
 }
 
+async function searchBal(req, res) {
+  const queryString = Object.keys(req.query)
+    .map((key) => `${key}=${String(req.query[key])}`)
+    .join("&");
+  const response = await client.get(`bases-locales/search/?${queryString}`)
+  forward(response, res)
+}
+
 async function removeBal(req, res) {
   const response = await client.delete(`bases-locales/${req.params.baseLocaleId}`)
   forward(response, res)
@@ -33,6 +41,7 @@ const app = new express.Router()
 
 app.use(express.json())
 
+app.get('/bases-locales/search', w(searchBal))
 app.get('/bases-locales/:baseLocaleId', w(getBal))
 app.delete('/bases-locales/:baseLocaleId', w(removeBal))
 

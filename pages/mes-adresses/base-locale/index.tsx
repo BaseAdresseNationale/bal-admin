@@ -70,6 +70,27 @@ const BaseLocale = () => {
             {baseLocale.token && (
               <CopyToClipBoard text={baseLocale.token} title="Token" />
             )}
+            <ul className="fr-tags-group">
+              <li>
+                <h3>Emails</h3>
+              </li>
+              
+              {baseLocale.emails ? (
+                baseLocale.emails.map((email) => 
+                  <li key='email' >
+                    <p className="fr-tag">
+                      {email}
+                    </p>
+                  </li>
+                )
+              ) : (
+                <li>
+                  <p className="fr-tag">
+                  inconnu
+                  </p>
+                </li>
+              )}
+            </ul>
             <div className="fr-my-4v">
               <Badge severity={computedStatus?.intent} noIcon>
                 {computedStatus?.label}
