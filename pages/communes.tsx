@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import allCommunes from "@etalab/decoupage-administratif/data/communes.json";
 import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
