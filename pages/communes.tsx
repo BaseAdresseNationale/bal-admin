@@ -1,59 +1,58 @@
-import {useState, useEffect} from 'react'
-import {useRouter} from 'next/router'
-import allCommunes from '@etalab/decoupage-administratif/data/communes.json'
-import {SearchBar} from '@codegouvfr/react-dsfr/SearchBar'
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import allCommunes from "@etalab/decoupage-administratif/data/communes.json";
+import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
 
-import SearchInput from '@/components/search-input'
+import SearchInput from "@/components/search-input";
+import { useFuse } from "@/hooks/use-fuse";
+import { useDebounce } from "@/hooks/use-debounce";
 
-const communes = (allCommunes as Array<{nom: string; code: string; type: string}>).filter(c => ['commune-actuelle', 'arrondissement-municipal'].includes(c.type))
+const communes = (
+  allCommunes as Array<{ nom: string; code: string; type: string }>
+).filter((c) =>
+  ["commune-actuelle", "arrondissement-municipal"].includes(c.type)
+);
 
 const Communes = () => {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [value, setValue] = useState(null)
-  const [inputValue, setInputValue] = useState('')
-  const [options, setOptions] = useState([])
+  const [value, setValue] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [options, setOptions] = useState<{ label: string; value: string }[]>(
+    []
+  );
+  const fuzzySearch = useFuse(communes, ["nom", "code"], setOptions);
+  const debouncedFuzzySearch = useDebounce(fuzzySearch, 500);
 
   useEffect(() => {
-    if (inputValue.length <= 2) {
-      setOptions([])
-    } else if (inputValue.length > 2) {
-      const newOptions = communes
-        .filter(c =>
-          String(c.code).toLowerCase().includes(inputValue.toLowerCase())
-          || c.nom.toLowerCase().includes(inputValue.toLowerCase()),
-        )
-        .map(c => ({label: `${c.nom} (${c.code})`, value: c.code}))
-        .slice(0, 10)
-      setOptions(newOptions)
-    }
-  }, [inputValue])
+    debouncedFuzzySearch(inputValue);
+  }, [debouncedFuzzySearch, inputValue]);
 
   useEffect(() => {
     if (value?.value) {
-      void router.push({pathname: `/communes/${(value.value as string)}`})
+      void router.push({ pathname: `/communes/${value.value as string}` });
     }
-  }, [value, router])
+  }, [value, router]);
 
   return (
-    <div className='fr-container fr-py-12v'>
-      <div className='fr-container--fluid'>
+    <div className="fr-container fr-py-12v">
+      <div className="fr-container--fluid">
         <h3>Recherche</h3>
-        <div className='fr-grid-row fr-grid-row--gutters'>
-          <div className='fr-col'>
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col">
             <SearchBar
-              renderInput={({className, id, placeholder, type}) => (
+              renderInput={({ className, id, placeholder, type }) => (
                 <SearchInput
                   options={options}
                   className={className}
                   id={id}
                   placeholder={placeholder}
                   type={type}
-                  onChange={newValue => {
-                    setValue(newValue)
+                  onChange={(newValue) => {
+                    setValue(newValue);
                   }}
-                  onInputChange={newValue => {
-                    setInputValue(newValue)
+                  onInputChange={(newValue) => {
+                    setInputValue(newValue);
                   }}
                 />
               )}
@@ -62,9 +61,7 @@ const Communes = () => {
         </div>
       </div>
     </div>
+  );
+};
 
-  )
-}
-
-export default Communes
-
+export default Communes;
