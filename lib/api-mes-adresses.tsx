@@ -68,7 +68,6 @@ export async function searchBasesLocales(
     .map((key: string) => `${key}=${String(params[key])}`)
     .join("&");
 
-  console.log(`${PROXY_MES_ADRESSES_API}/bases-locales/search?${queryString}`)
   const res: Response = await fetch(
     `${PROXY_MES_ADRESSES_API}/bases-locales/search?${queryString}`
   );
