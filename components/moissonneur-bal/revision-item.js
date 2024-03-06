@@ -10,6 +10,7 @@ import UpdateStatusBadge from "@/components/update-status-badge";
 import { getFile } from "@/lib/api-moissonneur-bal";
 import { getCommune } from "@/lib/cog";
 import { RevisionPublication } from "@/components/revision-publication";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 
 const RevisionItem = ({
   _id,
@@ -46,7 +47,7 @@ const RevisionItem = ({
       {!ignoreFields.includes("commune") && (
         <td className="fr-col fr-my-1v">
           <a>
-            {commune.nom} ({codeCommune})
+            {commune ? (commune.nom) : (<Badge severity='error' noIcon>Ancienne commune</Badge>)} ({codeCommune})
           </a>
         </td>
       )}
