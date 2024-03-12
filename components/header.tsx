@@ -14,7 +14,7 @@ const Header = ({ session }: HeaderProps) => (
         <div className="fr-header__body-row">
           <div className="fr-header__brand fr-enlarge-link">
             <div className="fr-header__brand-top">
-              <Link href="/">
+              <Link href="/" legacyBehavior passHref>
                 <div className="fr-header__logo">
                   <p className="fr-logo">
                     Base Adresse Locale <br />
@@ -37,7 +37,7 @@ const Header = ({ session }: HeaderProps) => (
               </div>
             </div>
             <div className="fr-header__service">
-              <Link href="/" title="Accueil - [BAL Admin / ANCT]">
+              <Link href="/" legacyBehavior passHref title="Accueil - [BAL Admin / ANCT]">
                 <p className="fr-header__service-title">
                   Base Adresse Locale / Admin - ANCT
                 </p>
@@ -105,42 +105,42 @@ const Header = ({ session }: HeaderProps) => (
         >
           <ul className="fr-nav__list">
             <li className="fr-nav__item">
-              <Link href="/communes">
+              <Link href="/communes" legacyBehavior passHref>
                 <a className="fr-nav__link" target="_self">
                   Communes
                 </a>
               </Link>
             </li>{" "}
             <li className="fr-nav__item">
-              <Link href="/api-depot">
+              <Link href="/api-depot" legacyBehavior passHref>
                 <a className="fr-nav__link" target="_self">
                   API Dépôt
                 </a>
               </Link>
             </li>
             <li className="fr-nav__item">
-              <Link href="/moissonneur-bal">
+              <Link href="/moissonneur-bal" legacyBehavior passHref>
                 <a className="fr-nav__link" target="_self">
                   Moissonneur BAL
                 </a>
               </Link>
             </li>
             <li className="fr-nav__item">
-              <Link href="/partenaires-de-la-charte">
+              <Link href="/partenaires-de-la-charte" legacyBehavior passHref>
                 <a className="fr-nav__link" target="_self">
                   Partenaires de la charte
                 </a>
               </Link>
             </li>
             <li className="fr-nav__item">
-              <Link href="/events">
+              <Link href="/events" legacyBehavior passHref>
                 <a className="fr-nav__link" target="_self">
                   Evènements
                 </a>
               </Link>
             </li>
             <li>
-              <Link href="/bal-widget">
+              <Link href="/bal-widget" legacyBehavior passHref>
                 <a className="fr-nav__link" target="_self">
                   BAL Widget
                 </a>

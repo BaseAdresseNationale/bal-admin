@@ -18,7 +18,7 @@ const MoissoneurOrganizationItem = ({
   <tr>
     <td className="fr-col fr-my-1v">{name}</td>
     <td className="fr-col fr-my-1v">
-      <Link href={page} target="_blank" >
+      <Link legacyBehavior passHref href={page} target="_blank" >
         <Button>data.gouv</Button>
       </Link>
     </td>

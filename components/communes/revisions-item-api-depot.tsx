@@ -15,7 +15,7 @@ export const RevisionItemApiDepot = (
     </td>
     <td className='fr-col fr-my-1v'>
       <Tooltip text={client.nom}>
-        <Link passHref href={{pathname: '/api-depot/client', query: {clientId: client._id}}}>
+        <Link legacyBehavior passHref href={{pathname: '/api-depot/client', query: {clientId: client._id}}}>
           {client._id}
         </Link>
       </Tooltip>

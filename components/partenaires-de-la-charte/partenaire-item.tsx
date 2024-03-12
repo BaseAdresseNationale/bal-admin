@@ -39,7 +39,7 @@ export const PartenaireItem = ({_id, _created, type, name, signatureDate, servic
       {services?.map(service => (<Badge severity='info' style={{marginRight: 2, marginBottom: 2}} key={service}>{service}</Badge>))}
     </td>
     <td className='fr-col fr-my-1v'>
-      <Link passHref href={{
+      <Link legacyBehavior passHref href={{
         pathname: `/partenaires-de-la-charte/${_id}`,
       }}
       >

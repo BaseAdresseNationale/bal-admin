@@ -16,7 +16,7 @@ const APIDepot = () => (
 
             <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--right'>
               <div className='fr-col-2'>
-                <Link passHref href={{
+                <Link legacyBehavior passHref href={{
                   pathname: '/api-depot/client/client-form',
                 }}
                 >
@@ -36,7 +36,7 @@ const APIDepot = () => (
 
             <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--right'>
               <div className='fr-col-2'>
-                <Link passHref href={{
+                <Link legacyBehavior passHref href={{
                   pathname: '/api-depot/client/client-form',
                   query: {demo: 1}
                 }}
