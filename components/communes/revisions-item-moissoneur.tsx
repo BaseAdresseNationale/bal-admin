@@ -15,7 +15,7 @@ export const RevisionItemMoissoneur = (
     </td>
     <td className='fr-col fr-my-1v'>
       <Tooltip text={sourceId}>
-        <Link passHref href={{pathname: `/moissonneur-bal/sources/${sourceId}`}}>
+        <Link legacyBehavior passHref href={{pathname: `/moissonneur-bal/sources/${sourceId}`}}>
           {sourceId}
         </Link>
       </Tooltip>

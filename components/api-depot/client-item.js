@@ -23,7 +23,7 @@ const ClientItem = ({_id, nom, mandataire, chefDeFile, authorizationStrategy, ac
       <input type='checkbox' id='checkbox' name='checkbox' checked={options.relaxMode} disabled />
     </td>
     <td className='fr-col fr-my-1v'>
-      <Link passHref href={{
+      <Link legacyBehavior passHref href={{
         pathname: '/api-depot/client/client-form',
         query: {clientId: _id, demo: isDemo ? 1 : 0}
       }}
@@ -34,7 +34,7 @@ const ClientItem = ({_id, nom, mandataire, chefDeFile, authorizationStrategy, ac
       </Link>
     </td>
     <td className='fr-col fr-my-1v'>
-      <Link passHref href={{
+      <Link legacyBehavior passHref href={{
         pathname: '/api-depot/client',
         query: {clientId: _id, demo: isDemo ? 1 : 0}
       }}

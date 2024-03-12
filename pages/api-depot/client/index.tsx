@@ -54,7 +54,7 @@ const Client = () => {
           />
         )}
 
-        <Link passHref href={{
+        <Link legacyBehavior passHref href={{
           pathname: '/api-depot/client/client-form',
           query: {clientId: client._id, demo: isDemo ? 1 : 0},
         }}
