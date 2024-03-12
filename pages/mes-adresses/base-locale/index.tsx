@@ -74,20 +74,16 @@ const BaseLocale = () => {
               <li>
                 <h3>Emails</h3>
               </li>
-              
+
               {baseLocale.emails ? (
-                baseLocale.emails.map((email) => 
-                  <li key='email' >
-                    <p className="fr-tag">
-                      {email}
-                    </p>
+                baseLocale.emails.map((email) => (
+                  <li key="email">
+                    <p className="fr-tag">{email}</p>
                   </li>
-                )
+                ))
               ) : (
                 <li>
-                  <p className="fr-tag">
-                  inconnu
-                  </p>
+                  <p className="fr-tag">inconnu</p>
                 </li>
               )}
             </ul>
@@ -126,6 +122,7 @@ const BaseLocale = () => {
           <div className="fr-col-2">
             <div className="fr-container">
               <Link
+                legacyBehavior
                 href={`${NEXT_PUBLIC_MES_ADRESSES_URL}/bal/${baseLocale._id}/${baseLocale.token}`}
               >
                 <a
