@@ -1,6 +1,6 @@
 const express = require('express')
 const got = require('got')
-
+const {validateObjectId} = require('./utils/payload')
 const w = require('./w')
 
 const API_MES_ADRESSES_URL = process.env.NEXT_PUBLIC_API_MES_ADRESSES || 'https://api-bal.adresse.data.gouv.fr/v2'
@@ -20,7 +20,8 @@ function forward(gotResponse, res) {
 }
 
 async function getBal(req, res) {
-  const response = await client.get(`bases-locales/${req.params.baseLocaleId}`)
+  const balId = validateObjectId(req.params.baseLocaleId)
+  const response = await client.get(`bases-locales/${balId}`)
   forward(response, res)
 }
 
@@ -33,7 +34,8 @@ async function searchBal(req, res) {
 }
 
 async function removeBal(req, res) {
-  const response = await client.delete(`bases-locales/${req.params.baseLocaleId}`)
+  const balId = validateObjectId(req.params.baseLocaleId)
+  const response = await client.delete(`bases-locales/${balId}`)
   forward(response, res)
 }
 

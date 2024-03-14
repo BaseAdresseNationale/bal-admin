@@ -1,4 +1,5 @@
 const {pick} = require('lodash')
+const {ObjectId} = require('mongodb')
 
 class ValidationError extends Error {
   constructor(validationDetails) {
@@ -92,6 +93,16 @@ function validTime(time, error) {
   }
 }
 
+function validateObjectId(id) {
+  const isValid = ObjectId.isValid(id)
+
+  if (!isValid) {
+    throw new ValidationError({id: ['L’identifiant est invalide']})
+  }
+
+  return id
+}
+
 module.exports = {
   addError,
   validSchema,
@@ -101,5 +112,6 @@ module.exports = {
   validEmail,
   ValidationError,
   validDate,
-  validTime
+  validTime,
+  validateObjectId
 }

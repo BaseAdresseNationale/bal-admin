@@ -20,22 +20,33 @@ function forward(gotResponse, res) {
 }
 
 async function harvestSource(req, res) {
-  const {sourceId} = req.params
+  let sourceId
+  if (req.params.sourceId.startsWith("datagouv-")) {
+    const id = sourceId.split("-")[1]
+    sourceId = validateObjectId(id)
+  } else {
+    sourceId = validateObjectId(req.params.sourceId)
+  }
 
   const response = await client.post(`sources/${sourceId}/harvest`)
   forward(response, res)
 }
 
 async function updateSource(req, res) {
-  const {sourceId} = req.params
+  let sourceId
+  if (req.params.sourceId.startsWith("datagouv-")) {
+    const id = sourceId.split("-")[1]
+    sourceId = validateObjectId(id)
+  } else {
+    sourceId = validateObjectId(req.params.sourceId)
+  }
 
   const response = await client.put(`sources/${sourceId}`, {json: req.body})
   forward(response, res)
 }
 
 async function publishRevision(req, res) {
-  const {revisionId} = req.params
-
+  const revisionId = validateObjectId(req.params.revisionId)
   const response = await client.post(`revisions/${revisionId}/publish`, {json: req.body})
   forward(response, res)
 }
@@ -47,8 +58,7 @@ async function getRevisionsByCommune(req, res) {
 }
 
 async function updateOrganization(req, res) {
-  const {organizationId} = req.params
-
+  const organizationId = validateObjectId(req.params.organizationId)
   const response = await client.put(`organizations/${organizationId}`, {json: req.body})
   forward(response, res)
 }
