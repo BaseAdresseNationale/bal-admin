@@ -1,8 +1,16 @@
 import { PerimeterType } from "./api-depot";
 
+export type PageHarvests = {
+  offset: number;
+  limit: number;
+  count: number;
+  results: HarvestMoissonneurType[];
+}
+
 export enum RevisionStatusMoissoneurEnum {
   PROVIDED_BY_OTHER_CLIENT = "provided-by-other-client",
   PROVIDED_BY_OTHER_SOURCE = "provided-by-other-source",
+  NOT_CONFIGURED = 'not-configured',
   PUBLISHED = "published",
   ERROR = "error",
 }
@@ -32,34 +40,20 @@ export type HarvestMoissonneurType = {
 
 export type SourceMoissoneurType = {
   _id: string;
+  url: string;
+  title: string;
+  page: string;
+  organizationId: string;
+  license: string;
+  enabled: boolean;
+  description: string;
+  harvesting: {
+    lastHarvest: Date;
+    harvestingSince: Date | null;
+  };
   _updated: string;
   _created: string;
   _deleted: boolean;
-  url: string;
-  title: string;
-  type: string;
-  page: string;
-  organization: {
-    id: string;
-    name: string;
-  };
-  model: string;
-  license: string;
-  harvesting: {
-    asked: boolean;
-    lastHarvest: string;
-    lastHarvestStatus: string;
-    lastHarvestError: string;
-  };
-  enabled: boolean;
-  description: string;
-  data: {
-    fileId: string;
-    harvestDate: string;
-    nbRows: number;
-    nbRowsWithErrors: number;
-    uniqueErrors: string[];
-  };
 };
 
 export type PublicationMoissoneurType = {
@@ -92,7 +86,6 @@ export type OrganizationMoissoneurType = {
   name?: string;
   page?: string;
   logo?: string;
-  isActive?: boolean;
   perimeters?: PerimeterType[];
   _updated?: Date;
   _created?: Date;
