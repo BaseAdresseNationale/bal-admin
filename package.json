@@ -2,6 +2,13 @@
   "name": "bal-admin",
   "version": "0.1.0",
   "private": true,
+  "author": "Équipe Adresse <adresse@data.gouv.fr>",
+  "contributors": [
+    "Jérôme Desboeufs <jerome.desboeufs@data.gouv.fr>",
+    "Théophile Merlière <theophile.merliere@data.gouv.fr>",
+    "Guillaume Fay <guillaume.fay@beta.gouv.fr>",
+    "Fabien Tafforeau <fabien.tafforeau@beta.gouv.fr>"
+  ],
   "scripts": {
     "dev": "node server",
     "build": "next build",
