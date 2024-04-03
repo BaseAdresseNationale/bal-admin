@@ -1,164 +1,225 @@
-import {useState, useEffect, useMemo, useCallback} from 'react'
-import {toast} from 'react-toastify'
-import type {RevisionMoissoneurType} from '../../types/moissoneur'
-import type {RevisionApiDepotType} from '../../types/api-depot'
-import type {PageType} from '../../types/page'
-import type {BaseLocaleType} from '../../types/mes-adresses'
-import {getCommune} from '@/lib/cog'
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { toast } from "react-toastify";
+import type { RevisionMoissoneurType } from "../../types/moissoneur";
+import type { RevisionApiDepotType } from "../../types/api-depot";
+import type { PageType } from "../../types/page";
+import type { BaseLocaleType } from "../../types/mes-adresses";
+import { getCommune } from "@/lib/cog";
 
-import {ModalAlert} from '@/components/modal-alerte'
-import {getAllRevisionByCommune} from '@/lib/api-depot'
-import {searchBasesLocales, removeBaseLocale, getBaseLocaleIsHabilitationValid} from '@/lib/api-mes-adresses'
-import {getRevisionsByCommune} from '@/lib/api-moissonneur-bal'
+import { ModalAlert } from "@/components/modal-alerte";
+import { getAllRevisionByCommune } from "@/lib/api-depot";
+import {
+  searchBasesLocales,
+  removeBaseLocale,
+  getBaseLocaleIsHabilitationValid,
+} from "@/lib/api-mes-adresses";
+import { getRevisionsByCommune } from "@/lib/api-moissonneur-bal";
 
-import {EditableList} from '@/components/editable-list'
-import {RevisionItemApiDepot} from '@/components/communes/revisions-item-api-depot'
-import {RevisionItemMoissoneur} from '@/components/communes/revisions-item-moissoneur'
-import {BalsItem} from '@/components/communes/bals-item'
+import { EditableList } from "@/components/editable-list";
+import { RevisionItemApiDepot } from "@/components/communes/revisions-item-api-depot";
+import { RevisionItemMoissoneur } from "@/components/communes/revisions-item-moissoneur";
+import { BalsItem } from "@/components/communes/bals-item";
 
 const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
   for (const bal of bals) {
-    bal.habilitationIsValid = await getBaseLocaleIsHabilitationValid(bal._id)
+    bal.habilitationIsValid = await getBaseLocaleIsHabilitationValid(bal._id);
   }
-}
+};
 
 type CommuneSourcePageProps = {
   code: string;
-}
+};
 
-const CommuneSource = (
-  {code}: CommuneSourcePageProps,
-) => {
-  const [bals, setBals] = useState<BaseLocaleType[]>([])
-  const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<RevisionApiDepotType[]>([])
-  const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] = useState<RevisionMoissoneurType[]>([])
-  const [balToDeleted, setBalToDeleted] = useState(null)
+const CommuneSource = ({ code }: CommuneSourcePageProps) => {
+  const [bals, setBals] = useState<BaseLocaleType[]>([]);
+  const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<
+    RevisionApiDepotType[]
+  >([]);
+  const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] =
+    useState<RevisionMoissoneurType[]>([]);
+  const [balToDeleted, setBalToDeleted] = useState(null);
 
   const [pageApiDepot, setPageApiDepot] = useState({
     limit: 10,
     count: 0,
     current: 1,
-  })
+  });
 
   const [pageMoissonneur, setPageMoissonneur] = useState({
     limit: 10,
     count: 0,
     current: 1,
-  })
+  });
 
   const [pageMesAdresses, setPageMesAdresses] = useState({
     limit: 10,
     count: 0,
     current: 1,
-  })
+  });
 
   const onPageMoissonneurChange = (newPage: number) => {
-    setPageMoissonneur(setPageMoissonneur => ({...setPageMoissonneur, current: newPage}))
-  }
+    setPageMoissonneur((setPageMoissonneur) => ({
+      ...setPageMoissonneur,
+      current: newPage,
+    }));
+  };
 
   const onPageMesAdressesChange = (newPage: number) => {
-    setPageMesAdresses(setPageMesAdresses => ({...setPageMesAdresses, current: newPage}))
-  }
+    setPageMesAdresses((setPageMesAdresses) => ({
+      ...setPageMesAdresses,
+      current: newPage,
+    }));
+  };
 
   const onPageApiDepotChange = (newPage: number) => {
-    setPageApiDepot(pageApiDepot => ({...pageApiDepot, current: newPage}))
-  }
+    setPageApiDepot((pageApiDepot) => ({ ...pageApiDepot, current: newPage }));
+  };
 
-  const fetchBals = useCallback(async (commune: string) => {
-    const res = await searchBasesLocales({commune, page: pageMesAdresses.current, limit: pageMesAdresses.limit})
-    await getBasesLocalesIsHabilitationValid(res.results)
-    setBals(res.results)
-  }, [pageMesAdresses])
+  const fetchBals = useCallback(
+    async (commune: string) => {
+      const res = await searchBasesLocales({
+        commune,
+        page: pageMesAdresses.current,
+        limit: pageMesAdresses.limit,
+      });
+      await getBasesLocalesIsHabilitationValid(res.results);
+      setBals(res.results);
+      setPageMesAdresses((pageMesAdresses) => ({
+        ...pageMesAdresses,
+        count: res.count,
+      }));
+    },
+    [pageMesAdresses]
+  );
 
   useEffect(() => {
     const fetchData = async () => {
-      const initialRevisionsApiDepot: RevisionApiDepotType[] = await getAllRevisionByCommune(code)
-      const initialRevisionsMoissonneur: RevisionMoissoneurType[] = await getRevisionsByCommune(code)
+      const initialRevisionsApiDepot: RevisionApiDepotType[] =
+        await getAllRevisionByCommune(code);
+      const initialRevisionsMoissonneur: RevisionMoissoneurType[] =
+        await getRevisionsByCommune(code);
 
       // Show the last revisions first
-      setInitialRevisionsApiDepot(initialRevisionsApiDepot.reverse())
-      setPageApiDepot(pageApiDepot => ({...pageApiDepot, count: initialRevisionsApiDepot.length}))
+      setInitialRevisionsApiDepot(initialRevisionsApiDepot.reverse());
+      setPageApiDepot((pageApiDepot) => ({
+        ...pageApiDepot,
+        count: initialRevisionsApiDepot.length,
+      }));
 
-      setInitialRevisionsMoissonneur(initialRevisionsMoissonneur.reverse())
-      setPageMoissonneur(pageMoissonneur => ({...pageMoissonneur, count: initialRevisionsMoissonneur.length}))
-    }
+      setInitialRevisionsMoissonneur(initialRevisionsMoissonneur.reverse());
+      setPageMoissonneur((pageMoissonneur) => ({
+        ...pageMoissonneur,
+        count: initialRevisionsMoissonneur.length,
+      }));
+    };
 
-    fetchData().catch(console.error)
-  }, [code])
+    fetchData().catch(console.error);
+  }, [code]);
 
   useEffect(() => {
-    fetchBals(code).catch(console.error)
-  }, [pageMesAdresses, code, fetchBals])
+    fetchBals(code).catch(console.error);
+  }, [pageMesAdresses, code, fetchBals]);
 
   const revisionsApiDepot = useMemo(() => {
-    const start = (pageApiDepot.current - 1) * pageApiDepot.limit
-    const end = (pageApiDepot.current) * pageApiDepot.limit
-    return initialRevisionsApiDepot.slice(start, end)
-  }, [pageApiDepot, initialRevisionsApiDepot])
+    const start = (pageApiDepot.current - 1) * pageApiDepot.limit;
+    const end = pageApiDepot.current * pageApiDepot.limit;
+    return initialRevisionsApiDepot.slice(start, end);
+  }, [pageApiDepot, initialRevisionsApiDepot]);
 
   const revisionsMoissoneur = useMemo(() => {
-    const start = (pageMoissonneur.current - 1) * pageMoissonneur.limit
-    const end = (pageMoissonneur.current) * pageMoissonneur.limit
-    return initialRevisionsMoissonneur.slice(start, end)
-  }, [pageMoissonneur, initialRevisionsMoissonneur])
+    const start = (pageMoissonneur.current - 1) * pageMoissonneur.limit;
+    const end = pageMoissonneur.current * pageMoissonneur.limit;
+    return initialRevisionsMoissonneur.slice(start, end);
+  }, [pageMoissonneur, initialRevisionsMoissonneur]);
 
   const onDeleteBal = useCallback(async () => {
     try {
-      await removeBaseLocale(balToDeleted._id)
-      await fetchBals(code).catch(console.error)
-      setBalToDeleted(null)
-      toast('La BAL a bien été archivé', {type: 'success'})
+      await removeBaseLocale(balToDeleted._id);
+      await fetchBals(code).catch(console.error);
+      setBalToDeleted(null);
+      toast("La BAL a bien été archivé", { type: "success" });
     } catch (e: unknown) {
-      console.error(e)
+      console.error(e);
       if (e instanceof Error) {
-        toast(e.message, {type: 'error'})
+        toast(e.message, { type: "error" });
       }
     }
-  }, [balToDeleted, code, fetchBals, setBalToDeleted])
+  }, [balToDeleted, code, fetchBals, setBalToDeleted]);
 
   const actionsBals = {
     delete(item: BaseLocaleType) {
-      setBalToDeleted(item)
+      setBalToDeleted(item);
     },
-  }
+  };
 
   return (
-    <div className='fr-container fr-my-4w'>
-      <ModalAlert item={balToDeleted} setItem={setBalToDeleted} onAction={onDeleteBal} title='Voulez vous vraiment supprimer cette bal ?' />
+    <div className="fr-container fr-my-4w">
+      <ModalAlert
+        item={balToDeleted}
+        setItem={setBalToDeleted}
+        onAction={onDeleteBal}
+        title="Voulez vous vraiment supprimer cette bal ?"
+      />
 
-      <h1>{getCommune(code).nom} ({code})</h1>
+      <h1>
+        {getCommune(code).nom} ({code})
+      </h1>
 
       <EditableList
-        headers={['Id', 'Client', 'Status', 'Date création', 'Date mise à jour', 'Emails', 'Consulter', 'Supprimer']}
-        caption='Bals mes adresses'
+        headers={[
+          "Id",
+          "Client",
+          "Status",
+          "Date création",
+          "Date mise à jour",
+          "Emails",
+          "Consulter",
+          "Supprimer",
+        ]}
+        caption="Bals mes adresses"
         data={bals}
         renderItem={BalsItem}
-        page={{...pageMesAdresses, onPageChange: onPageMesAdressesChange}}
+        page={{ ...pageMesAdresses, onPageChange: onPageMesAdressesChange }}
         actions={actionsBals}
       />
 
       <EditableList
-        headers={['Id', 'Source', 'Nb lignes', 'Nb lignes erreurs', 'Status', 'Publication']}
-        caption='Révisions Moissoneur'
+        headers={[
+          "Id",
+          "Source",
+          "Nb lignes",
+          "Nb lignes erreurs",
+          "Status",
+          "Publication",
+        ]}
+        caption="Révisions Moissoneur"
         data={revisionsMoissoneur}
         renderItem={RevisionItemMoissoneur}
-        page={{...pageMoissonneur, onPageChange: onPageMoissonneurChange}}
+        page={{ ...pageMoissonneur, onPageChange: onPageMoissonneurChange }}
       />
 
       <EditableList
-        headers={['Id', 'Client', 'Status', 'Current', 'Validation', 'Date création', 'Date publication']}
-        caption='Révisions Api Depot'
+        headers={[
+          "Id",
+          "Client",
+          "Status",
+          "Current",
+          "Validation",
+          "Date création",
+          "Date publication",
+        ]}
+        caption="Révisions Api Depot"
         data={revisionsApiDepot}
         renderItem={RevisionItemApiDepot}
-        page={{...pageApiDepot, onPageChange: onPageApiDepotChange}}
+        page={{ ...pageApiDepot, onPageChange: onPageApiDepotChange }}
       />
     </div>
-  )
+  );
+};
+
+export async function getServerSideProps({ params }) {
+  const { code } = params;
+  return { props: { code } };
 }
 
-export async function getServerSideProps({params}) {
-  const {code} = params
-  return {props: {code}}
-}
-
-export default CommuneSource
+export default CommuneSource;
