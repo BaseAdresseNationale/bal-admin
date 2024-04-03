@@ -9,6 +9,8 @@ const getEventTypeColor = (type: EventTypeTypeEnum) => {
   switch (type) {
     case EventTypeTypeEnum.FORMATION:
       return "rgb(15, 111, 0)";
+    case EventTypeTypeEnum.FORMATION_LVL2:
+      return "rgb(3, 189, 91)";
     case EventTypeTypeEnum.PARTENAIRE:
       return "rgb(0, 83, 179)";
     case EventTypeTypeEnum.ADRESSE_LAB:
