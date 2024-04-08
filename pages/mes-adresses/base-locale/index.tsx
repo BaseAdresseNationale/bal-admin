@@ -6,12 +6,14 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import type { BaseLocaleType } from "types/mes-adresses";
-import { getBaseLocale } from "@/lib/api-mes-adresses";
+import { createHabilitation, getBaseLocale } from "@/lib/api-mes-adresses";
 import { StatusInterface, computeStatus } from "@/lib/bal-status";
 import { formatDate } from "@/lib/util/date";
 import { getBaseLocaleIsHabilitationValid } from "@/lib/api-mes-adresses";
 
 import CopyToClipBoard from "@/components/copy-to-clipboard";
+import Button from "@codegouvfr/react-dsfr/Button";
+import { validateHabilitation } from "@/lib/api-depot";
 
 const NEXT_PUBLIC_MES_ADRESSES_URL =
   process.env.NEXT_PUBLIC_MES_ADRESSES_URL ||
@@ -21,31 +23,42 @@ const BaseLocale = () => {
   const router = useRouter();
   const { baseLocaleId } = router.query;
   const [baseLocale, setBaseLocale] = useState<BaseLocaleType>(null);
+  const [isHabilitationValid, setisHabilitationValid] = useState<boolean>(null);
   const [computedStatus, setComputedStatus] = useState<StatusInterface | null>(
     null
   );
 
-  useEffect(() => {
-    async function calcStatus(baseLocale) {
-      const isHabilitationValid = await getBaseLocaleIsHabilitationValid(
-        baseLocale._id
-      );
-      const status = computeStatus(
-        baseLocale.status,
-        baseLocale.sync,
-        isHabilitationValid
-      );
-      setComputedStatus(status);
-    }
+  async function calcStatus(baseLocale) {
+    const habilitationValid = await getBaseLocaleIsHabilitationValid(
+      baseLocale._id
+    );
+    const status = computeStatus(
+      baseLocale.status,
+      baseLocale.sync,
+      habilitationValid
+    );
+    setComputedStatus(status);
+    setisHabilitationValid(habilitationValid)
+  }
 
+  useEffect(() => {
     async function fetchBaseLocale() {
-      const baseLocale = await getBaseLocale(baseLocaleId as string);
+      const baseLocale = await getBaseLocale(String(baseLocaleId));
       setBaseLocale(baseLocale);
       await calcStatus(baseLocale);
     }
 
     void fetchBaseLocale();
   }, [baseLocaleId]);
+
+  const createBalHabilitation = async function () {
+    const habilitation = await createHabilitation(
+      baseLocale._id,
+      baseLocale.token
+    );
+    await validateHabilitation(habilitation._id);
+    await calcStatus(baseLocale);
+  };
 
   return baseLocale ? (
     <div className="fr-container">
@@ -93,6 +106,14 @@ const BaseLocale = () => {
               </Badge>
             </div>
 
+            <div className="fr-my-4v">
+              {isHabilitationValid ?
+                <Badge severity='success' noIcon>Habilitation Valide</Badge>
+                :
+                <Button onClick={createBalHabilitation}>Habiliter</Button>
+              }
+            </div>
+
             <ul className="fr-tags-group">
               <li>
                 <p className="fr-tag">
@@ -117,6 +138,10 @@ const BaseLocale = () => {
                 </p>
               </li>
             </ul>
+
+
+            
+            
           </div>
 
           <div className="fr-col-2">
@@ -134,24 +159,6 @@ const BaseLocale = () => {
                 </a>
               </Link>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="fr-container">
-        <h2>Paramètres</h2>
-        <div className="fr-container">
-          <div className="fr-checkbox-group">
-            <input
-              type="checkbox"
-              id="enabledComplement"
-              name="enabledComplement"
-              checked={Boolean(baseLocale.enableComplement)}
-              disabled
-            />
-            <label className="fr-label" htmlFor="enabledComplement">
-              Complément de voie
-            </label>
           </div>
         </div>
       </div>

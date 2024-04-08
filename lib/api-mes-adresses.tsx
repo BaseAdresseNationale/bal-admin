@@ -19,7 +19,7 @@ export type SearchBasesLocalesParams = {
 async function processReponse(res: Response) {
   if (!res.ok) {
     const error = await res.json();
-    console.log(error)
+    console.log(error);
     throw new Error(error.message);
   }
 
@@ -84,5 +84,17 @@ export async function getStatCreations({
   const res = await fetch(
     `${NEXT_PUBLIC_API_MES_ADRESSES}/stats/bals/creations?from=${from}&to=${to}`
   );
+  return processReponse(res);
+}
+
+export async function createHabilitation(balId: string, token: string) {
+  const res = await fetch(
+    `${NEXT_PUBLIC_API_MES_ADRESSES}/bases-locales/${balId}/habilitation`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
   return processReponse(res);
 }
