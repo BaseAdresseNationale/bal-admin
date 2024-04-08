@@ -1,22 +1,43 @@
-import { OrganizationMoissoneurType } from "types/moissoneur";
+import {
+  OrganizationBalAdminType,
+  OrganizationMoissoneurType,
+} from "types/moissoneur";
 import { useState } from "react";
 import MoissoneurOrganizationItem from "./moissonneur-organization-item";
+import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 
 type MoissoneurOrganizationsProps = {
   organizations: OrganizationMoissoneurType[];
+  partenaires: PartenaireDeLaChartType[];
 };
 
-const MoissoneurOrganizations = ({ organizations }: MoissoneurOrganizationsProps) => {
-  const getFilteredOrganizations = (showDeleted: boolean): OrganizationMoissoneurType[] => {
-    if (showDeleted) {
-      return organizations.sort((a, b) => (a.perimeters && b.perimeters.length) ? -1 : 1);
+const MoissoneurOrganizations = ({
+  organizations,
+  partenaires,
+}: MoissoneurOrganizationsProps) => {
+  const getFilteredOrganizations = (
+    showDeleted: boolean
+  ): OrganizationBalAdminType[] => {
+    let res = organizations.sort((a, b) =>
+      a.perimeters && b.perimeters.length ? -1 : 1
+    );
+
+    if (!showDeleted) {
+      res = res.filter((s) => !s._deleted);
     }
-    return organizations.filter((s) => !s._deleted).sort((a, b) => (a.perimeters && b.perimeters.length) ? -1 : 1);
+
+    return res.map((orga) => {
+      const partenaire: PartenaireDeLaChartType | null =
+        partenaires.find(
+          ({ dataGouvOrganizationId }) => dataGouvOrganizationId === orga._id
+        ) || null;
+      return { ...orga, partenaire };
+    });
   };
 
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
   const [organizationsFiltered, setOrganizationsFiltered] = useState<
-  OrganizationMoissoneurType[]
+    OrganizationBalAdminType[]
   >(getFilteredOrganizations(showDeleted));
 
   const toggleShowDelete = () => {
@@ -48,6 +69,7 @@ const MoissoneurOrganizations = ({ organizations }: MoissoneurOrganizationsProps
               <th scope="col">Nom</th>
               <th scope="col">Page</th>
               <th scope="col">Actif</th>
+              <th scope="col">Partenaire</th>
               <th scope="col">Date de mise à jour</th>
               <th scope="col" />
             </tr>
@@ -55,7 +77,10 @@ const MoissoneurOrganizations = ({ organizations }: MoissoneurOrganizationsProps
 
           <tbody>
             {organizationsFiltered.map((organization) => (
-              <MoissoneurOrganizationItem key={organization._id} {...organization} />
+              <MoissoneurOrganizationItem
+                key={organization._id}
+                {...organization}
+              />
             ))}
           </tbody>
         </table>

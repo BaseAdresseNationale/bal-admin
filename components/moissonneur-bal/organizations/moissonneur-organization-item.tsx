@@ -4,7 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 
 import { formatDate } from "@/lib/util/date";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import { OrganizationMoissoneurType } from "types/moissoneur";
+import { OrganizationBalAdminType } from "types/moissoneur";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
 const MoissoneurOrganizationItem = ({
@@ -14,29 +14,44 @@ const MoissoneurOrganizationItem = ({
   perimeters,
   _deleted,
   _updated,
-}: OrganizationMoissoneurType) => (
+  partenaire,
+}: OrganizationBalAdminType) => (
   <tr>
     <td className="fr-col fr-my-1v">{name}</td>
     <td className="fr-col fr-my-1v">
-      <Link legacyBehavior passHref href={page} target="_blank" >
+      <Link legacyBehavior passHref href={page} target="_blank">
         <Button>data.gouv</Button>
       </Link>
     </td>
     <td>
-    {_deleted ? (
+      {_deleted ? (
         <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
           Supprimé
         </Badge>
       ) : perimeters && perimeters.length ? (
-          <Badge severity="success" style={{ marginRight: 2, marginBottom: 2 }}>
-            Activé
-          </Badge>
-        ) : (
-          <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
-            Pas de périmètre
-          </Badge>
-        )
-      }
+        <Badge severity="success" style={{ marginRight: 2, marginBottom: 2 }}>
+          Activé
+        </Badge>
+      ) : (
+        <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
+          Pas de périmètre
+        </Badge>
+      )}
+    </td>
+    <td className="fr-col fr-my-1v">
+      {partenaire ? (
+        <Link
+          legacyBehavior
+          passHref
+          href={{
+            pathname: `/partenaires-de-la-charte/${partenaire._id}`,
+          }}
+        >
+          {partenaire.name}
+        </Link>
+      ) : (
+        <Badge severity="warning">Non partenaire</Badge>
+      )}
     </td>
     <td className="fr-col fr-my-1v">
       {_updated ? formatDate(_updated) : "inconnu"}

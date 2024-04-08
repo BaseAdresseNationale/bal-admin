@@ -1,22 +1,22 @@
 export enum PartenaireDeLaCharteServiceEnum {
-  FORMATION = 'formation',
-  ACCOMPAGNEMENT_TECNIQUE = 'accompagnement technique',
-  REALISATION_DE_BASES_ADRESSES_LOCALES = 'réalisation de bases adresses locales',
-  MISE_A_DISPOSITION_D_OUTILS_MUTUALISES = 'mise à disposition d\'outils mutualisés',
-  PARTAGE_D_EXPERIENCE = 'partage d\'expérience',
+  FORMATION = "formation",
+  ACCOMPAGNEMENT_TECNIQUE = "accompagnement technique",
+  REALISATION_DE_BASES_ADRESSES_LOCALES = "réalisation de bases adresses locales",
+  MISE_A_DISPOSITION_D_OUTILS_MUTUALISES = "mise à disposition d'outils mutualisés",
+  PARTAGE_D_EXPERIENCE = "partage d'expérience",
 }
 
 export enum PartenaireDeLaCharteTypeEnum {
-  COMMUNE = 'commune',
-  ENTREPRISE = 'entreprise',
-  ORGANISME = 'organisme',
+  COMMUNE = "commune",
+  ENTREPRISE = "entreprise",
+  ORGANISME = "organisme",
 }
 
 export enum PartenaireDeLaCharteOrganismeTypeEnum {
-  EPCI = 'epci',
-  DEPARTEMENT = 'departement',
-  REGION = 'region',
-  AUTRE = 'autre',
+  EPCI = "epci",
+  DEPARTEMENT = "departement",
+  REGION = "region",
+  AUTRE = "autre",
 }
 
 export type PartenaireDeLaChartType = {
@@ -35,7 +35,8 @@ export type PartenaireDeLaChartType = {
   charteURL?: string;
   signatureDate?: string;
   dataGouvOrganizationId?: string;
-}
+  apiDepotClientId: string;
+};
 
 export type PartenaireDeLaCharteCommuneType = PartenaireDeLaChartType & {
   type: PartenaireDeLaCharteTypeEnum.COMMUNE;
@@ -43,7 +44,7 @@ export type PartenaireDeLaCharteCommuneType = PartenaireDeLaChartType & {
   codeCommune: string;
   testimonyURL?: string;
   balURL?: string;
-}
+};
 
 export type PartenaireDeLaCharteOrganismeType = PartenaireDeLaChartType & {
   type: PartenaireDeLaCharteTypeEnum.ORGANISME;
@@ -51,12 +52,11 @@ export type PartenaireDeLaCharteOrganismeType = PartenaireDeLaChartType & {
   testimonyURL?: string;
   infos?: string;
   perimeter?: string;
-}
+};
 
 export type PartenaireDeLaCharteEntrepriseType = PartenaireDeLaChartType & {
   type: PartenaireDeLaCharteTypeEnum.ENTREPRISE;
   isPerimeterFrance?: boolean;
   infos?: string;
   perimeter?: string;
-}
-
+};

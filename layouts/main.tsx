@@ -1,10 +1,10 @@
-import React from 'react'
-import Head from 'next/head'
-import styled from 'styled-components'
-import {Footer} from '@codegouvfr/react-dsfr/Footer'
-import {useSession} from 'next-auth/react'
+import React from "react";
+import Head from "next/head";
+import styled from "styled-components";
+import { Footer } from "@codegouvfr/react-dsfr/Footer";
+import { useSession } from "next-auth/react";
 
-import Header from '@/components/header'
+import Header from "@/components/header";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -23,52 +23,60 @@ const StyledContainer = styled.div`
 
       p {
         font-size: 1.5rem;
-        font-weight: bold
+        font-weight: bold;
       }
     }
   }
-`
+`;
 
 type LayoutProps = {
   children: React.ReactNode;
-}
+};
 
-const Layout = ({children}: LayoutProps) => {
-  const {data: session} = useSession()
+const Layout = ({ children }: LayoutProps) => {
+  const { data: session } = useSession();
 
   return (
     <>
       <Head>
         <title>BAL Admin</title>
-        <meta name='description' content='BAL Admin' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
+        <meta name="description" content="BAL Admin" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <StyledContainer>
         <Header session={session} />
-        <main role='main'>
-          {session ? children : (
-            <div className='user-not-logged-in'>
+        <main role="main">
+          {session ? (
+            children
+          ) : (
+            <div className="user-not-logged-in">
               <p>Vous devez être connecté pour accéder à cette page</p>
             </div>
           )}
         </main>
 
         <Footer
-          accessibility='non compliant'
-          brandTop={<>Base Adresse Locale <br />Admin</>}
-          contentDescription='Interface d’administration des services Base Adresse Locale'
+          accessibility="non compliant"
+          brandTop={
+            <>
+              Base Adresse Locale <br />
+              Admin
+            </>
+          }
+          contentDescription="Interface d’administration des services Base Adresse Locale"
           homeLinkProps={{
-            href: '/',
-            title: 'Accueil - Interface d’administration des services Base Adresse Locale',
+            href: "/",
+            title:
+              "Accueil - Interface d’administration des services Base Adresse Locale",
           }}
           termsLinkProps={{
-            href: '#',
+            href: "#",
           }}
         />
       </StyledContainer>
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
