@@ -1,4 +1,5 @@
 import { PerimeterType } from "./api-depot";
+import { PartenaireDeLaChartType } from "./partenaire-de-la-charte";
 
 export type PageHarvests = {
   offset: number;
@@ -36,7 +37,7 @@ export type HarvestMoissonneurType = {
   updateStatus: UpdateStatusEnum;
   updateRejectionReason: string;
   fileId: string;
-}
+};
 
 export type SourceMoissoneurType = {
   _id: string;
@@ -80,8 +81,7 @@ export type RevisionMoissoneurType = {
   current?: boolean;
 };
 
-
-export type OrganizationMoissoneurType = {
+export interface OrganizationMoissoneurType {
   _id: string;
   name?: string;
   page?: string;
@@ -90,4 +90,8 @@ export type OrganizationMoissoneurType = {
   _updated?: Date;
   _created?: Date;
   _deleted?: boolean;
-};
+}
+
+export interface OrganizationBalAdminType extends OrganizationMoissoneurType {
+  partenaire: PartenaireDeLaChartType | null;
+}

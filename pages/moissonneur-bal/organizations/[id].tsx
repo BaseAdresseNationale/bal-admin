@@ -16,15 +16,27 @@ import { PerimeterType } from "types/api-depot";
 import PerimeterList from "@/components/api-depot/client/client-form/perimeter-list";
 import Button from "@codegouvfr/react-dsfr/Button";
 import MoissoneurSourceItem from "@/components/moissonneur-bal/sources/moissonneur-source-item";
+import Link from "next/link";
+import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
+import Badge from "@codegouvfr/react-dsfr/Badge";
+import { getPartenaireDeLaCharteByOrganizationDataGouv } from "@/lib/partenaires-de-la-charte";
 
 type OrganizationPageProps = {
   organization: OrganizationMoissoneurType;
   sources: SourceMoissoneurType[];
+  partenaires: PartenaireDeLaChartType[];
 };
 
-const OrganizationPage = ({ organization, sources }: OrganizationPageProps) => {
+const OrganizationPage = ({
+  organization,
+  sources,
+  partenaires,
+}: OrganizationPageProps) => {
   const [perimeters, setPerimeters] = useState<PerimeterType[]>(
     organization?.perimeters ? organization.perimeters : []
+  );
+  const [partenaire, setpPartenaire] = useState<PartenaireDeLaChartType | null>(
+    partenaires.length > 0 ? partenaires[0] : null
   );
 
   const onUpdatePerimeter = async () => {
@@ -56,6 +68,23 @@ const OrganizationPage = ({ organization, sources }: OrganizationPageProps) => {
         <div className="fr-col">
           <h3>{organization.name}</h3>
           <CopyToClipBoard text={organization._id} title="Id" />
+          {partenaire ? (
+            <>
+              <h3>Partenaire de la charte</h3>
+              <Link
+                legacyBehavior
+                passHref
+                href={{
+                  pathname: `/partenaires-de-la-charte/${partenaire._id}`,
+                }}
+              >
+                <Button priority="secondary">{partenaire.name}</Button>
+              </Link>
+            </>
+          ) : (
+            <Badge severity="warning">Non partenaire</Badge>
+          )}
+
           <div className="fr-py-12v">
             <PerimeterList
               perimeters={perimeters}
@@ -110,8 +139,12 @@ export async function getServerSideProps({ params }) {
   const organization: OrganizationMoissoneurType = await getOrganization(id);
   const sources: SourceMoissoneurType[] = await getSourcesOrganization(id);
 
+  const partenaires = await getPartenaireDeLaCharteByOrganizationDataGouv(
+    String(id)
+  );
+
   return {
-    props: { organization, sources },
+    props: { organization, sources, partenaires },
   };
 }
 export default OrganizationPage;

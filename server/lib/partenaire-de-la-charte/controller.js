@@ -1,100 +1,114 @@
-const express = require('express')
-const cors = require('cors')
-const {shuffle} = require('../../utils/random')
-const {routeGuard} = require('../../route-guard')
-const PartenaireDeLaCharteService = require('./service')
+const express = require("express");
+const cors = require("cors");
+const { shuffle } = require("../../utils/random");
+const { routeGuard } = require("../../route-guard");
+const PartenaireDeLaCharteService = require("./service");
 
-const partenaireDeLaCharteRoutes = new express.Router()
+const partenaireDeLaCharteRoutes = new express.Router();
 
-partenaireDeLaCharteRoutes.use(express.json())
-partenaireDeLaCharteRoutes.use(cors())
+partenaireDeLaCharteRoutes.use(express.json());
+partenaireDeLaCharteRoutes.use(cors());
 
-partenaireDeLaCharteRoutes.get('/', async (req, res) => {
+partenaireDeLaCharteRoutes.get("/", async (req, res) => {
   try {
-    const partenairesDeLaCharte = await PartenaireDeLaCharteService.findMany(req.query)
-    res.json(partenairesDeLaCharte)
+    const partenairesDeLaCharte = await PartenaireDeLaCharteService.findMany(
+      req.query
+    );
+    res.json(partenairesDeLaCharte);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({error: err.message})
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
-partenaireDeLaCharteRoutes.get('/random', async (req, res) => {
+partenaireDeLaCharteRoutes.get("/random", async (req, res) => {
   try {
-    const {limit} = req.query
-    const partenairesDeLaCharte = await PartenaireDeLaCharteService.findMany()
-    let randomizedPartners = shuffle(partenairesDeLaCharte)
+    const { limit } = req.query;
+    const partenairesDeLaCharte = await PartenaireDeLaCharteService.findMany();
+    let randomizedPartners = shuffle(partenairesDeLaCharte);
     if (limit) {
-      randomizedPartners = randomizedPartners.slice(0, limit)
+      randomizedPartners = randomizedPartners.slice(0, limit);
     }
 
-    res.json(randomizedPartners)
+    res.json(randomizedPartners);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({error: err.message})
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
-partenaireDeLaCharteRoutes.get('/services', async (req, res) => {
+partenaireDeLaCharteRoutes.get("/services", async (req, res) => {
   try {
-    const partenairesDeLaCharteServices = await PartenaireDeLaCharteService.findDistinct('services')
+    const partenairesDeLaCharteServices =
+      await PartenaireDeLaCharteService.findDistinct("services");
 
-    res.json(partenairesDeLaCharteServices)
+    res.json(partenairesDeLaCharteServices);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({error: err.message})
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
-partenaireDeLaCharteRoutes.post('/', routeGuard, async (req, res) => {
+partenaireDeLaCharteRoutes.post("/", routeGuard, async (req, res) => {
   try {
-    const partenaireDeLaCharte = await PartenaireDeLaCharteService.createOne(req.body)
-    res.json(partenaireDeLaCharte)
+    const partenaireDeLaCharte = await PartenaireDeLaCharteService.createOne(
+      req.body
+    );
+    res.json(partenaireDeLaCharte);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({error: err.message})
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
-partenaireDeLaCharteRoutes.post('/candidate', async (req, res) => {
+partenaireDeLaCharteRoutes.post("/candidate", async (req, res) => {
   try {
-    const partenaireDeLaCharte = await PartenaireDeLaCharteService.createOne(req.body, {isCandidate: true})
-    res.json(partenaireDeLaCharte)
+    const partenaireDeLaCharte = await PartenaireDeLaCharteService.createOne(
+      req.body,
+      { isCandidate: true }
+    );
+    res.json(partenaireDeLaCharte);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({error: err.message})
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
-partenaireDeLaCharteRoutes.get('/:id', async (req, res) => {
+partenaireDeLaCharteRoutes.get("/:id", async (req, res) => {
   try {
-    const partenaireDeLaCharte = await PartenaireDeLaCharteService.findOneOrFail(req.params.id)
-    res.json(partenaireDeLaCharte)
+    const partenaireDeLaCharte =
+      await PartenaireDeLaCharteService.findOneOrFail(req.params.id);
+    res.json(partenaireDeLaCharte);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({error: err.message})
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
-partenaireDeLaCharteRoutes.put('/:id', routeGuard, async (req, res) => {
+partenaireDeLaCharteRoutes.get("/:id", async (req, res) => {
   try {
-    const acceptCandidacy = req.query.acceptCandidacy === 'true'
-    const partenaireDeLaCharte = await PartenaireDeLaCharteService.updateOne(req.params.id, req.body, {acceptCandidacy})
-    res.json(partenaireDeLaCharte)
+    const partenaireDeLaCharte =
+      await PartenaireDeLaCharteService.findOneOrFail(req.params.id);
+    res.json(partenaireDeLaCharte);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({error: err.message})
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
-partenaireDeLaCharteRoutes.delete('/:id', routeGuard, async (req, res) => {
+partenaireDeLaCharteRoutes.put("/:id", routeGuard, async (req, res) => {
   try {
-    const partenaireDeLaCharte = await PartenaireDeLaCharteService.deleteOne(req.params.id)
-    res.json(partenaireDeLaCharte)
+    const acceptCandidacy = req.query.acceptCandidacy === "true";
+    const partenaireDeLaCharte = await PartenaireDeLaCharteService.updateOne(
+      req.params.id,
+      req.body,
+      { acceptCandidacy }
+    );
+    res.json(partenaireDeLaCharte);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({error: err.message})
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
-module.exports = partenaireDeLaCharteRoutes
+module.exports = partenaireDeLaCharteRoutes;
