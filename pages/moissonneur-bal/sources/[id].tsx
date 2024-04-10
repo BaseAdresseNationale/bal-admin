@@ -12,6 +12,7 @@ import {
   harvestSource,
   getSourceCurrentRevisions,
   publishRevision,
+  getOrganization,
 } from "@/lib/api-moissonneur-bal";
 import { getClient } from "@/lib/api-depot";
 
@@ -19,7 +20,7 @@ import Loader from "@/components/loader";
 import CopyToClipBoard from "@/components/copy-to-clipboard";
 import HarvestItem from "@/components/moissonneur-bal/harvest-item";
 import RevisionItem from "@/components/moissonneur-bal/revision-item";
-import { HarvestMoissonneurType, SourceMoissoneurType, RevisionMoissoneurType } from "types/moissoneur";
+import { HarvestMoissonneurType, SourceMoissoneurType, RevisionMoissoneurType, OrganizationMoissoneurType } from "types/moissoneur";
 import Link from "next/link";
 
 const limit = 10;
@@ -28,12 +29,14 @@ interface MoissoneurSourceProps {
   initialSource: SourceMoissoneurType;
   initialHarvests: HarvestMoissonneurType[];
   initialTotalCount: number;
+  organization: OrganizationMoissoneurType;
 }
 
 const MoissoneurSource = ({
   initialSource,
   initialHarvests,
   initialTotalCount,
+  organization,
 }: MoissoneurSourceProps) => {
   const [source, setSource] = useState<SourceMoissoneurType>(initialSource);
   const [harvests, setHarvests] = useState<HarvestMoissonneurType[]>(initialHarvests);
@@ -44,49 +47,16 @@ const MoissoneurSource = ({
   const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState<string | null>(null);
   const interval = useRef<ReturnType<typeof setInterval> | undefined>();
 
-  async function getRevisionsWithPublicationData(sourceId) {
+  async function fetchCurrentRevision(sourceId) {
     setRevisionsIsLoading(true);
     const revisions = await getSourceCurrentRevisions(sourceId);
-    const revisionsWithPublicationData = await Promise.all(
-      revisions.map(async (revision) => {
-        if (revision.publication) {
-          if (revision.publication.status === "provided-by-other-source") {
-            const currentSource = await getSource(
-              revision.publication.currentSourceId
-            );
-            revision.publication = {
-              ...revision.publication,
-              currentSourceName: currentSource.organization.name,
-            };
-          } else if (
-            revision.publication.status === "provided-by-other-client"
-          ) {
-            let currentClientName = null;
-            if (revision.publication.currentClientId) {
-              const currentClient = await getClient(
-                revision.publication.currentClientId,
-                false
-              );
-              currentClientName = currentClient.nom;
-            }
-
-            revision.publication = {
-              ...revision.publication,
-              currentClientName,
-            };
-          }
-        }
-
-        return revision;
-      })
-    );
     setRevisionsIsLoading(false);
-    return revisionsWithPublicationData;
+    return revisions;
   }
 
   useEffect(() => {
     async function fetchData() {
-      const initialRevisions = await getRevisionsWithPublicationData(
+      const initialRevisions = await fetchCurrentRevision(
         source._id
       );
       setRevisions(initialRevisions);
@@ -112,10 +82,10 @@ const MoissoneurSource = ({
     async function update() {
       const freshSource = await getSource(source._id);
       setSource(freshSource);
-      if (!freshSource.harvesting.asked) {
+      if (freshSource.harvesting.harvestingSince === null) {
         clearInterval(interval.current);
         updateHarvest(currentPage);
-        const revisions = await getRevisionsWithPublicationData(source._id);
+        const revisions = await fetchCurrentRevision(source._id);
         setRevisions(revisions);
       }
     }
@@ -150,7 +120,7 @@ const MoissoneurSource = ({
     setForcePublishRevisionStatus("loading");
     try {
       await publishRevision(id, { force: true });
-      const updateRevisions = await getRevisionsWithPublicationData(source._id);
+      const updateRevisions = await fetchCurrentRevision(source._id);
       setRevisions(updateRevisions);
       setForcePublishRevisionStatus("success");
     } catch (err) {
@@ -170,9 +140,6 @@ const MoissoneurSource = ({
             <ul className="fr-tags-group">
               <li>
                 <p className="fr-tag">{source.license}</p>
-              </li>
-              <li>
-                <p className="fr-tag">{source.type}</p>
               </li>
             </ul>
           </div>
@@ -219,12 +186,12 @@ const MoissoneurSource = ({
       </div>
       <div className="fr-container">
         <h2>Organisation</h2>
-        {source.organization ? (
+        {source.organizationId ? (
           <Link
             href={{
-              pathname: `/moissonneur-bal/organizations/${source.organization.id}`,
+              pathname: `/moissonneur-bal/organizations/${source.organizationId}`,
             }}>
-            {source.organization.name}
+            {organization.name}
           </Link>
         ) : (
           <div>Aucune information</div>
@@ -235,10 +202,10 @@ const MoissoneurSource = ({
         <h2>Moissonnages</h2>
 
         <Button
-          disabled={source.harvesting.asked || !source.enabled}
+          disabled={source.harvesting.harvestingSince !== null || !source.enabled}
           onClick={askHarvest}
         >
-          {source.harvesting.asked
+          {source.harvesting.harvestingSince !== null
             ? "Moissonnage en cours…"
             : "Lancer le moissonnage"}
         </Button>
@@ -351,12 +318,14 @@ const MoissoneurSource = ({
 
 export async function getServerSideProps({ params }) {
   const source: SourceMoissoneurType = await getSource(params.id);
+  const organization: OrganizationMoissoneurType = await getOrganization(source.organizationId);
   const { results, count } = await getSourceHarvests(params.id, limit);
   return {
     props: {
       initialSource: source,
       initialHarvests: results,
       initialTotalCount: count,
+      organization: organization,
     },
   };
 }
