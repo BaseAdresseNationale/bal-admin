@@ -14,13 +14,17 @@ import {
   publishRevision,
   getOrganization,
 } from "@/lib/api-moissonneur-bal";
-import { getClient } from "@/lib/api-depot";
 
 import Loader from "@/components/loader";
 import CopyToClipBoard from "@/components/copy-to-clipboard";
 import HarvestItem from "@/components/moissonneur-bal/harvest-item";
 import RevisionItem from "@/components/moissonneur-bal/revision-item";
-import { HarvestMoissonneurType, SourceMoissoneurType, RevisionMoissoneurType, OrganizationMoissoneurType } from "types/moissoneur";
+import {
+  HarvestMoissonneurType,
+  SourceMoissoneurType,
+  RevisionMoissoneurType,
+  OrganizationMoissoneurType,
+} from "types/moissoneur";
 import Link from "next/link";
 
 const limit = 10;
@@ -39,12 +43,15 @@ const MoissoneurSource = ({
   organization,
 }: MoissoneurSourceProps) => {
   const [source, setSource] = useState<SourceMoissoneurType>(initialSource);
-  const [harvests, setHarvests] = useState<HarvestMoissonneurType[]>(initialHarvests);
+  const [harvests, setHarvests] =
+    useState<HarvestMoissonneurType[]>(initialHarvests);
   const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [revisionsIsLoading, setRevisionsIsLoading] = useState<boolean>(false);
   const [revisions, setRevisions] = useState<RevisionMoissoneurType[]>([]);
-  const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState<string | null>(null);
+  const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState<
+    string | null
+  >(null);
   const interval = useRef<ReturnType<typeof setInterval> | undefined>();
 
   async function fetchCurrentRevision(sourceId) {
@@ -56,9 +63,7 @@ const MoissoneurSource = ({
 
   useEffect(() => {
     async function fetchData() {
-      const initialRevisions = await fetchCurrentRevision(
-        source._id
-      );
+      const initialRevisions = await fetchCurrentRevision(source._id);
       setRevisions(initialRevisions);
     }
 
@@ -147,19 +152,27 @@ const MoissoneurSource = ({
           <div className="fr-col-2">
             <div className="fr-container">
               {source._deleted ? (
-                <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
+                <Badge
+                  severity="error"
+                  style={{ marginRight: 2, marginBottom: 2 }}
+                >
                   Supprimé
                 </Badge>
               ) : source.enabled ? (
-                  <Badge severity="success" style={{ marginRight: 2, marginBottom: 2 }}>
-                    Activé
-                  </Badge>
-                ) : (
-                  <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
-                    Désactivé
-                  </Badge>
-                )
-              }
+                <Badge
+                  severity="success"
+                  style={{ marginRight: 2, marginBottom: 2 }}
+                >
+                  Activé
+                </Badge>
+              ) : (
+                <Badge
+                  severity="error"
+                  style={{ marginRight: 2, marginBottom: 2 }}
+                >
+                  Désactivé
+                </Badge>
+              )}
               <div className="fr-toggle">
                 <input
                   type="checkbox"
@@ -190,7 +203,8 @@ const MoissoneurSource = ({
           <Link
             href={{
               pathname: `/moissonneur-bal/organizations/${source.organizationId}`,
-            }}>
+            }}
+          >
             {organization.name}
           </Link>
         ) : (
@@ -202,7 +216,9 @@ const MoissoneurSource = ({
         <h2>Moissonnages</h2>
 
         <Button
-          disabled={source.harvesting.harvestingSince !== null || !source.enabled}
+          disabled={
+            source.harvesting.harvestingSince !== null || !source.enabled
+          }
           onClick={askHarvest}
         >
           {source.harvesting.harvestingSince !== null
@@ -298,13 +314,13 @@ const MoissoneurSource = ({
                 {revisions.map((revision) => (
                   <RevisionItem
                     key={revision._id}
+                    revision={revision}
                     onForcePublishRevision={() =>
                       onForcePublishRevision(revision._id)
                     }
                     isForcePublishRevisionLoading={
                       forcePublishRevisionStatus === "loading"
                     }
-                    {...revision}
                   />
                 ))}
               </tbody>
@@ -318,7 +334,9 @@ const MoissoneurSource = ({
 
 export async function getServerSideProps({ params }) {
   const source: SourceMoissoneurType = await getSource(params.id);
-  const organization: OrganizationMoissoneurType = await getOrganization(source.organizationId);
+  const organization: OrganizationMoissoneurType = await getOrganization(
+    source.organizationId
+  );
   const { results, count } = await getSourceHarvests(params.id, limit);
   return {
     props: {
