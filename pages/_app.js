@@ -5,6 +5,7 @@ import {ToastContainer} from 'react-toastify'
 import {SessionProvider} from 'next-auth/react'
 import {createNextDsfrIntegrationApi} from '@codegouvfr/react-dsfr/next-pagesdir'
 import Main from '../layouts/main'
+import {createGlobalStyle} from 'styled-components'
 
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -15,9 +16,18 @@ const {withDsfr, dsfrDocumentApi} = createNextDsfrIntegrationApi({
 
 export {dsfrDocumentApi}
 
+// Global styles to override DSFR styles
+const GlobalStyle = createGlobalStyle`
+  .fr-container {
+    max-width: unset
+  };
+`;
+
+
 const App = ({Component, pageProps: {session, ...pageProps}}) => (
   <SessionProvider session={session}>
     <React.StrictMode>
+      <GlobalStyle />
       <Main>
         <Component {...pageProps} />
         <ToastContainer />
