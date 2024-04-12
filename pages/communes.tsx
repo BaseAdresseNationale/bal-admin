@@ -17,16 +17,11 @@ const Communes = () => {
   const router = useRouter();
 
   const [value, setValue] = useState(null);
-  const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState<{ label: string; value: string }[]>(
     []
   );
   const fuzzySearch = useFuse(communes, ["nom", "code"], setOptions);
   const debouncedFuzzySearch = useDebounce(fuzzySearch, 500);
-
-  useEffect(() => {
-    debouncedFuzzySearch(inputValue);
-  }, [debouncedFuzzySearch, inputValue]);
 
   useEffect(() => {
     if (value?.value) {
@@ -52,7 +47,7 @@ const Communes = () => {
                     setValue(newValue);
                   }}
                   onInputChange={(newValue) => {
-                    setInputValue(newValue);
+                    debouncedFuzzySearch(newValue);
                   }}
                 />
               )}
