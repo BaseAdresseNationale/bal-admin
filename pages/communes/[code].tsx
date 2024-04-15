@@ -65,32 +65,31 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
   };
 
   const onPageMesAdressesChange = (newPage: number) => {
-    setPageMesAdresses((setPageMesAdresses) => ({
-      ...setPageMesAdresses,
+    const page: any = {
+      ...pageMesAdresses,
       current: newPage,
-    }));
+    };
+    setPageMesAdresses(page);
+    fetchBals(code, page).catch(console.error);
   };
 
   const onPageApiDepotChange = (newPage: number) => {
     setPageApiDepot((pageApiDepot) => ({ ...pageApiDepot, current: newPage }));
   };
 
-  const fetchBals = useCallback(
-    async (commune: string) => {
-      const res = await searchBasesLocales({
-        commune,
-        page: pageMesAdresses.current,
-        limit: pageMesAdresses.limit,
-      });
-      await getBasesLocalesIsHabilitationValid(res.results);
-      setBals(res.results);
-      setPageMesAdresses((pageMesAdresses) => ({
-        ...pageMesAdresses,
-        count: res.count,
-      }));
-    },
-    [pageMesAdresses]
-  );
+  const fetchBals = useCallback(async (commune: string, page: any) => {
+    const res = await searchBasesLocales({
+      commune,
+      page: page.current,
+      limit: page.limit,
+    });
+    await getBasesLocalesIsHabilitationValid(res.results);
+    setBals(res.results);
+    setPageMesAdresses({
+      ...page,
+      count: res.count,
+    });
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,8 +116,8 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
   }, [code]);
 
   useEffect(() => {
-    fetchBals(code).catch(console.error);
-  }, [pageMesAdresses, code, fetchBals]);
+    fetchBals(code, pageMesAdresses).catch(console.error);
+  }, [code]);
 
   const revisionsApiDepot = useMemo(() => {
     const start = (pageApiDepot.current - 1) * pageApiDepot.limit;
@@ -135,7 +134,7 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
   const onDeleteBal = useCallback(async () => {
     try {
       await removeBaseLocale(balToDeleted._id);
-      await fetchBals(code).catch(console.error);
+      await fetchBals(code, pageMesAdresses).catch(console.error);
       setBalToDeleted(null);
       toast("La BAL a bien été archivé", { type: "success" });
     } catch (e: unknown) {
@@ -144,7 +143,7 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
         toast(e.message, { type: "error" });
       }
     }
-  }, [balToDeleted, code, fetchBals, setBalToDeleted]);
+  }, [balToDeleted, code, fetchBals, setBalToDeleted, pageMesAdresses]);
 
   const actionsBals = {
     delete(item: BaseLocaleType) {
