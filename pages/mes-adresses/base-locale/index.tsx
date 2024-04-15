@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import type { BaseLocaleType } from "types/mes-adresses";
@@ -14,6 +15,11 @@ import { getBaseLocaleIsHabilitationValid } from "@/lib/api-mes-adresses";
 import CopyToClipBoard from "@/components/copy-to-clipboard";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { validateHabilitation } from "@/lib/api-depot";
+
+const deleteEventModale = createModal({
+  id: "delete-event-modale",
+  isOpenedByDefault: false,
+});
 
 const NEXT_PUBLIC_MES_ADRESSES_URL =
   process.env.NEXT_PUBLIC_MES_ADRESSES_URL ||
@@ -38,7 +44,7 @@ const BaseLocale = () => {
       habilitationValid
     );
     setComputedStatus(status);
-    setisHabilitationValid(habilitationValid)
+    setisHabilitationValid(habilitationValid);
   }
 
   useEffect(() => {
@@ -58,6 +64,7 @@ const BaseLocale = () => {
     );
     await validateHabilitation(habilitation._id);
     await calcStatus(baseLocale);
+    deleteEventModale.close();
   };
 
   return baseLocale ? (
@@ -101,17 +108,36 @@ const BaseLocale = () => {
               )}
             </ul>
             <div className="fr-my-4v">
-              <Badge severity={computedStatus?.intent} noIcon>
+              <Badge
+                severity={computedStatus?.intent}
+                noIcon
+                style={{ marginRight: 5 }}
+              >
                 {computedStatus?.label}
               </Badge>
+              {isHabilitationValid ? (
+                <Badge severity="success" noIcon>
+                  Habilitation Valide
+                </Badge>
+              ) : (
+                <>
+                  <Badge severity="warning" noIcon>
+                    Pas Habilitaté
+                  </Badge>
+                </>
+              )}
             </div>
 
             <div className="fr-my-4v">
-              {isHabilitationValid ?
-                <Badge severity='success' noIcon>Habilitation Valide</Badge>
-                :
-                <Button onClick={createBalHabilitation}>Habiliter</Button>
-              }
+              {!isHabilitationValid && (
+                <Button
+                  onClick={() => {
+                    deleteEventModale.open();
+                  }}
+                >
+                  Habiliter
+                </Button>
+              )}
             </div>
 
             <ul className="fr-tags-group">
@@ -138,10 +164,6 @@ const BaseLocale = () => {
                 </p>
               </li>
             </ul>
-
-
-            
-            
           </div>
 
           <div className="fr-col-2">
@@ -162,6 +184,21 @@ const BaseLocale = () => {
           </div>
         </div>
       </div>
+      <deleteEventModale.Component title="Suppression">
+        <p>Êtes-vous sûr de vouloir habilité cette BAL?</p>
+        <div>
+          <Button onClick={createBalHabilitation}>Habiliter</Button>
+          <Button
+            style={{ marginLeft: "1rem" }}
+            priority="tertiary"
+            onClick={() => {
+              deleteEventModale.close();
+            }}
+          >
+            Annuler
+          </Button>
+        </div>
+      </deleteEventModale.Component>
     </div>
   ) : null;
 };
