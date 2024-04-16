@@ -122,7 +122,7 @@ const BaseLocale = () => {
               ) : (
                 <>
                   <Badge severity="warning" noIcon>
-                    Pas Habilitaté
+                    Pas d&apos;habilitation
                   </Badge>
                 </>
               )}
