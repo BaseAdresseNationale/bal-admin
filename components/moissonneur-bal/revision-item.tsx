@@ -8,12 +8,13 @@ import { getCommune } from "@/lib/cog";
 import { RevisionPublication } from "@/components/revision-publication";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import {
-  RevisionMoissoneurType,
+  AggregateRevisionMoissoneurType,
   RevisionStatusMoissoneurEnum,
 } from "types/moissoneur";
+import { formatDate } from "@/lib/util/date";
 
 interface RevisionItemProps {
-  revision: RevisionMoissoneurType;
+  revision: AggregateRevisionMoissoneurType;
   onForcePublishRevision;
   isForcePublishRevisionLoading;
 }
@@ -41,7 +42,7 @@ const RevisionItem = ({
   return (
     <tr>
       <td className="fr-col fr-my-1v">
-        <MongoId id={revision._id} />
+        <MongoId id={revision.id} />
       </td>
       <td className="fr-col fr-my-1v">
         <a>
@@ -56,10 +57,11 @@ const RevisionItem = ({
         </a>
       </td>
       <td className="fr-col fr-my-1v">
-        <a>{revision.nbRows}</a>
+        {revision._created ? formatDate(revision._created) : "inconnu"}
       </td>
+
       <td className="fr-col fr-my-1v">
-        <a>{revision.nbRowsWithErrors}</a>
+        {revision.nbRows} / {revision.nbRowsWithErrors}
       </td>
       <td className="fr-col fr-my-1v">
         <UpdateStatusBadge
