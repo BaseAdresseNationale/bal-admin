@@ -6,12 +6,12 @@ export type PageHarvests = {
   limit: number;
   count: number;
   results: HarvestMoissonneurType[];
-}
+};
 
 export enum RevisionStatusMoissoneurEnum {
   PROVIDED_BY_OTHER_CLIENT = "provided-by-other-client",
   PROVIDED_BY_OTHER_SOURCE = "provided-by-other-source",
-  NOT_CONFIGURED = 'not-configured',
+  NOT_CONFIGURED = "not-configured",
   PUBLISHED = "published",
   ERROR = "error",
 }
@@ -79,7 +79,13 @@ export type RevisionMoissoneurType = {
   uniqueErrors?: string[];
   publication?: PublicationMoissoneurType;
   current?: boolean;
+  _created?: Date;
 };
+
+export interface AggregateRevisionMoissoneurType
+  extends RevisionMoissoneurType {
+  id: string;
+}
 
 export interface OrganizationMoissoneurType {
   _id: string;

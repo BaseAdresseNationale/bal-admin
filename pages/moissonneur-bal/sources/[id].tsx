@@ -10,9 +10,9 @@ import {
   udpateSource,
   getSourceHarvests,
   harvestSource,
-  getSourceCurrentRevisions,
   publishRevision,
   getOrganization,
+  getSourceLastUpdatedRevisions,
 } from "@/lib/api-moissonneur-bal";
 
 import Loader from "@/components/loader";
@@ -24,6 +24,7 @@ import {
   SourceMoissoneurType,
   RevisionMoissoneurType,
   OrganizationMoissoneurType,
+  AggregateRevisionMoissoneurType,
 } from "types/moissoneur";
 import Link from "next/link";
 
@@ -48,7 +49,9 @@ const MoissoneurSource = ({
   const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [revisionsIsLoading, setRevisionsIsLoading] = useState<boolean>(false);
-  const [revisions, setRevisions] = useState<RevisionMoissoneurType[]>([]);
+  const [revisions, setRevisions] = useState<AggregateRevisionMoissoneurType[]>(
+    []
+  );
   const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState<
     string | null
   >(null);
@@ -56,7 +59,8 @@ const MoissoneurSource = ({
 
   async function fetchCurrentRevision(sourceId) {
     setRevisionsIsLoading(true);
-    const revisions = await getSourceCurrentRevisions(sourceId);
+    const revisions: AggregateRevisionMoissoneurType[] =
+      await getSourceLastUpdatedRevisions(sourceId);
     setRevisionsIsLoading(false);
     return revisions;
   }
@@ -301,8 +305,8 @@ const MoissoneurSource = ({
                 <tr>
                   <th scope="col">Id</th>
                   <th scope="col">Commune</th>
-                  <th scope="col">Nombre de ligne</th>
-                  <th scope="col">Nombre de ligne en erreur</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Nombre de ligne / erreur</th>
                   <th scope="col">Status</th>
                   <th scope="col">Publication</th>
                   <th scope="col">Fichier</th>
