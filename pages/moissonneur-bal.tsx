@@ -40,17 +40,17 @@ const MoissoneurBAL = ({
         selectedTabId={selectedTabId}
         onTabChange={(e) => setSelectedTabId(e)}
         tabs={[
-          { tabId: "sources", label: "Sources" },
           { tabId: "organizations", label: "Organisations" },
+          { tabId: "sources", label: "Sources" },
         ]}
       >
-        {selectedTabId === "sources" && <MoissoneurSources sources={sources} />}
         {selectedTabId === "organizations" && (
           <MoissoneurOrganizations
             organizations={organizations}
             partenaires={partenaires}
           />
         )}
+        {selectedTabId === "sources" && <MoissoneurSources sources={sources} />}
       </Tabs>
     </div>
   );
@@ -64,7 +64,12 @@ export async function getServerSideProps({ query }) {
     await getPartenairesDeLaCharte();
 
   return {
-    props: { sources, organizations, partenaires, page: page || "sources" },
+    props: {
+      sources,
+      organizations,
+      partenaires,
+      page: page || "organizations",
+    },
   };
 }
 

@@ -150,21 +150,6 @@ export async function getSourceHarvests(
   return result.json();
 }
 
-export async function getSourceCurrentRevisions(
-  id: string
-): Promise<RevisionMoissoneurType[]> {
-  const result = await fetch(
-    `${NEXT_PUBLIC_API_MOISSONEUR_BAL}/sources/${id}/current-revisions`
-  );
-
-  if (!result.ok) {
-    const error = await result.json();
-    throw new Error(error.message);
-  }
-
-  return result.json();
-}
-
 export async function getSourceLastUpdatedRevisions(
   id: string
 ): Promise<AggregateRevisionMoissoneurType[]> {
