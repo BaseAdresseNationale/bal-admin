@@ -57,6 +57,11 @@ export type SourceMoissoneurType = {
   _deleted: boolean;
 };
 
+export interface ExtendedSourceMoissoneurType extends SourceMoissoneurType {
+  harvestError?: boolean;
+  nbRevisionError?: number;
+}
+
 export type PublicationMoissoneurType = {
   status: RevisionStatusMoissoneurEnum;
   publishedRevisionId?: string | undefined;
@@ -81,11 +86,6 @@ export type RevisionMoissoneurType = {
   current?: boolean;
   _created?: Date;
 };
-
-export interface AggregateRevisionMoissoneurType
-  extends RevisionMoissoneurType {
-  id: string;
-}
 
 export interface OrganizationMoissoneurType {
   _id: string;

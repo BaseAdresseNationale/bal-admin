@@ -4,7 +4,7 @@ import {
   PageHarvests,
   SourceMoissoneurType,
   RevisionMoissoneurType,
-  AggregateRevisionMoissoneurType,
+  ExtendedSourceMoissoneurType,
 } from "types/moissoneur";
 
 const NEXT_PUBLIC_API_MOISSONEUR_BAL =
@@ -28,7 +28,7 @@ export async function getFile(id: string): Promise<any> {
   return result;
 }
 
-export async function getSources(): Promise<SourceMoissoneurType[]> {
+export async function getSources(): Promise<ExtendedSourceMoissoneurType[]> {
   const result = await fetch(`${NEXT_PUBLIC_API_MOISSONEUR_BAL}/sources`);
 
   if (!result.ok) {
@@ -152,7 +152,7 @@ export async function getSourceHarvests(
 
 export async function getSourceLastUpdatedRevisions(
   id: string
-): Promise<AggregateRevisionMoissoneurType[]> {
+): Promise<RevisionMoissoneurType[]> {
   const result = await fetch(
     `${NEXT_PUBLIC_API_MOISSONEUR_BAL}/sources/${id}/last-updated-revisions`
   );
