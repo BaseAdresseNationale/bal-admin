@@ -1,22 +1,28 @@
 import MoissoneurSourceItem from "@/components/moissonneur-bal/sources/moissonneur-source-item";
-import { SourceMoissoneurType } from "types/moissoneur";
+import { ExtendedSourceMoissoneurType } from "types/moissoneur";
 import { useState } from "react";
 
 type MoissoneurSourcesProps = {
-  sources: SourceMoissoneurType[];
+  sources: ExtendedSourceMoissoneurType[];
 };
 
 const MoissoneurSources = ({ sources }: MoissoneurSourcesProps) => {
-  const getFilteredSource = (showDeleted: boolean): SourceMoissoneurType[] => {
+  const getFilteredSource = (
+    showDeleted: boolean
+  ): ExtendedSourceMoissoneurType[] => {
+    const resSources = sources.sort(({ harvestError, nbRevisionError }) =>
+      harvestError || nbRevisionError > 0 ? -1 : 1
+    );
+
     if (showDeleted) {
-      return sources;
+      return resSources;
     }
-    return sources.filter((s) => !s._deleted);
+    return resSources.filter((s) => !s._deleted);
   };
 
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
   const [sourcesFiltered, setSourcesFiltered] = useState<
-    SourceMoissoneurType[]
+    ExtendedSourceMoissoneurType[]
   >(getFilteredSource(showDeleted));
 
   const toggleShowDelete = () => {
@@ -49,6 +55,8 @@ const MoissoneurSources = ({ sources }: MoissoneurSourcesProps) => {
               <th scope="col">Title</th>
               <th scope="col">Actif</th>
               <th scope="col">Date de mise à jour</th>
+              <th scope="col">Erreur Moissonnage</th>
+              <th scope="col">Erreur Revisions</th>
               <th scope="col" />
             </tr>
           </thead>

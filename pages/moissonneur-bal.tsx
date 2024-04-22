@@ -1,7 +1,7 @@
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import {
+  ExtendedSourceMoissoneurType,
   OrganizationMoissoneurType,
-  SourceMoissoneurType,
 } from "types/moissoneur";
 import { getOrganizations, getSources } from "@/lib/api-moissonneur-bal";
 import MoissoneurSources from "@/components/moissonneur-bal/sources/index";
@@ -13,7 +13,7 @@ import { getPartenairesDeLaCharte } from "@/lib/partenaires-de-la-charte";
 
 type MoissoneurBALProps = {
   page: string;
-  sources: SourceMoissoneurType[];
+  sources: ExtendedSourceMoissoneurType[];
   organizations: OrganizationMoissoneurType[];
   partenaires: PartenaireDeLaChartType[];
 };
@@ -58,7 +58,7 @@ const MoissoneurBAL = ({
 
 export async function getServerSideProps({ query }) {
   const { page } = query;
-  const sources: SourceMoissoneurType[] = await getSources();
+  const sources: ExtendedSourceMoissoneurType[] = await getSources();
   const organizations: OrganizationMoissoneurType[] = await getOrganizations();
   const partenaires: PartenaireDeLaChartType[] =
     await getPartenairesDeLaCharte();

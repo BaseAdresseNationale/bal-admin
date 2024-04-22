@@ -24,7 +24,6 @@ import {
   SourceMoissoneurType,
   RevisionMoissoneurType,
   OrganizationMoissoneurType,
-  AggregateRevisionMoissoneurType,
 } from "types/moissoneur";
 import Link from "next/link";
 
@@ -49,9 +48,7 @@ const MoissoneurSource = ({
   const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [revisionsIsLoading, setRevisionsIsLoading] = useState<boolean>(false);
-  const [revisions, setRevisions] = useState<AggregateRevisionMoissoneurType[]>(
-    []
-  );
+  const [revisions, setRevisions] = useState<RevisionMoissoneurType[]>([]);
   const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState<
     string | null
   >(null);
@@ -59,7 +56,7 @@ const MoissoneurSource = ({
 
   async function fetchCurrentRevision(sourceId) {
     setRevisionsIsLoading(true);
-    const revisions: AggregateRevisionMoissoneurType[] =
+    const revisions: RevisionMoissoneurType[] =
       await getSourceLastUpdatedRevisions(sourceId);
     setRevisionsIsLoading(false);
     return revisions;
