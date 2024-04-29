@@ -12,7 +12,7 @@ interface ClientItemProps {
   client: ClientApiDepotType;
   mandataire: MandataireApiDepotType;
   chefDeFile: ChefDeFileApiDepotType;
-  partenaire: PartenaireDeLaChartType;
+  partenaires: PartenaireDeLaChartType[];
   isDemo: boolean;
 }
 
@@ -20,7 +20,7 @@ const ClientItem = ({
   client,
   mandataire,
   chefDeFile,
-  partenaire,
+  partenaires,
   isDemo,
 }: ClientItemProps) => (
   <tr>
@@ -47,16 +47,20 @@ const ClientItem = ({
       />
     </td>
     <td className="fr-col fr-my-1v">
-      {partenaire ? (
-        <Link
-          legacyBehavior
-          passHref
-          href={{
-            pathname: `/partenaires-de-la-charte/${partenaire._id}`,
-          }}
-        >
-          {partenaire.name}
-        </Link>
+      {partenaires && partenaires.length > 0 ? (
+        partenaires.map((partenaire) => (
+          <div key={partenaire._id}>
+            <Link
+              legacyBehavior
+              passHref
+              href={{
+                pathname: `/partenaires-de-la-charte/${partenaire._id}`,
+              }}
+            >
+              {partenaire.name}
+            </Link>
+          </div>
+        ))
       ) : (
         <Badge severity="warning">Non partenaire</Badge>
       )}
