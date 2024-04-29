@@ -21,7 +21,6 @@ import { MultiSelectInput } from "../multi-select-input";
 import type { CommuneType } from "../commune-input";
 import { CommuneInput } from "../commune-input";
 import SelectInput from "@/components/select-input";
-import Tooltip from "@/components/tooltip";
 import { capitalize } from "@/lib/util/string";
 import AutocompleteInput from "../autocomplete-input";
 import { getClients } from "@/lib/api-depot";
@@ -102,7 +101,7 @@ const newPartenaireForm = {
   infos: "",
   perimeter: "",
   dataGouvOrganizationId: "",
-  apiDepotClientId: "",
+  apiDepotClientId: [],
 };
 
 export const PartenaireForm = ({
@@ -127,16 +126,6 @@ export const PartenaireForm = ({
     { value: string; label: string }[]
   >([]);
   const isCandidate = data && !data.signatureDate;
-
-  const clientApiDepotLabel = useMemo(() => {
-    if (optionClients.length > 0 && formData.apiDepotClientId) {
-      return (
-        optionClients.find(({ value }) => value === formData.apiDepotClientId)
-          ?.label || formData.apiDepotClientId
-      );
-    }
-    return formData.apiDepotClientId;
-  }, [optionClients, formData.apiDepotClientId]);
 
   const dataGouvOrganizationLabel = useMemo(() => {
     if (optionOrganizations.length > 0 && formData.dataGouvOrganizationId) {
@@ -483,12 +472,18 @@ export const PartenaireForm = ({
             />
           </div>
           <div className="fr-col-6">
-            <AutocompleteInput
-              id={uniqueId()}
+
+            <MultiSelectInput
               label="Client api depot ID"
+              value={formData.apiDepotClientId}
               options={optionClients}
-              value={clientApiDepotLabel}
-              onChange={handleEdit("apiDepotClientId")}
+              placeholder="Sélectionnez un ou plusieurs client de l'api-depot"
+              onChange={(apiDepotClientId) => {
+                setFormData((state) => ({
+                  ...state,
+                  apiDepotClientId,
+                }));
+              }}
             />
           </div>
         </div>

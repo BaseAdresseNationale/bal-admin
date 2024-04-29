@@ -92,8 +92,9 @@ const ClientsList = ({ isDemo = false }: ClientsListProps) => {
                 chefDeFile={data.chefsDeFile.find(
                   ({ _id }) => _id === client.chefDeFile
                 )}
-                partenaire={data.partenaires.find(
-                  ({ apiDepotClientId }) => apiDepotClientId === client._id
+                partenaires={data.partenaires.filter(
+                  ({ apiDepotClientId }) =>
+                    apiDepotClientId?.includes(client._id)
                 )}
                 isDemo={isDemo}
               />

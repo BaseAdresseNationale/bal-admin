@@ -12,7 +12,7 @@ const createBaseSchema = {
   codeDepartement: { isRequired: false, type: "array" },
   services: { isRequired: false, type: "array" },
   dataGouvOrganizationId: { isRequired: false, type: "string" },
-  apiDepotClientId: { isRequired: false, type: "string" },
+  apiDepotClientId: { isRequired: false, type: "array" },
 };
 
 const createCommuneSchema = {

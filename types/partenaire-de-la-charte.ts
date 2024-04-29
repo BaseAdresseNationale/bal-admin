@@ -35,7 +35,7 @@ export type PartenaireDeLaChartType = {
   charteURL?: string;
   signatureDate?: string;
   dataGouvOrganizationId?: string;
-  apiDepotClientId: string;
+  apiDepotClientId: string[];
 };
 
 export type PartenaireDeLaCharteCommuneType = PartenaireDeLaChartType & {

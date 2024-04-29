@@ -55,27 +55,14 @@ export const PartenaireItem = ({
     </td>
     <td className="fr-col fr-my-1v">
       {dataGouvOrganizationId && (
-        <Link
-          legacyBehavior
-          passHref
-          href={{
-            pathname: `/moissonneur-bal/organizations/${dataGouvOrganizationId}`,
-          }}
-        >
-          <Button priority="secondary">Moissonneur</Button>
-        </Link>
+        <Badge severity="info" noIcon>
+          Organisation Moissonnée
+        </Badge>
       )}
       {apiDepotClientId && (
-        <Link
-          legacyBehavior
-          passHref
-          href={{
-            pathname: `/api-depot/client`,
-            query: { clientId: apiDepotClientId },
-          }}
-        >
-          <Button priority="secondary">Api depot</Button>
-        </Link>
+        <Badge severity="new" noIcon>
+          {apiDepotClientId.length} Client(s) api-depot
+        </Badge>
       )}
     </td>
     <td className="fr-col fr-my-1v">
