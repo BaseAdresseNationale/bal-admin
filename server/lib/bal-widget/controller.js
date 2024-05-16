@@ -39,4 +39,14 @@ BALWidgetRoutes.post("/send-mail", async (req, res) => {
   }
 });
 
+BALWidgetRoutes.post("/send-mail-to-commune", async (req, res) => {
+  try {
+    await MailerService.sendSignalementToCommune(req.body);
+    res.json(true);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = BALWidgetRoutes;

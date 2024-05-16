@@ -9,6 +9,29 @@ const mailSchema = {
   captchaToken: { isRequired: true, type: "string" },
 };
 
+const signalementOtherMailSchema = {
+  ...mailSchema,
+  city: { isRequired: true, type: "string" },
+}
+
+const signalementMissingNumberMailSchema = {
+  ...mailSchema,
+  city: { isRequired: true, type: "string" },
+  number: { isRequired: true, type: "string" },
+  street: { isRequired: true, type: "string" },
+  message: { isRequired: false, type: "string" },
+}
+
+const signalementMissingStreetMailSchema = {
+  ...mailSchema,
+  city: { isRequired: true, type: "string" },
+  street: { isRequired: true, type: "string" },
+  message: { isRequired: false, type: "string" },
+}
+
 module.exports = {
   mailSchema,
+  signalementOtherMailSchema,
+  signalementMissingNumberMailSchema,
+  signalementMissingStreetMailSchema
 };

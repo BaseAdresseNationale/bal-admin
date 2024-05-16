@@ -1,11 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import { BALWidgetConfig } from "types/bal-widget";
+import styled from "styled-components";
 
 const BAL_WIDGET_URL = process.env.NEXT_PUBLIC_BAL_WIDGET_URL;
 
 interface BALWidgetIFrameProps {
   config: BALWidgetConfig;
 }
+
+const StyledIFrame = styled.iframe<{ $isOpen: boolean }>`
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 999;
+  ${({ $isOpen }) =>
+    $isOpen ? "height: 600px; width: 450px;" : "height: 60px; width: 60px;"}
+
+  @media screen and (max-width: 450px) {
+    bottom: 10px;
+    right: 10px;
+    ${({ $isOpen }) => $isOpen && "width: calc(100% - 20px);"}
+  }
+`;
 
 function BALWidgetIFrame({ config }: BALWidgetIFrameProps) {
   const balWidgetRef = useRef<HTMLIFrameElement>(null);
@@ -52,17 +68,10 @@ function BALWidgetIFrame({ config }: BALWidgetIFrameProps) {
   }, [isBalWidgetOpen]);
 
   return (
-    <iframe
+    <StyledIFrame
       ref={balWidgetRef}
       src={BAL_WIDGET_URL}
-      width={isBalWidgetOpen ? 450 : 60}
-      height={isBalWidgetOpen ? 800 : 60}
-      style={{
-        position: "fixed",
-        bottom: 40,
-        right: 40,
-        zIndex: 999,
-      }}
+      $isOpen={isBalWidgetOpen}
     />
   );
 }
