@@ -1,29 +1,16 @@
 import Fuse from "fuse.js";
 import { useCallback } from "react";
 
-export const useFuse = (
-  data: any[],
-  keys: string[],
-  setter: (values: { label: string; value: string }[]) => void
-) => {
+export const useFuse = <T>(data: T[], options: Fuse.IFuseOptions<T>) => {
   return useCallback(
     (search) => {
-      const fuse = new Fuse(data, {
-        keys,
-        threshold: 0.4,
-      });
+      const fuse = new Fuse(data, options);
       if (search.length <= 2) {
-        setter([]);
+        return [];
       } else if (search.length > 2) {
-        const results = fuse.search(search).slice(0, 10);
-        setter(
-          results.map(({ item }) => ({
-            label: `${item.nom} (${item.code})`,
-            value: item.code,
-          }))
-        );
+        return fuse.search(search).slice(0, 10);
       }
     },
-    [data, keys, setter]
+    [data, options]
   );
 };
