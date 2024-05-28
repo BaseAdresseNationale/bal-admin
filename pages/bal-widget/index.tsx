@@ -21,13 +21,17 @@ const defaultConfig: BALWidgetConfig = {
     outdatedApiDepotClients: [],
     outdatedHarvestSources: [],
   },
-  gitbook: {
+  gitbookCommunes: {
     welcomeBlockTitle: "Ces articles pourraient vous aider",
     topArticles: [],
   },
   contactUs: {
     welcomeBlockTitle: "Nous contacter",
     subjects: [],
+  },
+  gitbookParticuliers: {
+    welcomeBlockTitle: "Ces articles pourraient vous aider",
+    topArticles: [],
   },
 };
 

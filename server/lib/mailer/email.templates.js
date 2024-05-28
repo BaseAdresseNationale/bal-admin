@@ -1,4 +1,5 @@
-const sanitizeHtml = require('sanitize-html');
+const sanitizeHtml = require("sanitize-html");
+const { getMailToCommuneTemplate } = require("./mail-to-communes-template");
 
 module.exports = {
   "candidature-partenaire-de-la-charte": {
@@ -14,7 +15,25 @@ module.exports = {
       to: "adresse@data.gouv.fr",
       subject: `BAL Widget - ${subject}`,
       text: `Bonjour,\n\nVous avez reçu un nouveau message via le formulaire de contact de BAL Widget.\n\nNom: ${lastName}\nPrénom: ${firstName}\nEmail: ${email}\n\nMessage:\n${message}\n\nBonne journée,\n\nL’équipe BAL`,
-      html: sanitizeHtml(`<p>Bonjour,</p><p>Vous avez reçu un nouveau message via le formulaire de contact de BAL Widget.</p>${lastName ? `<p>Nom: <b>${lastName}</b></p>` : ''}${firstName ? `<p>Prénom: <b>${firstName}</b></p>` : ''}<p>Email: <b>${email}</b></p><p>Message:</p><p><em>${message}</em></p><p>Bonne journée,</p><p>L’équipe BAL</p>`)
+      html: sanitizeHtml(
+        `<p>Bonjour,</p><p>Vous avez reçu un nouveau message via le formulaire de contact de BAL Widget.</p>${
+          lastName ? `<p>Nom: <b>${lastName}</b></p>` : ""
+        }${
+          firstName ? `<p>Prénom: <b>${firstName}</b></p>` : ""
+        }<p>Email: <b>${email}</b></p><p>Message:</p><p><em>${message}</em></p><p>Bonne journée,</p><p>L’équipe BAL</p>`
+      ),
+    };
+  },
+  signalementToCommune: (
+    { firstName, lastName, email, message, subject, street, number },
+    to,
+    publication
+  ) => {
+    return {
+      from: process.env.SMTP_FROM || "adresse@data.gouv.fr",
+      to,
+      subject: `Signalement d'un problème d'adressage - ${subject}`,
+      html: getMailToCommuneTemplate({ firstName: sanitizeHtml(firstName), lastName: sanitizeHtml(lastName), email: sanitizeHtml(email), message: sanitizeHtml(message), subject, street: sanitizeHtml(street), number: sanitizeHtml(number) }, publication),
     };
   },
 };
