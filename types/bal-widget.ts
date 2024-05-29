@@ -14,12 +14,16 @@ export interface BALWidgetConfig {
     outdatedApiDepotClients: string[];
     outdatedHarvestSources: string[];
   };
-  gitbook: {
-    welcomeBlockTitle: string;
-    topArticles: BALWidgetLink[];
-  };
   contactUs: {
     welcomeBlockTitle: string;
     subjects: string[];
+  };
+  gitbookCommunes: {
+    welcomeBlockTitle: string;
+    topArticles: BALWidgetLink[];
+  };
+  gitbookParticuliers: {
+    welcomeBlockTitle: string;
+    topArticles: BALWidgetLink[];
   };
 }

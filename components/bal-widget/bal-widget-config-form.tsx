@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import styled from "styled-components";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -31,6 +32,7 @@ const StyledForm = styled.form`
   }
 
   .form-controls {
+    margin-top: 2rem;
     display: flex;
     align-items: center;
 
@@ -46,6 +48,8 @@ export const BALWidgetConfigForm = ({
   formData,
   setFormData,
 }: BALWidgetConfigFormProps) => {
+  const tabRef = useRef(null);
+  const [selectedTabId, setSelectedTabId] = useState("communes");
   const [apiDepotClients, setApiDepotClients] = useState<ClientApiDepotType[]>(
     []
   );
@@ -75,6 +79,16 @@ export const BALWidgetConfigForm = ({
 
     fetchData();
   }, []);
+
+  // Add type="button" to all tabs buttons to avoid form submission
+  useEffect(() => {
+    if (tabRef.current) {
+      const tabBtns = tabRef.current.querySelectorAll(".fr-tabs__tab");
+      tabBtns.forEach((btn) => {
+        btn.setAttribute("type", "button");
+      });
+    }
+  }, [tabRef]);
 
   const handleEdit =
     (section: keyof BALWidgetConfig, property: string) =>
@@ -111,14 +125,14 @@ export const BALWidgetConfigForm = ({
 
   return (
     <StyledForm onSubmit={handleSubmit} className="fr-my-4w">
-      <h3>Configuration du widget</h3>
+      <h3>Configuration de BAL Widget</h3>
       <section>
         <h4>Globale</h4>
         <Input
           label="Titre du widget"
           nativeInputProps={{
             required: true,
-            value: formData.global.title,
+            value: formData.global?.title || "",
             onChange: handleEdit("global", "title"),
           }}
         />
@@ -128,7 +142,7 @@ export const BALWidgetConfigForm = ({
             {
               label: "Cacher le widget",
               nativeInputProps: {
-                checked: formData.global.hideWidget,
+                checked: formData.global?.hideWidget || false,
                 onChange: handleToggle("global", "hideWidget"),
               },
             },
@@ -136,101 +150,154 @@ export const BALWidgetConfigForm = ({
         />
         <MultiStringInput
           label="Afficher le widget uniquement sur les pages :"
-          value={formData.global.showOnPages}
+          value={formData.global?.showOnPages || []}
           onChange={(value) =>
             handleEdit("global", "showOnPages")({ target: { value } } as any)
           }
           placeholder="Path de la page autorisée (/programme-bal)"
         />
       </section>
-      <section>
-        <h4>Aide aux communes</h4>
-        <Input
-          label="Titre sur la page d'accueil"
-          nativeInputProps={{
-            required: true,
-            value: formData.communes.welcomeBlockTitle,
-            onChange: handleEdit("communes", "welcomeBlockTitle"),
-          }}
-        />
-        <MultiSelectInput
-          label="Clients API Dépôt caducs"
-          value={formData.communes.outdatedApiDepotClients}
-          options={apiDepotClients.map((client) => ({
-            value: client._id,
-            label: client.nom,
-          }))}
-          placeholder="Sélectionner les clients API Dépôt caducs"
-          onChange={(value) =>
-            setFormData((state) => ({
-              ...state,
-              communes: {
-                ...state.communes,
-                outdatedApiDepotClients: value,
-              },
-            }))
-          }
-        />
-        <MultiSelectInput
-          label="Sources moissonnées caduques"
-          value={formData.communes.outdatedHarvestSources}
-          options={harvestSources.map((source) => ({
-            value: source._id,
-            label: source.title,
-          }))}
-          placeholder="Sélectionner les sources moissonnées caduques"
-          onChange={(value) =>
-            setFormData((state) => ({
-              ...state,
-              communes: {
-                ...state.communes,
-                outdatedHarvestSources: value,
-              },
-            }))
-          }
-        />
-      </section>
-      <section>
-        <h4>Gitbook</h4>
-        <Input
-          label="Titre sur la page d'accueil"
-          nativeInputProps={{
-            required: true,
-            value: formData.gitbook.welcomeBlockTitle,
-            onChange: handleEdit("gitbook", "welcomeBlockTitle"),
-          }}
-        />
-        <MultiLinkInput
-          label="Articles populaires :"
-          placeholders={[
-            "Comment puis-je obtenir une adresse ?",
-            "Path Gitbook de l'article (/utiliser-la-ban/mon-article)",
-          ]}
-          value={formData.gitbook.topArticles}
-          onChange={(value) =>
-            handleEdit("gitbook", "topArticles")({ target: { value } } as any)
-          }
-        />
-      </section>
-      <section>
-        <h4>Formulaire de contact</h4>
-        <Input
-          label="Titre sur la page d'accueil"
-          nativeInputProps={{
-            required: true,
-            value: formData.contactUs.welcomeBlockTitle,
-            onChange: handleEdit("contactUs", "welcomeBlockTitle"),
-          }}
-        />
-        <MultiStringInput
-          label="Sujets du formulaire de contact :"
-          placeholder="Je souhaite publier une BAL"
-          value={formData.contactUs.subjects}
-          onChange={(value) =>
-            handleEdit("contactUs", "subjects")({ target: { value } } as any)
-          }
-        />
-      </section>
+      <Tabs
+        ref={tabRef}
+        selectedTabId={selectedTabId}
+        onTabChange={(e) => setSelectedTabId(e)}
+        tabs={[
+          { tabId: "communes", label: "Communes" },
+          { tabId: "particuliers", label: "Particuliers" },
+        ]}
+      >
+        {selectedTabId === "communes" && (
+          <>
+            <section>
+              <h4>Aide aux communes</h4>
+              <Input
+                label="Titre sur la page d'accueil"
+                nativeInputProps={{
+                  required: true,
+                  value: formData.communes?.welcomeBlockTitle || "",
+                  onChange: handleEdit("communes", "welcomeBlockTitle"),
+                }}
+              />
+              <MultiSelectInput
+                label="Clients API Dépôt caducs"
+                value={formData.communes?.outdatedApiDepotClients || []}
+                options={apiDepotClients.map((client) => ({
+                  value: client._id,
+                  label: client.nom,
+                }))}
+                placeholder="Sélectionner les clients API Dépôt caducs"
+                onChange={(value) =>
+                  setFormData((state) => ({
+                    ...state,
+                    communes: {
+                      ...state.communes,
+                      outdatedApiDepotClients: value,
+                    },
+                  }))
+                }
+              />
+              <MultiSelectInput
+                label="Sources moissonnées caduques"
+                value={formData.communes?.outdatedHarvestSources || []}
+                options={harvestSources.map((source) => ({
+                  value: source._id,
+                  label: source.title,
+                }))}
+                placeholder="Sélectionner les sources moissonnées caduques"
+                onChange={(value) =>
+                  setFormData((state) => ({
+                    ...state,
+                    communes: {
+                      ...state.communes,
+                      outdatedHarvestSources: value,
+                    },
+                  }))
+                }
+              />
+            </section>
+            <section>
+              <h4>Gitbook pour les communes</h4>
+              <Input
+                label="Titre sur la page d'accueil"
+                nativeInputProps={{
+                  required: true,
+                  value: formData.gitbookCommunes?.welcomeBlockTitle || "",
+                  onChange: handleEdit("gitbookCommunes", "welcomeBlockTitle"),
+                }}
+              />
+              <MultiLinkInput
+                label="Articles populaires :"
+                placeholders={[
+                  "Comment puis-je obtenir une adresse ?",
+                  "Path Gitbook de l'article (/utiliser-la-ban/mon-article)",
+                ]}
+                value={formData.gitbookCommunes?.topArticles || []}
+                onChange={(value) =>
+                  handleEdit(
+                    "gitbookCommunes",
+                    "topArticles"
+                  )({ target: { value } } as any)
+                }
+              />
+            </section>
+            <section>
+              <h4>Formulaire de contact</h4>
+              <Input
+                label="Titre sur la page d'accueil"
+                nativeInputProps={{
+                  required: true,
+                  value: formData.contactUs?.welcomeBlockTitle || "",
+                  onChange: handleEdit("contactUs", "welcomeBlockTitle"),
+                }}
+              />
+              <MultiStringInput
+                label="Sujets du formulaire de contact :"
+                placeholder="Je souhaite publier une BAL"
+                value={formData.contactUs?.subjects || []}
+                onChange={(value) =>
+                  handleEdit(
+                    "contactUs",
+                    "subjects"
+                  )({ target: { value } } as any)
+                }
+              />
+            </section>
+          </>
+        )}
+        {selectedTabId === "particuliers" && (
+          <>
+            <section>
+              <h4>Gitbook pour les particuliers</h4>
+              <Input
+                label="Titre sur la page d'accueil"
+                nativeInputProps={{
+                  required: true,
+                  value: formData.gitbookParticuliers?.welcomeBlockTitle || "",
+                  onChange: handleEdit(
+                    "gitbookParticuliers",
+                    "welcomeBlockTitle"
+                  ),
+                }}
+              />
+              <MultiLinkInput
+                label="Articles populaires :"
+                placeholders={[
+                  "Comment puis-je obtenir une adresse ?",
+                  "Path Gitbook de l'article (/utiliser-la-ban/mon-article)",
+                ]}
+                value={formData.gitbookParticuliers?.topArticles || []}
+                onChange={(value) =>
+                  handleEdit(
+                    "gitbookParticuliers",
+                    "topArticles"
+                  )({ target: { value } } as any)
+                }
+              />
+            </section>
+          </>
+        )}
+      </Tabs>
+
       <div className="form-controls">
         <Button disabled={!canPublish} type="submit" iconId="fr-icon-save-line">
           Publier
