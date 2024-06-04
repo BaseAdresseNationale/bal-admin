@@ -4,6 +4,7 @@ export enum EventTypeTypeEnum {
   PARTENAIRE = "partenaire",
   ADRESSE_LAB = "adresselab",
   ADRESSE_REGION = "adresse-region",
+  PRESENTATION = "présentation",
 }
 
 export enum EventTypeTagEnum {
