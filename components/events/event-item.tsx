@@ -17,8 +17,10 @@ const getEventTypeColor = (type: EventTypeTypeEnum) => {
       return "rgb(209, 51, 91)";
     case EventTypeTypeEnum.ADRESSE_REGION:
       return "rgb(130, 0, 191)";
+    case EventTypeTypeEnum.PRESENTATION:
+      return "rgb(26, 168, 255)";
     default:
-      return 'black';
+      return "black";
   }
 };
 
@@ -27,7 +29,7 @@ const getDate = (date: string) => {
 };
 
 const getHours = (startHour: string, endHour: string) => {
-  return `${startHour.replace(':', 'h')} à ${endHour.replace(':', 'h')}`;
+  return `${startHour.replace(":", "h")} à ${endHour.replace(":", "h")}`;
 };
 
 export const EventItem = ({
@@ -40,7 +42,10 @@ export const EventItem = ({
 }: EventType) => (
   <tr key={_id}>
     <td className="fr-col fr-my-1v">
-      <Badge style={{background: getEventTypeColor(type), color: 'white'}} noIcon>
+      <Badge
+        style={{ background: getEventTypeColor(type), color: "white" }}
+        noIcon
+      >
         {type}
       </Badge>
     </td>
