@@ -111,4 +111,14 @@ partenaireDeLaCharteRoutes.put("/:id", routeGuard, async (req, res) => {
   }
 });
 
+partenaireDeLaCharteRoutes.delete("/:id", routeGuard, async (req, res) => {
+  try {
+    const response = await PartenaireDeLaCharteService.deleteOne(req.params.id);
+    res.json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = partenaireDeLaCharteRoutes;
