@@ -54,12 +54,12 @@ export const PartenaireItem = ({
       ))}
     </td>
     <td className="fr-col fr-my-1v">
-      {dataGouvOrganizationId && (
+      {dataGouvOrganizationId?.length > 0 && (
         <Badge severity="info" noIcon>
-          Organisation Moissonnée
+          {dataGouvOrganizationId?.length} organisation(s) moissonnée(s)
         </Badge>
       )}
-      {apiDepotClientId && (
+      {apiDepotClientId?.length > 0 && (
         <Badge severity="new" noIcon>
           {apiDepotClientId.length} Client(s) api-depot
         </Badge>

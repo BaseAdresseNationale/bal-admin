@@ -34,7 +34,7 @@ export type PartenaireDeLaChartType = {
   link?: string;
   charteURL?: string;
   signatureDate?: string;
-  dataGouvOrganizationId?: string;
+  dataGouvOrganizationId?: string[];
   apiDepotClientId: string[];
 };
 
