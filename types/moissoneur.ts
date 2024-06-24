@@ -99,5 +99,5 @@ export interface OrganizationMoissoneurType {
 }
 
 export interface OrganizationBalAdminType extends OrganizationMoissoneurType {
-  partenaire: PartenaireDeLaChartType | null;
+  partenaire?: PartenaireDeLaChartType;
 }
