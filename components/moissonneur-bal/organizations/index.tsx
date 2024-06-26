@@ -18,21 +18,21 @@ const MoissoneurOrganizations = ({
   const getFilteredOrganizations = (
     showDeleted: boolean
   ): OrganizationBalAdminType[] => {
-    let res = organizations.sort((a, b) =>
+    let organisationsSort = organizations.sort((a, b) =>
       a.perimeters && b.perimeters.length ? -1 : 1
     );
 
     if (!showDeleted) {
-      res = res.filter((s) => !s._deleted);
+      organisationsSort = organisationsSort.filter((s) => !s._deleted);
     }
 
-    return res.map((orga) => {
-      const partenaire: PartenaireDeLaChartType | null =
-        partenaires.find(
-          ({ dataGouvOrganizationId }) => dataGouvOrganizationId === orga._id
-        ) || null;
-      return { ...orga, partenaire };
-    });
+    return organisationsSort.map((orga) => ({
+      ...orga,
+      partenaire: partenaires.find(
+        ({ dataGouvOrganizationId }) =>
+          dataGouvOrganizationId?.includes(orga._id)
+      ),
+    }));
   };
 
   const [showDeleted, setShowDeleted] = useState<boolean>(false);

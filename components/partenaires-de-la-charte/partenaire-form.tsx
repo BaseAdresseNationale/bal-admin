@@ -22,7 +22,6 @@ import type { CommuneType } from "../commune-input";
 import { CommuneInput } from "../commune-input";
 import SelectInput from "@/components/select-input";
 import { capitalize } from "@/lib/util/string";
-import AutocompleteInput from "../autocomplete-input";
 import { getClients } from "@/lib/api-depot";
 import { ClientApiDepotType } from "types/api-depot";
 import { OrganizationMoissoneurType } from "types/moissoneur";
@@ -100,7 +99,7 @@ const newPartenaireForm = {
   balURL: "",
   infos: "",
   perimeter: "",
-  dataGouvOrganizationId: "",
+  dataGouvOrganizationId: [],
   apiDepotClientId: [],
 };
 
@@ -126,17 +125,6 @@ export const PartenaireForm = ({
     { value: string; label: string }[]
   >([]);
   const isCandidate = data && !data.signatureDate;
-
-  const dataGouvOrganizationLabel = useMemo(() => {
-    if (optionOrganizations.length > 0 && formData.dataGouvOrganizationId) {
-      return (
-        optionOrganizations.find(
-          ({ value }) => value === formData.dataGouvOrganizationId
-        )?.label || formData.dataGouvOrganizationId
-      );
-    }
-    return formData.dataGouvOrganizationId;
-  }, [optionOrganizations, formData.dataGouvOrganizationId]);
 
   useEffect(() => {
     async function fetchOptions() {
@@ -463,21 +451,25 @@ export const PartenaireForm = ({
         <h4>Applications</h4>
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-6">
-            <AutocompleteInput
-              id={uniqueId()}
+            <MultiSelectInput
               label="Data.gouv organization ID (Moissonneur)"
+              value={formData.dataGouvOrganizationId}
               options={optionOrganizations}
-              value={dataGouvOrganizationLabel}
-              onChange={handleEdit("dataGouvOrganizationId")}
+              placeholder="Sélectionnez une ou plusieurs organisations datagouv"
+              onChange={(dataGouvOrganizationId) => {
+                setFormData((state) => ({
+                  ...state,
+                  dataGouvOrganizationId,
+                }));
+              }}
             />
           </div>
           <div className="fr-col-6">
-
             <MultiSelectInput
               label="Client api depot ID"
               value={formData.apiDepotClientId}
               options={optionClients}
-              placeholder="Sélectionnez un ou plusieurs client de l'api-depot"
+              placeholder="Sélectionnez un ou plusieurs clients de l'api-depot"
               onChange={(apiDepotClientId) => {
                 setFormData((state) => ({
                   ...state,
