@@ -4,9 +4,10 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { useRouter } from "next/router";
 
-import type {
-  ChefDeFileApiDepotType,
-  MandataireApiDepotType,
+import {
+  ClientApiDepotAuthorizationStrategyEnum,
+  type ChefDeFileApiDepotType,
+  type MandataireApiDepotType,
 } from "types/api-depot";
 
 import {
@@ -23,20 +24,23 @@ import SelectInput from "@/components/select-input";
 import TextInput from "@/components/text-input";
 import MandataireForm from "@/components/api-depot/client/client-form/mandataire-form";
 import ChefDeFileSelect from "@/components/api-depot/client/client-form/chef-de-file-select";
-import { object } from "prop-types";
 import ChefDeFileForm from "@/components/api-depot/client/client-form/chef-de-file-form";
 
 const authorizationStrategyOptions = [
-  { label: "Chef de file", value: "chef-de-file" },
-  { label: "Habilitation", value: "habilitation" },
-  { label: "Interne", value: "internal" },
+  {
+    label: "Chef de file",
+    value: ClientApiDepotAuthorizationStrategyEnum.CHEF_DE_FILE,
+  },
+  {
+    label: "Habilitation",
+    value: ClientApiDepotAuthorizationStrategyEnum.HABILITATION,
+  },
 ];
 
 const newClientFormData = {
   nom: "",
   isModeRelax: false,
   isActive: false,
-  authorizationStrategy: "chef-de-file",
   mandataire: "",
   chefDeFile: "",
 };
@@ -45,6 +49,9 @@ const ClientForm = () => {
   const router = useRouter();
   const { clientId, demo } = router.query;
   const isDemo = demo === "1";
+  const [authorizationStrategy, setAuthorizationStrategy] = useState(
+    authorizationStrategyOptions[0].value
+  );
   const [isFormValid, setIsFormValid] = useState(false);
   const [submitError, setSubmitError] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -73,7 +80,6 @@ const ClientForm = () => {
           nom: client.nom,
           isModeRelax: Boolean(client.options?.relaxMode),
           isActive: client.active,
-          authorizationStrategy: client.authorizationStrategy,
           mandataire: client.mandataire,
           chefDeFile: client.chefDeFile,
         });
@@ -103,22 +109,20 @@ const ClientForm = () => {
 
   const handleSumit = async (event) => {
     event.preventDefault();
-    const {
-      nom,
-      isModeRelax,
-      isActive,
-      authorizationStrategy,
-      mandataire,
-      chefDeFile,
-    } = formData;
-    const body = {
+    const { nom, isModeRelax, isActive, mandataire, chefDeFile } = formData;
+    const body: any = {
       nom,
       options: { relaxMode: isModeRelax },
       active: isActive,
-      authorizationStrategy,
       mandataire: undefined,
-      chefDeFile,
     };
+    if (
+      chefDeFile &&
+      authorizationStrategy ===
+        ClientApiDepotAuthorizationStrategyEnum.CHEF_DE_FILE
+    ) {
+      body.chefDeFile = chefDeFile;
+    }
 
     try {
       // Gestion du mandataire sélectionné ou créé
@@ -151,16 +155,20 @@ const ClientForm = () => {
       return;
     }
 
-    const { nom, authorizationStrategy, mandataire, chefDeFile } = formData;
+    const { nom, mandataire, chefDeFile } = formData;
 
     let isFormValid = nom && mandataire;
 
-    if (authorizationStrategy === "chef-de-file" && !chefDeFile) {
+    if (
+      authorizationStrategy ===
+        ClientApiDepotAuthorizationStrategyEnum.CHEF_DE_FILE &&
+      !chefDeFile
+    ) {
       isFormValid = false;
     }
 
     setIsFormValid(isFormValid);
-  }, [formData]);
+  }, [formData, authorizationStrategy]);
 
   const closeFormChefDeFile = async () => {
     const chefsDeFile: ChefDeFileApiDepotType[] = await getChefsDeFile(isDemo);
@@ -207,9 +215,13 @@ const ClientForm = () => {
             <SelectInput
               label="Stratégie d’authorisation"
               hint="Méthode qui authorise le client à publier des BAL"
-              value={formData.authorizationStrategy}
+              value={authorizationStrategy}
               options={authorizationStrategyOptions}
-              handleChange={handleEdit("authorizationStrategy")}
+              handleChange={(value) =>
+                setAuthorizationStrategy(
+                  value as ClientApiDepotAuthorizationStrategyEnum
+                )
+              }
             />
 
             <MandataireForm
@@ -218,7 +230,8 @@ const ClientForm = () => {
               onSelect={handleEdit("mandataire")}
             />
 
-            {formData.authorizationStrategy === "chef-de-file" && (
+            {authorizationStrategy ===
+              ClientApiDepotAuthorizationStrategyEnum.CHEF_DE_FILE && (
               <>
                 {isformChefDeFileOpen ? (
                   <ChefDeFileForm
