@@ -21,6 +21,21 @@ partenaireDeLaCharteRoutes.get("/", async (req, res) => {
   }
 });
 
+partenaireDeLaCharteRoutes.get("/paginated", async (req, res) => {
+  try {
+    const {page, limit, ...query} = req.query;
+    const partenairesDeLaCharte = await PartenaireDeLaCharteService.findManyPaginated(
+      query,
+      parseInt(page),
+      parseInt(limit)
+    );
+    res.json(partenairesDeLaCharte);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 partenaireDeLaCharteRoutes.get("/random", async (req, res) => {
   try {
     const { limit } = req.query;

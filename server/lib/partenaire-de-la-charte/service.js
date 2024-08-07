@@ -62,6 +62,76 @@ async function findMany(query = {}) {
   return records;
 }
 
+async function findManyPaginated(query = {}, page = 1, limit = 10) {
+  const {
+    search,
+    codeDepartement,
+    services,
+    type,
+    withCandidates,
+    withoutPictures,
+    dataGouvOrganizationId,
+    apiDepotClientId,
+  } = query;
+
+  const mongoQuery = withCandidates
+    ? {}
+    : {
+        signatureDate: { $exists: true },
+      };
+
+  if (search) {
+    mongoQuery.name = { $regex: search, $options: "i" }
+  }
+
+  if (type) {
+    mongoQuery.type = type;
+  }
+
+  if (dataGouvOrganizationId) {
+    mongoQuery.dataGouvOrganizationId = dataGouvOrganizationId;
+  }
+
+  if (apiDepotClientId) {
+    mongoQuery.apiDepotClientId = apiDepotClientId;
+  }
+
+  if (codeDepartement) {
+    mongoQuery.$or = [
+      { codeDepartement: { $in: [codeDepartement] } },
+      { isPerimeterFrance: true },
+    ];
+  }
+
+  if (services) {
+    mongoQuery.services = { $in: services.split(",") };
+  }
+
+  const total = await mongoClient.count(collectionName, mongoQuery);
+  const totalCommunes = await mongoClient.count(collectionName, {
+    ...mongoQuery,
+    type: "commune",
+  });
+  const totalOrganismes = await mongoClient.count(collectionName, {
+    ...mongoQuery,
+    type: "organisme",
+  });
+  const totalEntreprises = await mongoClient.count(collectionName, {
+    ...mongoQuery,
+    type: "entreprise",
+  });
+  const records = await mongoClient.findManyPaginated(collectionName, mongoQuery, page, limit);
+
+  if (withoutPictures) {
+    return records.map((record) => {
+      const { picture, ...rest } = record;
+      return rest;
+    });
+  }
+
+  return {total, totalCommunes, totalOrganismes, totalEntreprises, data: records};
+}
+
 async function findOneOrFail(id) {
   const record = await mongoClient.findOneById(collectionName, id);
 
@@ -164,6 +234,7 @@ async function deleteOne(id) {
 
 module.exports = {
   findMany,
+  findManyPaginated,
   findOneOrFail,
   createOne,
   updateOne,

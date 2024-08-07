@@ -86,6 +86,17 @@ class Mongo {
     return this.db.collection(collectionName).find({_deleted: undefined, ...options}).toArray()
   }
 
+  findManyPaginated(collectionName, options = {}, page = 1, pageSize = 20) {
+    return this.db.collection(collectionName).find({_deleted: undefined, ...options})
+      .limit(pageSize)
+      .skip((page - 1) * pageSize)
+      .toArray()
+  }
+
+  count(collectionName, options = {}) {
+    return this.db.collection(collectionName).countDocuments({_deleted: undefined, ...options})
+  }
+
   findDistinct(collectionName, field) {
     return this.db.collection(collectionName).distinct(field)
   }
