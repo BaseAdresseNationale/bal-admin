@@ -10,13 +10,22 @@ export const BalsItem = (
   item: BaseLocaleType,
   actions: Record<string, (item: BaseLocaleType) => void>
 ) => {
-  const { _id, nom, status, sync, emails, _created, _updated, habilitationIsValid } = item;
+  const {
+    id,
+    nom,
+    status,
+    sync,
+    emails,
+    createdAt,
+    updatedAt,
+    habilitationIsValid,
+  } = item;
 
-  const computedStatus = computeStatus(status, sync, habilitationIsValid)
+  const computedStatus = computeStatus(status, sync, habilitationIsValid);
 
   return (
-    <tr key={_id}>
-      <td className="fr-col fr-my-1v">{_id}</td>
+    <tr key={id}>
+      <td className="fr-col fr-my-1v">{id}</td>
       <td className="fr-col fr-my-1v">{nom}</td>
       <td className="fr-col fr-my-1v">
         <Badge severity={computedStatus?.intent} noIcon>
@@ -24,20 +33,20 @@ export const BalsItem = (
         </Badge>
       </td>
       <td className="fr-col fr-my-1v">
-        {_created ? formatDate(_created) : "inconnu"}
+        {createdAt ? formatDate(createdAt) : "inconnu"}
       </td>
       <td className="fr-col fr-my-1v">
-        {_updated ? formatDate(_updated) : "inconnu"}
+        {updatedAt ? formatDate(updatedAt) : "inconnu"}
       </td>
       <td className="fr-col fr-my-1v">
-        {emails ? emails.join('\n') : "inconnu"}
+        {emails ? emails.join("\n") : "inconnu"}
       </td>
       <td className="fr-col fr-my-1v">
         <Link
           passHref
           href={{
             pathname: "/mes-adresses/base-locale",
-            query: { baseLocaleId: _id },
+            query: { baseLocaleId: id },
           }}
         >
           <Button iconId="fr-icon-arrow-right-line" iconPosition="right">

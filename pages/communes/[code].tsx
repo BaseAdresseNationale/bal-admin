@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import type { RevisionMoissoneurType } from "../../types/moissoneur";
 import type { RevisionApiDepotType } from "../../types/api-depot";
-import type { PageType } from "../../types/page";
 import type { BaseLocaleType } from "../../types/mes-adresses";
 import { getCommune } from "@/lib/cog";
 
@@ -22,7 +21,7 @@ import { BalsItem } from "@/components/communes/bals-item";
 
 const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
   for (const bal of bals) {
-    bal.habilitationIsValid = await getBaseLocaleIsHabilitationValid(bal._id);
+    bal.habilitationIsValid = await getBaseLocaleIsHabilitationValid(bal.id);
   }
 };
 
