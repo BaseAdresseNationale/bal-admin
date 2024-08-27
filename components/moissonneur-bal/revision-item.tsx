@@ -42,7 +42,7 @@ const RevisionItem = ({
   return (
     <tr>
       <td className="fr-col fr-my-1v">
-        <MongoId id={revision._id} />
+        <MongoId id={revision.id} />
       </td>
       <td className="fr-col fr-my-1v">
         <a>
@@ -57,11 +57,11 @@ const RevisionItem = ({
         </a>
       </td>
       <td className="fr-col fr-my-1v">
-        {revision._created ? formatDate(revision._created) : "inconnu"}
+        {revision.createdAt ? formatDate(revision.createdAt) : "inconnu"}
       </td>
 
       <td className="fr-col fr-my-1v">
-        {revision.nbRows} / {revision.nbRowsWithErrors}
+        {revision.validation.nbRows} / {revision.validation.nbRowsWithErrors}
       </td>
       <td className="fr-col fr-my-1v">
         <UpdateStatusBadge

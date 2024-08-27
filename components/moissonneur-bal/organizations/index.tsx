@@ -23,14 +23,14 @@ const MoissoneurOrganizations = ({
     );
 
     if (!showDeleted) {
-      organisationsSort = organisationsSort.filter((s) => !s._deleted);
+      organisationsSort = organisationsSort.filter((s) => !s.deletedAt);
     }
 
     return organisationsSort.map((orga) => ({
       ...orga,
       partenaire: partenaires.find(
         ({ dataGouvOrganizationId }) =>
-          dataGouvOrganizationId?.includes(orga._id)
+          dataGouvOrganizationId?.includes(orga.id)
       ),
     }));
   };
@@ -78,7 +78,7 @@ const MoissoneurOrganizations = ({
           <tbody>
             {organizationsFiltered.map((organization) => (
               <MoissoneurOrganizationItem
-                key={organization._id}
+                key={organization.id}
                 {...organization}
               />
             ))}

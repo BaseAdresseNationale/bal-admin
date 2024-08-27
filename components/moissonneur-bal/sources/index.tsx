@@ -17,7 +17,7 @@ const MoissoneurSources = ({ sources }: MoissoneurSourcesProps) => {
     if (showDeleted) {
       return resSources;
     }
-    return resSources.filter((s) => !s._deleted);
+    return resSources.filter((s) => !s.deletedAt);
   };
 
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
@@ -63,7 +63,7 @@ const MoissoneurSources = ({ sources }: MoissoneurSourcesProps) => {
 
           <tbody>
             {sourcesFiltered.map((source) => (
-              <MoissoneurSourceItem key={source._id} {...source} />
+              <MoissoneurSourceItem key={source.id} {...source} />
             ))}
           </tbody>
         </table>

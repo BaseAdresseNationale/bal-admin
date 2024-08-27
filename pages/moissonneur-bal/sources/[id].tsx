@@ -64,34 +64,34 @@ const MoissoneurSource = ({
 
   useEffect(() => {
     async function fetchData() {
-      const initialRevisions = await fetchCurrentRevision(source._id);
+      const initialRevisions = await fetchCurrentRevision(source.id);
       setRevisions(initialRevisions);
     }
 
     fetchData();
-  }, [source._id]);
+  }, [source.id]);
 
   const updateHarvest = useCallback(
     async (page) => {
       const { results, count } = await getSourceHarvests(
-        source._id,
+        source.id,
         limit,
         page
       );
       setHarvests(results);
       setTotalCount(count);
     },
-    [source._id, setHarvests, setTotalCount]
+    [source.id, setHarvests, setTotalCount]
   );
 
   const refresh = useCallback(async () => {
     async function update() {
-      const freshSource = await getSource(source._id);
+      const freshSource = await getSource(source.id);
       setSource(freshSource);
-      if (freshSource.harvesting.harvestingSince === null) {
+      if (freshSource.harvestingSince === null) {
         clearInterval(interval.current);
         updateHarvest(currentPage);
-        const revisions = await fetchCurrentRevision(source._id);
+        const revisions = await fetchCurrentRevision(source.id);
         setRevisions(revisions);
       }
     }
@@ -100,7 +100,7 @@ const MoissoneurSource = ({
     interval.current = setInterval(async () => {
       await update();
     }, 5000);
-  }, [source._id, currentPage, updateHarvest]);
+  }, [source.id, currentPage, updateHarvest]);
 
   const onPageChange = useCallback(
     async (page) => {
@@ -111,12 +111,12 @@ const MoissoneurSource = ({
   );
 
   const askHarvest = async () => {
-    await harvestSource(source._id);
+    await harvestSource(source.id);
     await refresh();
   };
 
   const enabledSource = async () => {
-    const updatedSource = await udpateSource(source._id, {
+    const updatedSource = await udpateSource(source.id, {
       enabled: !source.enabled,
     });
     setSource(updatedSource);
@@ -126,7 +126,7 @@ const MoissoneurSource = ({
     setForcePublishRevisionStatus("loading");
     try {
       await publishRevision(id, { force: true });
-      const updateRevisions = await fetchCurrentRevision(source._id);
+      const updateRevisions = await fetchCurrentRevision(source.id);
       setRevisions(updateRevisions);
       setForcePublishRevisionStatus("success");
     } catch (err) {
@@ -141,7 +141,7 @@ const MoissoneurSource = ({
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-10">
             <h1>{source.title}</h1>
-            <CopyToClipBoard text={source._id} title="Id" />
+            <CopyToClipBoard text={source.id} title="Id" />
 
             <ul className="fr-tags-group">
               <li>
@@ -152,7 +152,7 @@ const MoissoneurSource = ({
 
           <div className="fr-col-2">
             <div className="fr-container">
-              {source._deleted ? (
+              {source.deletedAt ? (
                 <Badge
                   severity="error"
                   style={{ marginRight: 2, marginBottom: 2 }}
@@ -217,12 +217,10 @@ const MoissoneurSource = ({
         <h2>Moissonnages</h2>
 
         <Button
-          disabled={
-            source.harvesting.harvestingSince !== null || !source.enabled
-          }
+          disabled={source.harvestingSince !== null || !source.enabled}
           onClick={askHarvest}
         >
-          {source.harvesting.harvestingSince !== null
+          {source.harvestingSince !== null
             ? "Moissonnage en cours…"
             : "Lancer le moissonnage"}
         </Button>
@@ -242,7 +240,7 @@ const MoissoneurSource = ({
 
             <tbody>
               {harvests.map((harvest) => (
-                <HarvestItem key={harvest._id} {...harvest} />
+                <HarvestItem key={harvest.id} {...harvest} />
               ))}
             </tbody>
           </table>
@@ -314,10 +312,10 @@ const MoissoneurSource = ({
               <tbody>
                 {revisions.map((revision) => (
                   <RevisionItem
-                    key={revision._id}
+                    key={revision.id}
                     revision={revision}
                     onForcePublishRevision={() =>
-                      onForcePublishRevision(revision._id)
+                      onForcePublishRevision(revision.id)
                     }
                     isForcePublishRevisionLoading={
                       forcePublishRevisionStatus === "loading"

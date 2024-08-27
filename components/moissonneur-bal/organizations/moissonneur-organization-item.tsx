@@ -8,12 +8,12 @@ import { OrganizationBalAdminType } from "types/moissoneur";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
 const MoissoneurOrganizationItem = ({
-  _id,
+  id,
   name,
   page,
   perimeters,
-  _deleted,
-  _updated,
+  updatedAt,
+  deletedAt,
   partenaire,
 }: OrganizationBalAdminType) => (
   <tr>
@@ -24,7 +24,7 @@ const MoissoneurOrganizationItem = ({
       </Link>
     </td>
     <td>
-      {_deleted ? (
+      {deletedAt ? (
         <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
           Supprimé
         </Badge>
@@ -54,13 +54,13 @@ const MoissoneurOrganizationItem = ({
       )}
     </td>
     <td className="fr-col fr-my-1v">
-      {_updated ? formatDate(_updated) : "inconnu"}
+      {updatedAt ? formatDate(updatedAt) : "inconnu"}
     </td>
     <td className="fr-col fr-my-1v">
       <Link
         passHref
         href={{
-          pathname: `/moissonneur-bal/organizations/${_id}`,
+          pathname: `/moissonneur-bal/organizations/${id}`,
         }}
       >
         <Button iconId="fr-icon-arrow-right-line" iconPosition="right">
