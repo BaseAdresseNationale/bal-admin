@@ -59,7 +59,7 @@ const BaseLocale = () => {
 
   const createBalHabilitation = async function () {
     const habilitation = await createHabilitation(
-      baseLocale._id,
+      baseLocale.id,
       baseLocale.token
     );
     await validateHabilitation(habilitation._id);
@@ -69,13 +69,13 @@ const BaseLocale = () => {
 
   return baseLocale ? (
     <div className="fr-container">
-      {baseLocale._deleted && (
+      {baseLocale.deletedAt && (
         <Alert
           className="fr-mt-4v"
           title="Cette Base Adresse Locale a été supprimée"
           severity="error"
           description={`La Base Adresse Locale a été supprimée le ${formatDate(
-            baseLocale._deleted
+            baseLocale.deletedAt
           )}`}
         />
       )}
@@ -86,7 +86,7 @@ const BaseLocale = () => {
             <h1>
               {baseLocale.nom} ({baseLocale.commune})
             </h1>
-            <CopyToClipBoard text={baseLocale._id} title="Id" />
+            <CopyToClipBoard text={baseLocale.id} title="Id" />
             {baseLocale.token && (
               <CopyToClipBoard text={baseLocale.token} title="Token" />
             )}
@@ -145,7 +145,7 @@ const BaseLocale = () => {
                 <p className="fr-tag">
                   Création :{" "}
                   <b className="fr-mx-1v">
-                    {formatDate(baseLocale._created, "PPP")}
+                    {formatDate(baseLocale.createdAt, "PPP")}
                   </b>
                 </p>
               </li>
@@ -153,7 +153,7 @@ const BaseLocale = () => {
                 <p className="fr-tag">
                   Mise à jour :{" "}
                   <b className="fr-mx-1v">
-                    {formatDate(baseLocale._updated, "PPP")}
+                    {formatDate(baseLocale.updatedAt, "PPP")}
                   </b>
                 </p>
               </li>
@@ -170,7 +170,7 @@ const BaseLocale = () => {
             <div className="fr-container">
               <Link
                 legacyBehavior
-                href={`${NEXT_PUBLIC_MES_ADRESSES_URL}/bal/${baseLocale._id}/${baseLocale.token}`}
+                href={`${NEXT_PUBLIC_MES_ADRESSES_URL}/bal/${baseLocale.id}/${baseLocale.token}`}
               >
                 <a
                   target="_blank"
