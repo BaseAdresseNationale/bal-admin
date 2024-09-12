@@ -82,6 +82,7 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
       page: page.current,
       limit: page.limit,
     });
+
     await getBasesLocalesIsHabilitationValid(res.results);
     setBals(res.results);
     setPageMesAdresses({
