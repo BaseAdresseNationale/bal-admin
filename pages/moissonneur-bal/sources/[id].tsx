@@ -200,7 +200,7 @@ const MoissoneurSource = ({
       </div>
       <div className="fr-container">
         <h2>Organisation</h2>
-        {source.organizationId ? (
+        {organization && source.organizationId ? (
           <Link
             href={{
               pathname: `/moissonneur-bal/organizations/${source.organizationId}`,
@@ -335,9 +335,13 @@ const MoissoneurSource = ({
 
 export async function getServerSideProps({ params }) {
   const source: SourceMoissoneurType = await getSource(params.id);
-  const organization: OrganizationMoissoneurType = await getOrganization(
-    source.organizationId
-  );
+  let organization: OrganizationMoissoneurType = null;
+  try {
+    organization = await getOrganization(source.organizationId);
+  } catch (err) {
+    console.error(err);
+  }
+
   const { results, count } = await getSourceHarvests(params.id, limit);
   return {
     props: {
