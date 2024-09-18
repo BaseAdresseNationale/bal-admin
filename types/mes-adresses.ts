@@ -20,7 +20,6 @@ export type BaseLocaleType = {
   nbNumeros?: number;
   nbNumerosCertifies?: number;
   isAllCertified?: boolean;
-  commentedNumeros?: any;
   emails?: string[];
   sync?: {
     status: StatusSyncEnum;
