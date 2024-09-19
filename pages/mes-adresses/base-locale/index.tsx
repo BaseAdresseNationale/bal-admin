@@ -34,9 +34,9 @@ const BaseLocale = () => {
     null
   );
 
-  async function calcStatus(baseLocale) {
+  async function calcStatus(baseLocale: BaseLocaleType) {
     const habilitationValid = await getBaseLocaleIsHabilitationValid(
-      baseLocale._id
+      baseLocale.id
     );
     const status = computeStatus(
       baseLocale.status,

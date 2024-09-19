@@ -36,7 +36,7 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
   >([]);
   const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] =
     useState<RevisionMoissoneurType[]>([]);
-  const [balToDeleted, setBalToDeleted] = useState(null);
+  const [balToDeleted, setBalToDeleted] = useState<BaseLocaleType>(null);
 
   const [pageApiDepot, setPageApiDepot] = useState({
     limit: 10,
@@ -82,6 +82,7 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
       page: page.current,
       limit: page.limit,
     });
+
     await getBasesLocalesIsHabilitationValid(res.results);
     setBals(res.results);
     setPageMesAdresses({
@@ -132,7 +133,7 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
 
   const onDeleteBal = useCallback(async () => {
     try {
-      await removeBaseLocale(balToDeleted._id);
+      await removeBaseLocale(balToDeleted.id);
       await fetchBals(code, pageMesAdresses).catch(console.error);
       setBalToDeleted(null);
       toast("La BAL a bien été archivé", { type: "success" });
