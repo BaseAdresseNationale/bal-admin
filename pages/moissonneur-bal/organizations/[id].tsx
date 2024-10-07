@@ -117,6 +117,8 @@ const OrganizationPage = ({
                   <th scope="col">Title</th>
                   <th scope="col">Status</th>
                   <th scope="col">Date de mise à jour</th>
+                  <th scope="col">Erreur Moissonnage</th>
+                  <th scope="col">Erreur Revisions</th>
                   <th scope="col" />
                 </tr>
               </thead>
