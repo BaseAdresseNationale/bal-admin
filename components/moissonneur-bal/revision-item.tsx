@@ -33,6 +33,7 @@ const RevisionItem = ({
 
   const displayForcePublishButton =
     !revision.publication ||
+    revision.publication?.status === RevisionStatusMoissoneurEnum.ERROR ||
     revision.publication?.status ===
       RevisionStatusMoissoneurEnum.NOT_CONFIGURED ||
     revision.publication?.status ===
