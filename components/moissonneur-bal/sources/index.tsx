@@ -1,35 +1,23 @@
 import MoissoneurSourceItem from "@/components/moissonneur-bal/sources/moissonneur-source-item";
 import { ExtendedSourceMoissoneurType } from "types/moissoneur";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type MoissoneurSourcesProps = {
   sources: ExtendedSourceMoissoneurType[];
 };
 
 const MoissoneurSources = ({ sources }: MoissoneurSourcesProps) => {
-  const getFilteredSource = (
-    showDeleted: boolean
-  ): ExtendedSourceMoissoneurType[] => {
+  const [showDeleted, setShowDeleted] = useState<boolean>(false);
+  const [showDisabled, setShowDisabled] = useState<boolean>(false);
+
+  const sourcesFiltered = useMemo(() => {
     const resSources = sources.sort(({ harvestError, nbRevisionError }) =>
       harvestError || nbRevisionError > 0 ? -1 : 1
     );
-
-    if (showDeleted) {
-      return resSources;
-    }
-    return resSources.filter((s) => !s.deletedAt);
-  };
-
-  const [showDeleted, setShowDeleted] = useState<boolean>(false);
-  const [sourcesFiltered, setSourcesFiltered] = useState<
-    ExtendedSourceMoissoneurType[]
-  >(getFilteredSource(showDeleted));
-
-  const toggleShowDelete = () => {
-    const isShowDeleted = !showDeleted;
-    setShowDeleted(isShowDeleted);
-    setSourcesFiltered(getFilteredSource(isShowDeleted));
-  };
+    return resSources
+      .filter(({ deletedAt }) => (showDeleted ? true : !deletedAt))
+      .filter(({ enabled }) => (showDisabled ? true : enabled));
+  }, [showDeleted, showDisabled, sources]);
 
   return (
     <div className="fr-container fr-py-12v">
@@ -38,12 +26,25 @@ const MoissoneurSources = ({ sources }: MoissoneurSourcesProps) => {
           type="checkbox"
           className="fr-toggle__input"
           aria-describedby="toggle-source-hint-text"
-          id="toggle-source"
+          id="toggle-deleted"
           checked={showDeleted}
-          onChange={toggleShowDelete}
+          onChange={() => setShowDeleted(!showDeleted)}
         />
-        <label className="fr-toggle__label" htmlFor="toggle-source">
+        <label className="fr-toggle__label" htmlFor="toggle-deleted">
           Voir supprimé
+        </label>
+      </div>
+      <div className="fr-toggle">
+        <input
+          type="checkbox"
+          className="fr-toggle__input"
+          aria-describedby="toggle-source-hint-text"
+          id="toggle-enable"
+          checked={showDisabled}
+          onChange={() => setShowDisabled(!showDisabled)}
+        />
+        <label className="fr-toggle__label" htmlFor="toggle-enable">
+          Voir désactivé
         </label>
       </div>
       <div className="fr-table">
