@@ -8,8 +8,8 @@ async function main() {
   const config = await mongoClient.db.collection(collectionName).findOne();
   const newOutdatedHarvestSources = [];
 
-  for (const orgaId of config?.communes?.outdatedHarvestSources) {
-    const [, id] = orgaId.split(/-(.*)/s);
+  for (const sourceId of config?.communes?.outdatedHarvestSources) {
+    const [, id] = sourceId.split(/-(.*)/s);
     newOutdatedHarvestSources.push(id.substring(0, 24));
   }
 
