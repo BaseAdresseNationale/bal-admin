@@ -200,7 +200,7 @@ export const BALWidgetConfigForm = ({
                 label="Sources moissonnées caduques"
                 value={formData.communes?.outdatedHarvestSources || []}
                 options={harvestSources.map((source) => ({
-                  value: source._id,
+                  value: source.id,
                   label: source.title,
                 }))}
                 placeholder="Sélectionner les sources moissonnées caduques"

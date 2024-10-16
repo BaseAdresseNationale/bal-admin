@@ -136,7 +136,7 @@ export const PartenaireForm = ({
       const organisations: OrganizationMoissoneurType[] =
         await getOrganizations();
       setOptionOrganizations(
-        organisations.map(({ _id, name }) => ({ value: _id, label: name }))
+        organisations.map(({ id, name }) => ({ value: id, label: name }))
       );
     }
 
