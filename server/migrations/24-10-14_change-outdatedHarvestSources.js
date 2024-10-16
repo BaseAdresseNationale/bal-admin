@@ -6,9 +6,9 @@ async function main() {
   await mongoClient.connect();
 
   const config = await mongoClient.db.collection(collectionName).findOne();
+  const outdatedHarvestSources = config?.communes?.outdatedHarvestSources || [];
   const newOutdatedHarvestSources = [];
-
-  for (const sourceId of config?.communes?.outdatedHarvestSources) {
+  for (const sourceId of outdatedHarvestSources) {
     const [, id] = sourceId.split(/-(.*)/s);
     newOutdatedHarvestSources.push(id.substring(0, 24));
   }
