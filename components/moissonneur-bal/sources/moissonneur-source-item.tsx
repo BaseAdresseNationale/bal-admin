@@ -7,19 +7,19 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import { ExtendedSourceMoissoneurType } from "types/moissoneur";
 
 const MoissoneurSourceItem = ({
-  _id,
+  id,
   title,
   enabled,
-  _deleted,
-  _updated,
+  deletedAt,
+  updatedAt,
   harvestError,
   nbRevisionError,
 }: ExtendedSourceMoissoneurType) => (
   <tr>
-    <td className="fr-col fr-my-1v">{_id}</td>
+    <td className="fr-col fr-my-1v">{id}</td>
     <td className="fr-col fr-my-1v">{title}</td>
     <td>
-      {_deleted ? (
+      {deletedAt ? (
         <Badge severity="error" style={{ marginRight: 2, marginBottom: 2 }}>
           Supprimé
         </Badge>
@@ -34,7 +34,7 @@ const MoissoneurSourceItem = ({
       )}
     </td>
     <td className="fr-col fr-my-1v">
-      {_updated ? formatDate(_updated) : "inconnu"}
+      {updatedAt ? formatDate(updatedAt) : "inconnu"}
     </td>
     <td className="fr-col fr-my-1v">
       {harvestError && (
@@ -54,7 +54,7 @@ const MoissoneurSourceItem = ({
       <Link
         passHref
         href={{
-          pathname: `/moissonneur-bal/sources/${_id}`,
+          pathname: `/moissonneur-bal/sources/${id}`,
         }}
       >
         <Button iconId="fr-icon-arrow-right-line" iconPosition="right">

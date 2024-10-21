@@ -41,7 +41,7 @@ const OrganizationPage = ({
 
   const onUpdatePerimeter = async () => {
     try {
-      const res = await updateOrganization(organization._id, { perimeters });
+      const res = await updateOrganization(organization.id, { perimeters });
       organization.perimeters = [...perimeters];
       onResetPerimeter();
       toast("Modifications enregistrées", { type: "success" });
@@ -67,7 +67,7 @@ const OrganizationPage = ({
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col">
           <h3>{organization.name}</h3>
-          <CopyToClipBoard text={organization._id} title="Id" />
+          <CopyToClipBoard text={organization.id} title="Id" />
           {partenaire ? (
             <>
               <h3>Partenaire de la charte</h3>
@@ -125,7 +125,7 @@ const OrganizationPage = ({
 
               <tbody>
                 {sources.map((source) => (
-                  <MoissoneurSourceItem key={source._id} {...source} />
+                  <MoissoneurSourceItem key={source.id} {...source} />
                 ))}
               </tbody>
             </table>

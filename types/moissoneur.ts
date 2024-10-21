@@ -29,32 +29,32 @@ export enum HarvestStatus {
 }
 
 export type HarvestMoissonneurType = {
-  _id: string;
-  startedAt: Date;
-  finishedAt: Date;
+  id: string;
+  sourceId: string;
+  fileId: string;
+  fileHash: string;
+  dataHash: string;
   status: HarvestStatus;
-  error: string;
   updateStatus: UpdateStatusEnum;
   updateRejectionReason: string;
-  fileId: string;
+  error: string;
+  startedAt: Date;
+  finishedAt: Date;
 };
 
 export type SourceMoissoneurType = {
-  _id: string;
-  url: string;
-  title: string;
-  page: string;
+  id: string;
   organizationId: string;
+  title: string;
+  url: string;
   license: string;
   enabled: boolean;
   description: string;
-  harvesting: {
-    lastHarvest: Date;
-    harvestingSince: Date | null;
-  };
-  _updated: string;
-  _created: string;
-  _deleted: boolean;
+  lastHarvest: Date;
+  harvestingSince: Date | null;
+  updatedAt?: Date;
+  createdAt?: Date;
+  deletedAt?: Date;
 };
 
 export interface ExtendedSourceMoissoneurType extends SourceMoissoneurType {
@@ -70,32 +70,35 @@ export type PublicationMoissoneurType = {
   currentSourceId?: string;
 };
 
-export type RevisionMoissoneurType = {
-  _id: string;
-  sourceId?: string;
-  codeCommune?: string;
-  harvestId?: string;
-  updateStatus?: UpdateStatusEnum;
-  updateRejectionReason?: string | undefined;
-  fileId?: string;
-  dataHash?: string;
+export type ValidationMoissonneurType = {
   nbRows?: number;
   nbRowsWithErrors?: number;
   uniqueErrors?: string[];
+};
+
+export type RevisionMoissoneurType = {
+  id: string;
+  sourceId?: string;
+  harvestId?: string;
+  fileId?: string;
+  dataHash?: string;
+  codeCommune?: string;
+  updateStatus?: UpdateStatusEnum;
+  updateRejectionReason?: string | undefined;
+  validation?: ValidationMoissonneurType;
   publication?: PublicationMoissoneurType;
-  current?: boolean;
-  _created?: Date;
+  createdAt?: Date;
 };
 
 export interface OrganizationMoissoneurType {
-  _id: string;
+  id?: string;
   name?: string;
   page?: string;
   logo?: string;
   perimeters?: PerimeterType[];
-  _updated?: Date;
-  _created?: Date;
-  _deleted?: boolean;
+  updatedAt?: Date;
+  createdAt?: Date;
+  deletedAt?: Date;
 }
 
 export interface OrganizationBalAdminType extends OrganizationMoissoneurType {

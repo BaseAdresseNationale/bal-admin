@@ -14,9 +14,8 @@ const MoissoneurSources = ({ sources }: MoissoneurSourcesProps) => {
     const resSources = sources.sort(({ harvestError, nbRevisionError }) =>
       harvestError || nbRevisionError > 0 ? -1 : 1
     );
-    console.log(showDeleted, showDisabled);
     return resSources
-      .filter(({ _deleted }) => (showDeleted ? true : !_deleted))
+      .filter(({ deletedAt }) => (showDeleted ? true : !deletedAt))
       .filter(({ enabled }) => (showDisabled ? true : enabled));
   }, [showDeleted, showDisabled, sources]);
 
@@ -65,7 +64,7 @@ const MoissoneurSources = ({ sources }: MoissoneurSourcesProps) => {
 
           <tbody>
             {sourcesFiltered.map((source) => (
-              <MoissoneurSourceItem key={source._id} {...source} />
+              <MoissoneurSourceItem key={source.id} {...source} />
             ))}
           </tbody>
         </table>
