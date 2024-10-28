@@ -26,9 +26,10 @@ const MandataireForm = ({
 
   const mandatairesOptions = useMemo(
     () =>
-      mandataires
-        .sort()
-        .map((m) => ({ label: m.nom + " (" + m.email + ")", value: m.id })),
+      mandataires.map((m) => ({
+        label: m.nom + " (" + m.email + ")",
+        value: m.id,
+      })),
     [mandataires]
   );
 
