@@ -5,12 +5,12 @@ import ToggleSwitch from "@codegouvfr/react-dsfr/ToggleSwitch";
 
 import { checkEmail } from "@/lib/util/email";
 
-import { ChefDeFileApiDepotType, PerimeterType } from "types/api-depot";
+import { ChefDeFile, Perimeter } from "types/api-depot.types";
 import { createChefDeFile, updateChefDeFile } from "@/lib/api-depot";
 import PerimeterList from "@/components/api-depot/client/client-form/perimeter-list";
 
 interface ChefDeFileFormProps {
-  initialChefDeFile: ChefDeFileApiDepotType;
+  initialChefDeFile: ChefDeFile;
   isDemo: boolean;
   close: () => void;
   onSelect: (value: string) => void;
@@ -32,8 +32,8 @@ const ChefDeFileForm = ({
     initialChefDeFile ? initialChefDeFile.isEmailPublic : true
   );
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
-  const [perimeters, setPerimeters] = useState<PerimeterType[]>(
-    initialChefDeFile ? initialChefDeFile.perimetre : []
+  const [perimeters, setPerimeters] = useState<Perimeter[]>(
+    initialChefDeFile ? initialChefDeFile.perimeters : []
   );
   const [isSignataireCharte, setIsSignataireCharte] = useState<boolean>(
     initialChefDeFile ? initialChefDeFile.signataireCharte : false
@@ -50,11 +50,14 @@ const ChefDeFileForm = ({
         perimetre: perimeters,
         signataireCharte: isSignataireCharte,
       };
-      if (initialChefDeFile?._id) {
-        await updateChefDeFile(initialChefDeFile._id, chefDeFile, isDemo);
+      if (initialChefDeFile?.id) {
+        await updateChefDeFile(initialChefDeFile.id, chefDeFile, isDemo);
       } else {
-        const newChefDeFile = await createChefDeFile(chefDeFile, isDemo);
-        onSelect(newChefDeFile._id);
+        const newChefDeFile: ChefDeFile = await createChefDeFile(
+          chefDeFile,
+          isDemo
+        );
+        onSelect(newChefDeFile.id);
       }
       close();
     } catch (error: unknown) {

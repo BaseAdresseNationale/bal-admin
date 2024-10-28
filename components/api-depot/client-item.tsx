@@ -1,17 +1,13 @@
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Link from "next/link";
-import {
-  ChefDeFileApiDepotType,
-  ClientApiDepotType,
-  MandataireApiDepotType,
-} from "types/api-depot";
+import { ChefDeFile, Client, Mandataire } from "types/api-depot.types";
 import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 
 interface ClientItemProps {
-  client: ClientApiDepotType;
-  mandataire: MandataireApiDepotType;
-  chefDeFile: ChefDeFileApiDepotType;
+  client: Client;
+  mandataire: Mandataire;
+  chefDeFile: ChefDeFile;
   partenaires: PartenaireDeLaChartType[];
   isDemo: boolean;
 }
@@ -42,7 +38,7 @@ const ClientItem = ({
         type="checkbox"
         id="checkbox"
         name="checkbox"
-        checked={client.options.relaxMode}
+        checked={client.modeRelax}
         disabled
       />
     </td>
@@ -71,7 +67,7 @@ const ClientItem = ({
         passHref
         href={{
           pathname: "/api-depot/client/client-form",
-          query: { clientId: client._id, demo: isDemo ? 1 : 0 },
+          query: { clientId: client.id, demo: isDemo ? 1 : 0 },
         }}
       >
         <Button iconId="fr-icon-edit-line" iconPosition="right">
@@ -85,7 +81,7 @@ const ClientItem = ({
         passHref
         href={{
           pathname: "/api-depot/client",
-          query: { clientId: client._id, demo: isDemo ? 1 : 0 },
+          query: { clientId: client.id, demo: isDemo ? 1 : 0 },
         }}
       >
         <Button iconId="fr-icon-arrow-right-line" iconPosition="right">

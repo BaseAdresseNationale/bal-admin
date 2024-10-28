@@ -12,7 +12,7 @@ import {
   updateOrganization,
 } from "@/lib/api-moissonneur-bal";
 import CopyToClipBoard from "@/components/copy-to-clipboard";
-import { PerimeterType } from "types/api-depot";
+import { Perimeter } from "types/api-depot.types";
 import PerimeterList from "@/components/api-depot/client/client-form/perimeter-list";
 import Button from "@codegouvfr/react-dsfr/Button";
 import MoissoneurSourceItem from "@/components/moissonneur-bal/sources/moissonneur-source-item";
@@ -32,7 +32,7 @@ const OrganizationPage = ({
   sources,
   partenaires,
 }: OrganizationPageProps) => {
-  const [perimeters, setPerimeters] = useState<PerimeterType[]>(
+  const [perimeters, setPerimeters] = useState<Perimeter[]>(
     organization?.perimeters ? organization.perimeters : []
   );
   const [partenaire, setpPartenaire] = useState<PartenaireDeLaChartType | null>(

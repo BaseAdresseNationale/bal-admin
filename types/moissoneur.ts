@@ -1,4 +1,4 @@
-import { PerimeterType } from "./api-depot";
+import { Perimeter } from "./api-depot.types";
 import { PartenaireDeLaChartType } from "./partenaire-de-la-charte";
 
 export type PageHarvests = {
@@ -95,7 +95,7 @@ export interface OrganizationMoissoneurType {
   name?: string;
   page?: string;
   logo?: string;
-  perimeters?: PerimeterType[];
+  perimeters?: Perimeter[];
   updatedAt?: Date;
   createdAt?: Date;
   deletedAt?: Date;

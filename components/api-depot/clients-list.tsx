@@ -1,15 +1,10 @@
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { getChefsDeFile, getClients, getMandataires } from "@/lib/api-depot";
 
 import ClientItem from "@/components/api-depot/client-item";
-import {
-  ChefDeFileApiDepotType,
-  ClientApiDepotType,
-  MandataireApiDepotType,
-} from "types/api-depot";
+import { ChefDeFile, Client, Mandataire } from "types/api-depot.types";
 import { getPartenairesDeLaCharte } from "@/lib/partenaires-de-la-charte";
 import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 
@@ -19,9 +14,9 @@ interface ClientsListProps {
 
 const ClientsList = ({ isDemo = false }: ClientsListProps) => {
   const [data, setData] = useState<{
-    clients: ClientApiDepotType[];
-    mandataires: MandataireApiDepotType[];
-    chefsDeFile: ChefDeFileApiDepotType[];
+    clients: Client[];
+    mandataires: Mandataire[];
+    chefsDeFile: ChefDeFile[];
     partenaires: PartenaireDeLaChartType[];
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -84,17 +79,17 @@ const ClientsList = ({ isDemo = false }: ClientsListProps) => {
           <tbody>
             {data?.clients.map((client) => (
               <ClientItem
-                key={client._id}
+                key={client.id}
                 client={client}
                 mandataire={data.mandataires.find(
-                  ({ _id }) => _id === client.mandataire
+                  ({ id }) => id === client.mandataireId
                 )}
                 chefDeFile={data.chefsDeFile.find(
-                  ({ _id }) => _id === client.chefDeFile
+                  ({ id }) => id === client.chefDeFileId
                 )}
                 partenaires={data.partenaires.filter(
                   ({ apiDepotClientId }) =>
-                    apiDepotClientId?.includes(client._id)
+                    apiDepotClientId?.includes(client.id)
                 )}
                 isDemo={isDemo}
               />

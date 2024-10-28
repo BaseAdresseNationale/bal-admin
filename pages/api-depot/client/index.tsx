@@ -5,29 +5,26 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import type {
-  ClientApiDepotType,
-  MandataireApiDepotType,
-  ChefDeFileApiDepotType,
-} from "types/api-depot";
+  Client as ClientApiDepot,
+  Mandataire as MandataireApiDepot,
+  ChefDeFile as ChefDeFileApiDepot,
+} from "types/api-depot.types";
 import Loader from "@/components/loader";
 import { getChefDeFile, getClient, getMandataire } from "@/lib/api-depot";
 
 import ClientHeader from "@/components/api-depot/client/client-header";
 import Mandataire from "@/components/api-depot/mandataire";
 import ChefDeFile from "@/components/api-depot/chef-de-file";
-import {
-  getPartenaireDeLaCharteByClientApiDepot,
-  getPartenairesDeLaCharte,
-} from "@/lib/partenaires-de-la-charte";
+import { getPartenaireDeLaCharteByClientApiDepot } from "@/lib/partenaires-de-la-charte";
 import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 
 const Client = () => {
   const router = useRouter();
   const { clientId, demo } = router.query;
   const isDemo = demo === "1";
-  const [client, setClient] = useState<ClientApiDepotType>(null);
-  const [chefDeFile, setChefDeFile] = useState<ChefDeFileApiDepotType>(null);
-  const [mandataire, setMandataire] = useState<MandataireApiDepotType>(null);
+  const [client, setClient] = useState<ClientApiDepot>(null);
+  const [chefDeFile, setChefDeFile] = useState<ChefDeFileApiDepot>(null);
+  const [mandataire, setMandataire] = useState<MandataireApiDepot>(null);
   const [partenaire, setPartenaire] = useState<PartenaireDeLaChartType>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -78,7 +75,7 @@ const Client = () => {
             passHref
             href={{
               pathname: "/api-depot/client/client-form",
-              query: { clientId: client._id, demo: isDemo ? 1 : 0 },
+              query: { clientId: client.id, demo: isDemo ? 1 : 0 },
             }}
           >
             <Button iconId="fr-icon-edit-line">Modifier le client</Button>

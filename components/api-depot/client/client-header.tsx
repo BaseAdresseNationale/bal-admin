@@ -3,11 +3,11 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 
 import CopyToClipBoard from "@/components/copy-to-clipboard";
-import { ClientApiDepotType } from "types/api-depot";
+import { Client } from "types/api-depot.types";
 import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 
 interface ClientHeaderProps {
-  client: ClientApiDepotType;
+  client: Client;
   partenaire: PartenaireDeLaChartType;
 }
 
@@ -18,7 +18,7 @@ const ClientHeader = ({ client, partenaire }: ClientHeaderProps) => (
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-10">
           <h2>{client.nom}</h2>
-          <CopyToClipBoard text={client._id} title="Id" />
+          <CopyToClipBoard text={client.id} title="Id" />
           <CopyToClipBoard text={client.token} title="Token" />
 
           {partenaire ? (

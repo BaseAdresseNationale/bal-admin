@@ -5,16 +5,16 @@ import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { useRouter } from "next/router";
 
 import {
-  ClientApiDepotAuthorizationStrategyEnum,
-  type ChefDeFileApiDepotType,
-  type MandataireApiDepotType,
-} from "types/api-depot";
+  AuthorizationStrategyEnum,
+  ChefDeFile,
+  Client,
+  Mandataire,
+} from "types/api-depot.types";
 
 import {
   createClient,
   updateClient,
   createMandataire,
-  createChefDeFile,
   getChefsDeFile,
   getClient,
   getMandataires,
@@ -29,26 +29,26 @@ import ChefDeFileForm from "@/components/api-depot/client/client-form/chef-de-fi
 const authorizationStrategyOptions = [
   {
     label: "Chef de file",
-    value: ClientApiDepotAuthorizationStrategyEnum.CHEF_DE_FILE,
+    value: AuthorizationStrategyEnum.CHEF_DE_FILE,
   },
   {
     label: "Habilitation",
-    value: ClientApiDepotAuthorizationStrategyEnum.HABILITATION,
+    value: AuthorizationStrategyEnum.HABILITATION,
   },
 ];
 
-const newClientFormData = {
+const newClientFormData: Partial<Client> = {
   nom: "",
-  isModeRelax: false,
-  isActive: false,
-  mandataire: "",
-  chefDeFile: "",
+  modeRelax: false,
+  active: false,
+  mandataireId: "",
+  chefDeFileId: "",
 };
 
 const ClientForm = () => {
   const router = useRouter();
-  const { clientId, demo } = router.query;
-  const isDemo = demo === "1";
+  const clientId: string = router.query?.clientId as string;
+  const isDemo: boolean = router.query?.demo === "1";
   const [authorizationStrategy, setAuthorizationStrategy] = useState(
     authorizationStrategyOptions[0].value
   );
@@ -58,30 +58,28 @@ const ClientForm = () => {
   const [isformChefDeFileOpen, setIsformChefDeFileOpen] =
     useState<boolean>(false);
   const [initialChefDeFileForm, setInitialChefDeFileForm] =
-    useState<ChefDeFileApiDepotType>(null);
+    useState<ChefDeFile>(null);
   const [chefsDeFileOptions, setChefsDeFileOptions] =
-    useState<ChefDeFileApiDepotType[]>(null);
+    useState<ChefDeFile[]>(null);
   const [mandatairesOptions, setMandatairesOptions] =
-    useState<MandataireApiDepotType[]>(null);
+    useState<Mandataire[]>(null);
   const [formData, setFormData] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      const mandataires: MandataireApiDepotType[] =
-        await getMandataires(isDemo);
+      const mandataires: Mandataire[] = await getMandataires(isDemo);
       setMandatairesOptions(mandataires);
-      const chefsDeFile: ChefDeFileApiDepotType[] =
-        await getChefsDeFile(isDemo);
+      const chefsDeFile: ChefDeFile[] = await getChefsDeFile(isDemo);
       setChefsDeFileOptions(chefsDeFile);
       if (clientId) {
-        const client = await getClient(clientId, isDemo);
+        const client: Client = await getClient(clientId, isDemo);
         setFormData({
           nom: client.nom,
-          isModeRelax: Boolean(client.options?.relaxMode),
-          isActive: client.active,
-          mandataire: client.mandataire,
-          chefDeFile: client.chefDeFile,
+          modeRelax: client.modeRelax,
+          active: client.active,
+          mandataireId: client.mandataireId,
+          chefDeFileId: client.chefDeFileId,
         });
       } else {
         setFormData(newClientFormData);
@@ -109,28 +107,30 @@ const ClientForm = () => {
 
   const handleSumit = async (event) => {
     event.preventDefault();
-    const { nom, isModeRelax, isActive, mandataire, chefDeFile } = formData;
-    const body: any = {
+    const { nom, modeRelax, active, mandataireId, chefDeFileId } = formData;
+    const body: Partial<Client> = {
       nom,
-      options: { relaxMode: isModeRelax },
-      active: isActive,
-      mandataire: undefined,
+      modeRelax,
+      active,
+      mandataireId: undefined,
     };
     if (
-      chefDeFile &&
-      authorizationStrategy ===
-        ClientApiDepotAuthorizationStrategyEnum.CHEF_DE_FILE
+      chefDeFileId &&
+      authorizationStrategy === AuthorizationStrategyEnum.CHEF_DE_FILE
     ) {
-      body.chefDeFile = chefDeFile;
+      body.chefDeFileId = chefDeFileId;
     }
 
     try {
       // Gestion du mandataire sélectionné ou créé
-      if (typeof mandataire === "object") {
-        const newMandataire = await createMandataire(mandataire, isDemo);
-        body.mandataire = newMandataire._id;
+      if (typeof mandataireId === "object") {
+        const newMandataire: Mandataire = await createMandataire(
+          mandataireId,
+          isDemo
+        );
+        body.mandataireId = newMandataire.id;
       } else {
-        body.mandataire = mandataire;
+        body.mandataireId = mandataireId;
       }
 
       let _clientId = clientId;
@@ -138,7 +138,7 @@ const ClientForm = () => {
         await updateClient(_clientId, body, isDemo);
       } else {
         const response = await createClient(body, isDemo);
-        _clientId = response._id;
+        _clientId = response.id;
       }
 
       await router.push({
@@ -155,14 +155,13 @@ const ClientForm = () => {
       return;
     }
 
-    const { nom, mandataire, chefDeFile } = formData;
+    const { nom, mandataireId, chefDeFileId } = formData;
 
-    let isFormValid = nom && mandataire;
+    let isFormValid = nom && mandataireId;
 
     if (
-      authorizationStrategy ===
-        ClientApiDepotAuthorizationStrategyEnum.CHEF_DE_FILE &&
-      !chefDeFile
+      authorizationStrategy === AuthorizationStrategyEnum.CHEF_DE_FILE &&
+      !chefDeFileId
     ) {
       isFormValid = false;
     }
@@ -171,16 +170,14 @@ const ClientForm = () => {
   }, [formData, authorizationStrategy]);
 
   const closeFormChefDeFile = async () => {
-    const chefsDeFile: ChefDeFileApiDepotType[] = await getChefsDeFile(isDemo);
+    const chefsDeFile: ChefDeFile[] = await getChefsDeFile(isDemo);
     setChefsDeFileOptions(chefsDeFile);
     setInitialChefDeFileForm(null);
     setIsformChefDeFileOpen(false);
   };
 
   const openFormChefDeFile = (initialId: string = null) => {
-    setInitialChefDeFileForm(
-      chefsDeFileOptions.find((c) => c._id == initialId)
-    );
+    setInitialChefDeFileForm(chefsDeFileOptions.find((c) => c.id == initialId));
     setIsformChefDeFileOpen(true);
   };
 
@@ -201,15 +198,15 @@ const ClientForm = () => {
             <ToggleSwitch
               label="Activé"
               helperText="Authorise le client à utiliser l’API"
-              checked={formData.isActive}
-              onChange={handleToggle("isActive")}
+              checked={formData.active}
+              onChange={handleToggle("active")}
             />
 
             <ToggleSwitch
               label="Mode relax"
               helperText="Le mode relax assoupli les vérifications du Validateur BAL"
-              checked={formData.isModeRelax}
-              onChange={handleToggle("isModeRelax")}
+              checked={formData.modeRelax}
+              onChange={handleToggle("modeRelax")}
             />
 
             <SelectInput
@@ -218,20 +215,18 @@ const ClientForm = () => {
               value={authorizationStrategy}
               options={authorizationStrategyOptions}
               handleChange={(value) =>
-                setAuthorizationStrategy(
-                  value as ClientApiDepotAuthorizationStrategyEnum
-                )
+                setAuthorizationStrategy(value as AuthorizationStrategyEnum)
               }
             />
 
             <MandataireForm
-              selectedMandataire={formData.mandataire}
+              selectedMandataire={formData.mandataireId}
               mandataires={mandatairesOptions}
-              onSelect={handleEdit("mandataire")}
+              onSelect={handleEdit("mandataireId")}
             />
 
             {authorizationStrategy ===
-              ClientApiDepotAuthorizationStrategyEnum.CHEF_DE_FILE && (
+              AuthorizationStrategyEnum.CHEF_DE_FILE && (
               <>
                 {isformChefDeFileOpen ? (
                   <ChefDeFileForm

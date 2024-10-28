@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { uniqueId } from "lodash";
 import Fuse from "fuse.js";
 import epcis from "@etalab/decoupage-administratif/data/epci.json";
@@ -7,8 +7,10 @@ import allCommunes from "@etalab/decoupage-administratif/data/communes.json";
 
 import AutocompleteInput from "@/components/autocomplete-input";
 import SelectInput from "@/components/select-input";
-import { PerimeterType, TypePerimeterEnum } from "types/api-depot";
-import { useFuse } from "@/hooks/use-fuse";
+import {
+  Perimeter as PerimeterType,
+  TypePerimeterEnum,
+} from "types/api-depot.types";
 
 const typeOptions = [
   { label: "EPCI", value: "epci" },

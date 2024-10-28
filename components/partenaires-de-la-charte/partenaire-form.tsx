@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { uniqueId } from "lodash";
 import type {
   PartenaireDeLaCharteCommuneType,
   PartenaireDeLaCharteEntrepriseType,
@@ -23,7 +22,7 @@ import { CommuneInput } from "../commune-input";
 import SelectInput from "@/components/select-input";
 import { capitalize } from "@/lib/util/string";
 import { getClients } from "@/lib/api-depot";
-import { ClientApiDepotType } from "types/api-depot";
+import { Client } from "types/api-depot.types";
 import { OrganizationMoissoneurType } from "types/moissoneur";
 import { getOrganizations } from "@/lib/api-moissonneur-bal";
 
@@ -128,9 +127,9 @@ export const PartenaireForm = ({
 
   useEffect(() => {
     async function fetchOptions() {
-      const clients: ClientApiDepotType[] = await getClients(false);
+      const clients: Client[] = await getClients(false);
       setOptionClients(
-        clients.map(({ _id, nom }) => ({ value: _id, label: nom }))
+        clients.map(({ id, nom }) => ({ value: id, label: nom }))
       );
 
       const organisations: OrganizationMoissoneurType[] =
