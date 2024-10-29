@@ -42,7 +42,7 @@ const ChefDeFile = ({
   email,
   isEmailPublic,
   perimeters,
-  signataireCharte,
+  isSignataireCharte,
 }: ChefDeFileProps) => {
   const perimetersString = getPerimeters(perimeters);
   return (
@@ -74,7 +74,7 @@ const ChefDeFile = ({
                 type="checkbox"
                 id="checkbox"
                 name="checkbox"
-                checked={signataireCharte}
+                checked={isSignataireCharte}
                 disabled
               />
               <label className="fr-label" htmlFor="checkbox">

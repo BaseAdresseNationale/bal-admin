@@ -36,19 +36,19 @@ const ChefDeFileForm = ({
     initialChefDeFile ? initialChefDeFile.perimeters : []
   );
   const [isSignataireCharte, setIsSignataireCharte] = useState<boolean>(
-    initialChefDeFile ? initialChefDeFile.signataireCharte : false
+    initialChefDeFile ? initialChefDeFile.isSignataireCharte : false
   );
 
   const saveChefDeFile = async (event) => {
     event.stopPropagation();
     event.preventDefault();
     try {
-      const chefDeFile = {
+      const chefDeFile: ChefDeFile = {
         nom,
         email,
         isEmailPublic,
-        perimetre: perimeters,
-        signataireCharte: isSignataireCharte,
+        perimeters: perimeters,
+        isSignataireCharte: isSignataireCharte,
       };
       if (initialChefDeFile?.id) {
         await updateChefDeFile(initialChefDeFile.id, chefDeFile, isDemo);

@@ -132,13 +132,13 @@ export type Perimeter = {
 
 export type ChefDeFile = {
   id?: string;
-  nom: string;
+  nom?: string;
   email?: string;
-  isEmailPublic: boolean;
-  signataireCharte: boolean;
+  isEmailPublic?: boolean;
+  isSignataireCharte?: boolean;
   perimeters?: Perimeter[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 // MANDATAIRE
