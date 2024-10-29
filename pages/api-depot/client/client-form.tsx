@@ -39,8 +39,8 @@ const authorizationStrategyOptions = [
 
 const newClientFormData: Partial<Client> = {
   nom: "",
-  modeRelax: false,
-  active: false,
+  isRelaxMode: false,
+  isActive: false,
   mandataireId: "",
   chefDeFileId: "",
 };
@@ -63,7 +63,7 @@ const ClientForm = () => {
     useState<ChefDeFile[]>(null);
   const [mandatairesOptions, setMandatairesOptions] =
     useState<Mandataire[]>(null);
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState<Partial<Client>>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -76,8 +76,8 @@ const ClientForm = () => {
         const client: Client = await getClient(clientId, isDemo);
         setFormData({
           nom: client.nom,
-          modeRelax: client.modeRelax,
-          active: client.active,
+          isRelaxMode: client.isRelaxMode,
+          isActive: client.isActive,
           mandataireId: client.mandataireId,
           chefDeFileId: client.chefDeFileId,
         });
@@ -107,11 +107,11 @@ const ClientForm = () => {
 
   const handleSumit = async (event) => {
     event.preventDefault();
-    const { nom, modeRelax, active, mandataireId, chefDeFileId } = formData;
+    const { nom, isRelaxMode, isActive, mandataireId, chefDeFileId } = formData;
     const body: Partial<Client> = {
       nom,
-      modeRelax,
-      active,
+      isRelaxMode,
+      isActive,
       mandataireId: undefined,
     };
     if (
@@ -157,7 +157,7 @@ const ClientForm = () => {
 
     const { nom, mandataireId, chefDeFileId } = formData;
 
-    let isFormValid = nom && mandataireId;
+    let isFormValid: any = nom && mandataireId;
 
     if (
       authorizationStrategy === AuthorizationStrategyEnum.CHEF_DE_FILE &&
@@ -198,15 +198,15 @@ const ClientForm = () => {
             <ToggleSwitch
               label="Activé"
               helperText="Authorise le client à utiliser l’API"
-              checked={formData.active}
-              onChange={handleToggle("active")}
+              checked={formData.isActive}
+              onChange={handleToggle("isActive")}
             />
 
             <ToggleSwitch
               label="Mode relax"
               helperText="Le mode relax assoupli les vérifications du Validateur BAL"
-              checked={formData.modeRelax}
-              onChange={handleToggle("modeRelax")}
+              checked={formData.isRelaxMode}
+              onChange={handleToggle("isRelaxMode")}
             />
 
             <SelectInput
@@ -238,7 +238,7 @@ const ClientForm = () => {
                 ) : (
                   <>
                     <ChefDeFileSelect
-                      selectedChefDeFile={formData.chefDeFile}
+                      selectedChefDeFile={formData.chefDeFileId}
                       chefsDeFile={chefsDeFileOptions}
                       onSelect={handleEdit("chefDeFile")}
                     />
@@ -250,7 +250,7 @@ const ClientForm = () => {
                         <Button
                           priority="secondary"
                           onClick={(e) =>
-                            openFormChefDeFile(formData.chefDeFile)
+                            openFormChefDeFile(formData.chefDeFileId)
                           }
                         >
                           Modifier

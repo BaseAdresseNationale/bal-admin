@@ -66,12 +66,12 @@ export enum StatusRevisionEnum {
 
 // REVISION
 
-export interface ParseError {
+export type ParseError = {
   type: string;
   code: string;
   message: string;
   row: number;
-}
+};
 
 export type Validation = {
   valid: boolean;
@@ -91,7 +91,7 @@ export type Context = {
 
 export type PublicClient = {
   id: string;
-  specId?: string;
+  legacyId?: string;
   nom: string;
   mandataire: string;
   chefDeFile?: string;
@@ -102,8 +102,8 @@ export type Revision = {
   id?: string;
   clientId?: string;
   codeCommune: string;
-  ready: boolean;
-  current: boolean;
+  isReady: boolean;
+  isCurrent: boolean;
   status: StatusRevisionEnum;
   context?: Context;
   validation?: Validation | null;
@@ -163,10 +163,10 @@ export type Client = {
   id?: string;
   mandataireId?: string;
   chefDeFileId?: string;
-  specId: string;
+  legacyId: string;
   nom: string;
-  active: boolean;
-  modeRelax: boolean;
+  isActive: boolean;
+  isRelaxMode: boolean;
   token?: string;
   authorizationStrategy: AuthorizationStrategyEnum;
   createdAt: Date;

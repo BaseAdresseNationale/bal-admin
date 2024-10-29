@@ -9,7 +9,7 @@ import Tooltip from "@/components/tooltip";
 export const RevisionItemApiDepot = ({
   id,
   status,
-  current = false,
+  isCurrent = false,
   client,
   validation,
   createdAt,
@@ -43,7 +43,7 @@ export const RevisionItemApiDepot = ({
         type="checkbox"
         id="checkbox"
         name="checkbox"
-        checked={current}
+        checked={isCurrent}
         disabled
       />
     </td>

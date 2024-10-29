@@ -29,7 +29,7 @@ const ClientItem = ({
         type="checkbox"
         id="checkbox"
         name="checkbox"
-        checked={client.active}
+        checked={client.isActive}
         disabled
       />
     </td>
@@ -38,7 +38,7 @@ const ClientItem = ({
         type="checkbox"
         id="checkbox"
         name="checkbox"
-        checked={client.modeRelax}
+        checked={client.isRelaxMode}
         disabled
       />
     </td>
