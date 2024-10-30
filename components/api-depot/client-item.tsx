@@ -1,5 +1,6 @@
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Link from "next/link";
 import { ChefDeFile, Client, Mandataire } from "types/api-depot.types";
 import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
@@ -25,21 +26,31 @@ const ClientItem = ({
     <td className="fr-col fr-my-1v">{chefDeFile ? chefDeFile.nom : "-"}</td>
     <td className="fr-col fr-my-1v">{client.authorizationStrategy}</td>
     <td className="fr-col fr-my-1v">
-      <input
-        type="checkbox"
-        id="checkbox"
-        name="checkbox"
-        checked={client.isActive}
-        disabled
+      <Checkbox
+        options={[
+          {
+            label: "",
+            nativeInputProps: {
+              value: "value1",
+              checked: client.isActive,
+              readOnly: true,
+            },
+          },
+        ]}
       />
     </td>
     <td className="fr-col fr-my-1v">
-      <input
-        type="checkbox"
-        id="checkbox"
-        name="checkbox"
-        checked={client.isRelaxMode}
-        disabled
+      <Checkbox
+        options={[
+          {
+            label: "",
+            nativeInputProps: {
+              value: "value1",
+              checked: client.isRelaxMode,
+              readOnly: true,
+            },
+          },
+        ]}
       />
     </td>
     <td className="fr-col fr-my-1v">

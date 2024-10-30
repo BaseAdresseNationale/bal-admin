@@ -34,11 +34,11 @@ const Client = () => {
       const client = await getClient(clientId, isDemo);
       setClient(client);
 
-      const mandataire = await getMandataire(client.mandataire, isDemo);
+      const mandataire = await getMandataire(client.mandataireId, isDemo);
       setMandataire(mandataire);
 
-      if (client.chefDeFile) {
-        const chefDeFile = await getChefDeFile(client.chefDeFile, isDemo);
+      if (client.chefDeFileId) {
+        const chefDeFile = await getChefDeFile(client.chefDeFileId, isDemo);
         setChefDeFile(chefDeFile);
       }
 

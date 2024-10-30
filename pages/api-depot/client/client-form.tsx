@@ -41,8 +41,9 @@ const newClientFormData: Partial<Client> = {
   nom: "",
   isRelaxMode: false,
   isActive: false,
-  mandataireId: "",
-  chefDeFileId: "",
+  mandataireId: null,
+  mandataire: null,
+  chefDeFileId: null,
 };
 
 const ClientForm = () => {
@@ -74,6 +75,7 @@ const ClientForm = () => {
       setChefsDeFileOptions(chefsDeFile);
       if (clientId) {
         const client: Client = await getClient(clientId, isDemo);
+        setAuthorizationStrategy(client.authorizationStrategy);
         setFormData({
           nom: client.nom,
           isRelaxMode: client.isRelaxMode,
@@ -107,44 +109,52 @@ const ClientForm = () => {
 
   const handleSumit = async (event) => {
     event.preventDefault();
-    const { nom, isRelaxMode, isActive, mandataireId, chefDeFileId } = formData;
+    const {
+      nom,
+      isRelaxMode,
+      isActive,
+      mandataireId,
+      mandataire,
+      chefDeFileId,
+    } = formData;
     const body: Partial<Client> = {
       nom,
       isRelaxMode,
       isActive,
-      mandataireId: undefined,
+      authorizationStrategy,
     };
+
     if (
-      chefDeFileId &&
-      authorizationStrategy === AuthorizationStrategyEnum.CHEF_DE_FILE
+      authorizationStrategy === AuthorizationStrategyEnum.CHEF_DE_FILE &&
+      chefDeFileId
     ) {
       body.chefDeFileId = chefDeFileId;
     }
 
     try {
-      // Gestion du mandataire sélectionné ou créé
-      if (typeof mandataireId === "object") {
+      if (mandataireId) {
+        body.mandataireId = mandataireId;
+      } else if (mandataire) {
         const newMandataire: Mandataire = await createMandataire(
-          mandataireId,
+          mandataire,
           isDemo
         );
         body.mandataireId = newMandataire.id;
-      } else {
-        body.mandataireId = mandataireId;
       }
 
-      let _clientId = clientId;
-      if (_clientId) {
-        await updateClient(_clientId, body, isDemo);
+      if (clientId) {
+        await updateClient(clientId, body, isDemo);
+        await router.push({
+          pathname: "/api-depot/client",
+          query: { clientId, demo: isDemo ? 1 : 0 },
+        });
       } else {
         const response = await createClient(body, isDemo);
-        _clientId = response.id;
+        await router.push({
+          pathname: "/api-depot/client",
+          query: { clientId: response.id, demo: isDemo ? 1 : 0 },
+        });
       }
-
-      await router.push({
-        pathname: "/api-depot/client",
-        query: { clientId: _clientId, demo: isDemo ? 1 : 0 },
-      });
     } catch (error: unknown) {
       setSubmitError((error as any).message || "");
     }
@@ -155,9 +165,9 @@ const ClientForm = () => {
       return;
     }
 
-    const { nom, mandataireId, chefDeFileId } = formData;
+    const { nom, mandataireId, mandataire, chefDeFileId } = formData;
 
-    let isFormValid: any = nom && mandataireId;
+    let isFormValid: any = nom && (mandataireId || mandataire);
 
     if (
       authorizationStrategy === AuthorizationStrategyEnum.CHEF_DE_FILE &&
@@ -223,6 +233,7 @@ const ClientForm = () => {
               selectedMandataire={formData.mandataireId}
               mandataires={mandatairesOptions}
               onSelect={handleEdit("mandataireId")}
+              onCreate={handleEdit("mandataire")}
             />
 
             {authorizationStrategy ===
@@ -231,7 +242,7 @@ const ClientForm = () => {
                 {isformChefDeFileOpen ? (
                   <ChefDeFileForm
                     initialChefDeFile={initialChefDeFileForm}
-                    onSelect={handleEdit("chefDeFile")}
+                    onSelect={handleEdit("chefDeFileId")}
                     isDemo={isDemo}
                     close={() => closeFormChefDeFile()}
                   />
@@ -240,7 +251,7 @@ const ClientForm = () => {
                     <ChefDeFileSelect
                       selectedChefDeFile={formData.chefDeFileId}
                       chefsDeFile={chefsDeFileOptions}
-                      onSelect={handleEdit("chefDeFile")}
+                      onSelect={handleEdit("chefDeFileId")}
                     />
                     <div className="fr-my-4w">
                       <div className="fr-grid-row">

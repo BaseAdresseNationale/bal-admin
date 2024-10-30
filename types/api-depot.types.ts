@@ -147,8 +147,8 @@ export type Mandataire = {
   id?: string;
   nom: string;
   email: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 // CLIENT
@@ -171,4 +171,6 @@ export type Client = {
   authorizationStrategy: AuthorizationStrategyEnum;
   createdAt: Date;
   updatedAt: Date;
+  mandataire?: Mandataire;
+  chefDeFile?: ChefDeFile;
 };

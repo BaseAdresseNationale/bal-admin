@@ -29,7 +29,7 @@ function getProxyURL(isDemo: boolean = false): string {
   return isDemo ? PROXY_API_DEPOT_DEMO_URL : PROXY_API_DEPOT_URL;
 }
 
-export async function getClient(clientId, isDemo) {
+export async function getClient(clientId, isDemo): Promise<Client> {
   const response = await fetch(`${getProxyURL(isDemo)}/clients/${clientId}`);
 
   return processResponse(response);

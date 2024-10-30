@@ -11,12 +11,14 @@ import { Mandataire } from "types/api-depot.types";
 interface MandataireFormProps {
   selectedMandataire: string;
   mandataires: Mandataire[];
-  onSelect: (value: any) => void;
+  onSelect: (value: string) => void;
+  onCreate: (value: Mandataire) => void;
 }
 
 const MandataireForm = ({
   selectedMandataire,
   onSelect,
+  onCreate,
   mandataires = [],
 }: MandataireFormProps) => {
   const [nom, setNom] = useState<string>("");
@@ -36,7 +38,7 @@ const MandataireForm = ({
   const handleCreationForm = (event, isOpen) => {
     event.preventDefault();
     setIsCreateFormOpen(isOpen);
-    onSelect("");
+    onSelect(null);
   };
 
   useEffect(() => {
@@ -50,9 +52,9 @@ const MandataireForm = ({
 
   useEffect(() => {
     if (nom && email && isEmailValid) {
-      onSelect({ nom, email });
+      onCreate({ nom, email });
     }
-  }, [nom, email, isEmailValid, onSelect]);
+  }, [nom, email, isEmailValid]);
 
   return (
     <div className="fr-my-4w">

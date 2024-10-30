@@ -8,6 +8,7 @@ import {
   Perimeter,
   TypePerimeterEnum,
 } from "types/api-depot.types";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
 function getPerimeters(perimetre: Perimeter[]) {
   return perimetre
@@ -55,31 +56,32 @@ const ChefDeFile = ({
               <h3>{nom}</h3>
               <CopyToClipBoard text={id} title="Id" />
               <CopyToClipBoard text={email} title="Email" />
-              <div className="fr-col">
-                <input
-                  type="checkbox"
-                  id="checkbox"
-                  name="checkbox"
-                  checked={isEmailPublic}
-                  disabled
-                />
-                <label className="fr-label" htmlFor="checkbox">
-                  Email Public
-                </label>
-              </div>
-            </div>
-
-            <div className="fr-col">
-              <input
-                type="checkbox"
-                id="checkbox"
-                name="checkbox"
-                checked={isSignataireCharte}
-                disabled
+              <Checkbox
+                state={isEmailPublic ? "success" : "error"}
+                options={[
+                  {
+                    label: "Email public",
+                    nativeInputProps: {
+                      value: "value1",
+                      checked: isEmailPublic,
+                      readOnly: true,
+                    },
+                  },
+                ]}
               />
-              <label className="fr-label" htmlFor="checkbox">
-                signataire de la charte
-              </label>
+              <Checkbox
+                state={isSignataireCharte ? "success" : "error"}
+                options={[
+                  {
+                    label: "Signataire de la charte",
+                    nativeInputProps: {
+                      value: "value1",
+                      checked: isSignataireCharte,
+                      readOnly: true,
+                    },
+                  },
+                ]}
+              />
             </div>
           </div>
 
