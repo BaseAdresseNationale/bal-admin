@@ -5,7 +5,7 @@ const API_ANNUAIRE =
   process.env.API_ANNUAIRE ||
   "https://api-lannuaire.service-public.fr/api/explore/v2.1";
 
-async function getCommuneEmail(codeCommune) {
+export async function getCommuneEmail(codeCommune: string) {
   try {
     const url = `${API_ANNUAIRE}/catalog/datasets/api-lannuaire-administration/records?where=pivot%20LIKE%20"mairie"%20AND%20code_insee_commune="${codeCommune}"`;
     const response = await got(url, { responseType: "json" });
@@ -35,16 +35,12 @@ async function getCommuneEmail(codeCommune) {
   }
 }
 
-function normalize(str) {
+function normalize(str: string): string {
   return deburr(str).toLowerCase();
 }
 
-function validateEmail(email) {
+function validateEmail(email: string): boolean {
   const re =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([a-zA-Z\-\d]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
 }
-
-module.exports = {
-  getCommuneEmail,
-};

@@ -10,7 +10,7 @@ const {
 
 const collectionName = "partenaires-de-la-charte";
 
-async function findMany(query = {}) {
+export async function findMany(query = {}) {
   const {
     codeDepartement,
     services,
@@ -62,7 +62,7 @@ async function findMany(query = {}) {
   return records;
 }
 
-async function findManyPaginated(query = {}, page = 1, limit = 10) {
+export async function findManyPaginated(query = {}, page = 1, limit = 10) {
   const {
     search,
     codeDepartement,
@@ -81,7 +81,7 @@ async function findManyPaginated(query = {}, page = 1, limit = 10) {
       };
 
   if (search) {
-    mongoQuery.name = { $regex: search, $options: "i" }
+    mongoQuery.name = { $regex: search, $options: "i" };
   }
 
   if (type) {
@@ -120,7 +120,12 @@ async function findManyPaginated(query = {}, page = 1, limit = 10) {
     ...mongoQuery,
     type: "entreprise",
   });
-  const records = await mongoClient.findManyPaginated(collectionName, mongoQuery, page, limit);
+  const records = await mongoClient.findManyPaginated(
+    collectionName,
+    mongoQuery,
+    page,
+    limit
+  );
 
   if (withoutPictures) {
     return records.map((record) => {
@@ -129,10 +134,16 @@ async function findManyPaginated(query = {}, page = 1, limit = 10) {
     });
   }
 
-  return {total, totalCommunes, totalOrganismes, totalEntreprises, data: records};
+  return {
+    total,
+    totalCommunes,
+    totalOrganismes,
+    totalEntreprises,
+    data: records,
+  };
 }
 
-async function findOneOrFail(id) {
+export async function findOneOrFail(id) {
   const record = await mongoClient.findOneById(collectionName, id);
 
   if (!record) {
@@ -142,13 +153,13 @@ async function findOneOrFail(id) {
   return record;
 }
 
-async function findDistinct(property) {
+export async function findDistinct(property) {
   const records = await mongoClient.findDistinct(collectionName, property);
 
   return records;
 }
 
-async function createOne(payload, options = {}) {
+export async function createOne(payload, options = {}) {
   const { isCandidate, noValidation } = options;
   let validationSchema;
   switch (payload.type) {
@@ -187,7 +198,7 @@ async function createOne(payload, options = {}) {
   return newRecord;
 }
 
-async function updateOne(id, payload, { acceptCandidacy = false }) {
+export async function updateOne(id, payload, { acceptCandidacy = false }) {
   let validationSchema;
   switch (payload.type) {
     case "commune":
@@ -225,19 +236,9 @@ async function updateOne(id, payload, { acceptCandidacy = false }) {
   return updatedRecord;
 }
 
-async function deleteOne(id) {
+export async function deleteOne(id) {
   const recordToDelete = await findOneOrFail(id);
   await mongoClient.deleteOne(collectionName, id, recordToDelete);
 
   return true;
 }
-
-module.exports = {
-  findMany,
-  findManyPaginated,
-  findOneOrFail,
-  createOne,
-  updateOne,
-  deleteOne,
-  findDistinct,
-};

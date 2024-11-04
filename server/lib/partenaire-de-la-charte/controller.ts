@@ -1,10 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const { shuffle } = require("../../utils/random");
-const { routeGuard } = require("../../route-guard");
-const PartenaireDeLaCharteService = require("./service");
+import express from "express";
+import cors from "cors";
+import { shuffle } from "../../utils/random";
+import routeGuard from "../../route-guard";
+import PartenaireDeLaCharteService from "./service";
 
-const partenaireDeLaCharteRoutes = new express.Router();
+const partenaireDeLaCharteRoutes = express.Router();
 
 partenaireDeLaCharteRoutes.use(express.json());
 partenaireDeLaCharteRoutes.use(cors());
@@ -23,12 +23,13 @@ partenaireDeLaCharteRoutes.get("/", async (req, res) => {
 
 partenaireDeLaCharteRoutes.get("/paginated", async (req, res) => {
   try {
-    const {page, limit, ...query} = req.query;
-    const partenairesDeLaCharte = await PartenaireDeLaCharteService.findManyPaginated(
-      query,
-      parseInt(page),
-      parseInt(limit)
-    );
+    const { page, limit, ...query } = req.query;
+    const partenairesDeLaCharte =
+      await PartenaireDeLaCharteService.findManyPaginated(
+        query,
+        parseInt(page),
+        parseInt(limit)
+      );
     res.json(partenairesDeLaCharte);
   } catch (err) {
     console.error(err);
@@ -136,4 +137,4 @@ partenaireDeLaCharteRoutes.delete("/:id", routeGuard, async (req, res) => {
   }
 });
 
-module.exports = partenaireDeLaCharteRoutes;
+export default partenaireDeLaCharteRoutes;
