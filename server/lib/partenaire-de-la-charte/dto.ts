@@ -7,13 +7,11 @@ import {
   IsOptional,
   IsEnum,
   IsUrl,
+  IsDate,
 } from "class-validator";
 import { TypePartenaireDeLaCharteEnum } from "./entity";
 
 export class PartenaireDeLaCharteDTO {
-  @IsMongoId()
-  id?: string;
-
   @IsString()
   name: string;
 
@@ -48,6 +46,10 @@ export class PartenaireDeLaCharteDTO {
   @IsOptional()
   @IsString({ each: true })
   service: string[];
+
+  @IsOptional()
+  @IsDate()
+  signatureDate: Date;
 
   @IsOptional()
   @IsMongoId({ each: true })

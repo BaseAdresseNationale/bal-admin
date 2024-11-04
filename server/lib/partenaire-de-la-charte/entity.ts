@@ -6,6 +6,16 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
+export enum ServicePartenaireDeLaCharteEnum {
+  ACCOMPAGNEMENT_TECHNIQUE = "accompagnement technique",
+  FORMATION = "formation",
+  FORMATION_TECHNIQUE = "formation technique",
+  MISE_A_DISPOSITION = "mise à disposition d'outils mutualisés",
+  PARTAGE_EXPERIENCE = "partage d'expérience",
+  REALISATION_BAL = "réalisation de bases adresses locales",
+  SENSIBILISATION = "sensibilisation",
+}
+
 export enum TypePartenaireDeLaCharteEnum {
   COMMUNE = "commune",
   ORGANISME = "organisme",
@@ -48,8 +58,12 @@ export class PartenaireDeLaCharte {
   @Column("text", { nullable: true, array: true, name: "code_departement" })
   codeDepartement: string[];
 
-  @Column("text", { nullable: true, array: true })
-  service: string[];
+  @Column("enum", {
+    enum: ServicePartenaireDeLaCharteEnum,
+    nullable: false,
+    array: true,
+  })
+  services: ServicePartenaireDeLaCharteEnum[];
 
   @Column("text", {
     nullable: true,
@@ -66,6 +80,9 @@ export class PartenaireDeLaCharte {
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
+
+  @Column("timestamp", { nullable: true, name: "signature_date" })
+  signatureDate: Date;
 
   // COMMUNE
 

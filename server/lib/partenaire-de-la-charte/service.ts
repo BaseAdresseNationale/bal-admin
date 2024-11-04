@@ -1,16 +1,16 @@
-const { ObjectId } = require("mongodb");
-const mongoClient = require("../../utils/mongo-client");
-const { validPayload } = require("../../utils/payload");
-const { sendTemplateMail } = require("../mailer/service");
-const {
-  createCommuneSchema,
-  createOrganismeSchema,
-  createEntrepriseSchema,
-} = require("./schemas");
+import { validateOrReject } from "class-validator";
 
-const collectionName = "partenaires-de-la-charte";
+import { sendTemplateMail } from "../mailer/service";
+import { PartenaireDeLaCharteDTO } from "./dto";
+import { AppDataSource } from "server/utils/typeorm-client";
+import { PartenaireDeLaCharte, TypePartenaireDeLaCharteEnum } from "./entity";
+import { isDate } from "date-fns";
+import { FindOptionsWhere, In, IsNull, Not, UpdateResult } from "typeorm";
 
-export async function findMany(query = {}) {
+const partenaireDeLaCharteRepository =
+  AppDataSource.getRepository(PartenaireDeLaCharte);
+
+export async function findMany(query: any = {}) {
   const {
     codeDepartement,
     services,
@@ -21,36 +21,30 @@ export async function findMany(query = {}) {
     apiDepotClientId,
   } = query;
 
-  const mongoQuery = withCandidates
-    ? {}
-    : {
-        signatureDate: { $exists: true },
-      };
+  const where: FindOptionsWhere<PartenaireDeLaCharte> = {
+    ...(type && type),
+    ...(dataGouvOrganizationId && dataGouvOrganizationId),
+    ...(apiDepotClientId && apiDepotClientId),
+  };
 
-  if (type) {
-    mongoQuery.type = type;
-  }
-
-  if (dataGouvOrganizationId) {
-    mongoQuery.dataGouvOrganizationId = dataGouvOrganizationId;
-  }
-
-  if (apiDepotClientId) {
-    mongoQuery.apiDepotClientId = apiDepotClientId;
-  }
-
-  if (codeDepartement) {
-    mongoQuery.$or = [
-      { codeDepartement: { $in: [codeDepartement] } },
-      { isPerimeterFrance: true },
-    ];
+  if (!withCandidates) {
+    where.signatureDate = Not(IsNull());
   }
 
   if (services) {
-    mongoQuery.services = { $in: services.split(",") };
+    where.services = In(services.split(","));
   }
 
-  const records = await mongoClient.findMany(collectionName, mongoQuery);
+  const queryPG = partenaireDeLaCharteRepository
+    .createQueryBuilder()
+    .where(where);
+  if (codeDepartement) {
+    queryPG.andWhere(
+      "codeDepartement = :codeDepartement OR isPerimeterFrance IS true",
+      { codeDepartement }
+    );
+  }
+  const records: PartenaireDeLaCharte[] = await queryPG.getMany();
 
   if (withoutPictures) {
     return records.map((record) => {
@@ -62,9 +56,8 @@ export async function findMany(query = {}) {
   return records;
 }
 
-export async function findManyPaginated(query = {}, page = 1, limit = 10) {
+export async function findManyPaginated(query: any = {}, page = 1, limit = 10) {
   const {
-    search,
     codeDepartement,
     services,
     type,
@@ -74,57 +67,49 @@ export async function findManyPaginated(query = {}, page = 1, limit = 10) {
     apiDepotClientId,
   } = query;
 
-  const mongoQuery = withCandidates
-    ? {}
-    : {
-        signatureDate: { $exists: true },
-      };
+  const offset = (page - 1) * limit;
 
-  if (search) {
-    mongoQuery.name = { $regex: search, $options: "i" };
-  }
+  const where: FindOptionsWhere<PartenaireDeLaCharte> = {
+    ...(type && type),
+    ...(dataGouvOrganizationId && dataGouvOrganizationId),
+    ...(apiDepotClientId && apiDepotClientId),
+  };
 
-  if (type) {
-    mongoQuery.type = type;
-  }
-
-  if (dataGouvOrganizationId) {
-    mongoQuery.dataGouvOrganizationId = dataGouvOrganizationId;
-  }
-
-  if (apiDepotClientId) {
-    mongoQuery.apiDepotClientId = apiDepotClientId;
-  }
-
-  if (codeDepartement) {
-    mongoQuery.$or = [
-      { codeDepartement: { $in: [codeDepartement] } },
-      { isPerimeterFrance: true },
-    ];
+  if (!withCandidates) {
+    where.signatureDate = Not(IsNull());
   }
 
   if (services) {
-    mongoQuery.services = { $in: services.split(",") };
+    where.services = In(services.split(","));
   }
 
-  const total = await mongoClient.count(collectionName, mongoQuery);
-  const totalCommunes = await mongoClient.count(collectionName, {
-    ...mongoQuery,
-    type: "commune",
+  const queryPG = partenaireDeLaCharteRepository
+    .createQueryBuilder()
+    .where(where)
+    .limit(limit)
+    .offset(offset);
+
+  if (codeDepartement) {
+    queryPG.andWhere(
+      "codeDepartement = :codeDepartement OR isPerimeterFrance IS true",
+      { codeDepartement }
+    );
+  }
+  const [records, total]: [PartenaireDeLaCharte[], number] =
+    await queryPG.getManyAndCount();
+
+  const totalCommunes: number = await partenaireDeLaCharteRepository.countBy({
+    type: TypePartenaireDeLaCharteEnum.COMMUNE,
   });
-  const totalOrganismes = await mongoClient.count(collectionName, {
-    ...mongoQuery,
-    type: "organisme",
+
+  const totalOrganismes: number = await partenaireDeLaCharteRepository.countBy({
+    type: TypePartenaireDeLaCharteEnum.ORGANISME,
   });
-  const totalEntreprises = await mongoClient.count(collectionName, {
-    ...mongoQuery,
-    type: "entreprise",
-  });
-  const records = await mongoClient.findManyPaginated(
-    collectionName,
-    mongoQuery,
-    page,
-    limit
+
+  const totalEntreprises: number = await partenaireDeLaCharteRepository.countBy(
+    {
+      type: TypePartenaireDeLaCharteEnum.ENTREPRISE,
+    }
   );
 
   if (withoutPictures) {
@@ -143,8 +128,8 @@ export async function findManyPaginated(query = {}, page = 1, limit = 10) {
   };
 }
 
-export async function findOneOrFail(id) {
-  const record = await mongoClient.findOneById(collectionName, id);
+export async function findOneOrFail(id: string) {
+  const record = await partenaireDeLaCharteRepository.findOneByOrFail({ id });
 
   if (!record) {
     throw new Error(`Partenaire de la charte ${id} introuvable`);
@@ -153,39 +138,26 @@ export async function findOneOrFail(id) {
   return record;
 }
 
-export async function findDistinct(property) {
-  const records = await mongoClient.findDistinct(collectionName, property);
-
-  return records;
-}
-
-export async function createOne(payload, options = {}) {
+export async function createOne(
+  payload: PartenaireDeLaCharteDTO,
+  options: any = {}
+): Promise<PartenaireDeLaCharte> {
   const { isCandidate, noValidation } = options;
-  let validationSchema;
-  switch (payload.type) {
-    case "commune":
-      validationSchema = createCommuneSchema;
-      break;
-    case "organisme":
-      validationSchema = createOrganismeSchema;
-      break;
-    case "entreprise":
-      validationSchema = createEntrepriseSchema;
-      break;
-    default:
-      throw new Error(`Type de partenaire inconnu: ${payload.type}`);
+  if (!noValidation) {
+    await validateOrReject(payload);
   }
 
-  const newRecord = noValidation
-    ? payload
-    : validPayload(payload, validationSchema);
+  const entityToSave: PartenaireDeLaCharte =
+    this.partenaireDeLaCharteRepository.create({
+      payload,
+    });
 
-  newRecord._id = new ObjectId();
   if (!isCandidate) {
-    newRecord.signatureDate = new Date();
+    entityToSave.signatureDate = new Date();
   }
 
-  await mongoClient.insertOne(collectionName, newRecord);
+  const newRecord: PartenaireDeLaCharte =
+    await this.partenaireDeLaCharteRepository.save(entityToSave);
 
   if (isCandidate) {
     try {
@@ -198,47 +170,27 @@ export async function createOne(payload, options = {}) {
   return newRecord;
 }
 
-export async function updateOne(id, payload, { acceptCandidacy = false }) {
-  let validationSchema;
-  switch (payload.type) {
-    case "commune":
-      validationSchema = createCommuneSchema;
-      break;
-    case "organisme":
-      validationSchema = createOrganismeSchema;
-      break;
-    case "entreprise":
-      validationSchema = createEntrepriseSchema;
-      break;
-    default:
-      throw new Error(`Type de partenaire inconnu: ${payload.type}`);
+export async function updateOne(
+  id: string,
+  payload: PartenaireDeLaCharteDTO,
+  { acceptCandidacy = false }
+): Promise<PartenaireDeLaCharte> {
+  await validateOrReject(payload);
+
+  if (!acceptCandidacy && !isDate(payload.signatureDate)) {
+    throw Error("Invalid payload");
   }
 
-  if (!acceptCandidacy) {
-    validationSchema = {
-      ...validationSchema,
-      signatureDate: { isRequired: true, type: "string" },
-    };
-  }
-
-  const newRecord = validPayload(payload, validationSchema);
-  newRecord.signatureDate = acceptCandidacy
+  payload.signatureDate = acceptCandidacy
     ? new Date()
-    : new Date(newRecord.signatureDate);
+    : new Date(payload.signatureDate);
 
-  await findOneOrFail(id);
-  const updatedRecord = await mongoClient.updateOne(
-    collectionName,
-    id,
-    newRecord
-  );
+  await partenaireDeLaCharteRepository.update({ id }, payload);
 
-  return updatedRecord;
+  return findOneOrFail(id);
 }
 
-export async function deleteOne(id) {
-  const recordToDelete = await findOneOrFail(id);
-  await mongoClient.deleteOne(collectionName, id, recordToDelete);
-
+export async function deleteOne(id: string): Promise<boolean> {
+  await partenaireDeLaCharteRepository.delete({ id });
   return true;
 }

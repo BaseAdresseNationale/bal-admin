@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import { shuffle } from "../../utils/random";
 import routeGuard from "../../route-guard";
-import PartenaireDeLaCharteService from "./service";
+import * as PartenaireDeLaCharteService from "./service";
+import { ServicePartenaireDeLaCharteEnum } from "./entity";
 
 const partenaireDeLaCharteRoutes = express.Router();
 
@@ -27,8 +28,8 @@ partenaireDeLaCharteRoutes.get("/paginated", async (req, res) => {
     const partenairesDeLaCharte =
       await PartenaireDeLaCharteService.findManyPaginated(
         query,
-        parseInt(page),
-        parseInt(limit)
+        parseInt(page as string),
+        parseInt(limit as string)
       );
     res.json(partenairesDeLaCharte);
   } catch (err) {
@@ -55,10 +56,7 @@ partenaireDeLaCharteRoutes.get("/random", async (req, res) => {
 
 partenaireDeLaCharteRoutes.get("/services", async (req, res) => {
   try {
-    const partenairesDeLaCharteServices =
-      await PartenaireDeLaCharteService.findDistinct("services");
-
-    res.json(partenairesDeLaCharteServices);
+    res.json(Object.values(ServicePartenaireDeLaCharteEnum));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
