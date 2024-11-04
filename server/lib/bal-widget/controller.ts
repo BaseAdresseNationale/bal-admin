@@ -1,10 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const {routeGuard} = require('../../route-guard')
-const BALWidgetService = require("./service");
-const MailerService = require("../mailer/service");
+import express from "express";
+import cors from "cors";
+import routeGuard from "../../route-guard";
+import * as BALWidgetService from "./service";
+import MailerService from "../mailer/service";
 
-const BALWidgetRoutes = new express.Router();
+const BALWidgetRoutes = express.Router();
 
 BALWidgetRoutes.use(express.json());
 BALWidgetRoutes.use(cors());
@@ -49,4 +49,4 @@ BALWidgetRoutes.post("/send-mail-to-commune", async (req, res) => {
   }
 });
 
-module.exports = BALWidgetRoutes;
+export default BALWidgetRoutes;
