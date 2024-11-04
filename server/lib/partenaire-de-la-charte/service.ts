@@ -2,10 +2,10 @@ import { validateOrReject } from "class-validator";
 
 import { sendTemplateMail } from "../mailer/service";
 import { PartenaireDeLaCharteDTO } from "./dto";
-import { AppDataSource } from "server/utils/typeorm-client";
+import { AppDataSource } from "../../utils/typeorm-client";
 import { PartenaireDeLaCharte, TypePartenaireDeLaCharteEnum } from "./entity";
 import { isDate } from "date-fns";
-import { FindOptionsWhere, In, IsNull, Not, UpdateResult } from "typeorm";
+import { FindOptionsWhere, In, IsNull, Not } from "typeorm";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);

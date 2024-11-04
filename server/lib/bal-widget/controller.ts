@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import routeGuard from "../../route-guard";
 import * as BALWidgetService from "./service";
-import MailerService from "../mailer/service";
+import * as MailerService from "../mailer/service";
 
 const BALWidgetRoutes = express.Router();
 

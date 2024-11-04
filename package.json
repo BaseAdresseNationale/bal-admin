@@ -14,7 +14,10 @@
     "dev": "ts-node server/index.ts",
     "lint": "eslint --ext .js,.ts,.tsx .",
     "predev": "only-include-used-icons",
-    "prebuild": "only-include-used-icons"
+    "prebuild": "only-include-used-icons",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "typeorm:migration:run": "yarn typeorm migration:run -- -d ./typeorm.config.ts",
+    "typeorm:migration:down": "yarn typeorm migration:revert -- -d ./typeorm.config.ts"
   },
   "dependencies": {
     "@codegouvfr/react-dsfr": "^0.69.0",

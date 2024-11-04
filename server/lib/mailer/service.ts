@@ -1,13 +1,8 @@
-const nodemailer = require("nodemailer");
-const templates = require("./email.templates");
-const {
-  mailSchema,
-  signalementOtherMailSchema,
-  signalementMissingNumberMailSchema,
-  signalementMissingStreetMailSchema,
-} = require("./schemas");
-const { validPayload } = require("../../utils/payload");
-const { getCommuneEmail } = require("../../utils/api-annuaire");
+import nodemailer from "nodemailer";
+import templates from "./email.templates";
+import { getCommuneEmail } from "../../utils/api-annuaire";
+import { MailDTO } from "./dto";
+import { validateOrReject } from "class-validator";
 
 const apiDepotBaseUrl =
   process.env.NEXT_PUBLIC_API_DEPOT_URL ||
@@ -39,21 +34,6 @@ function createTransport() {
 
 const transport = createTransport();
 
-async function sendTemplateMail(templateKey) {
-  const template = templates[templateKey];
-  if (!template) {
-    throw new Error(`Le template ${templateKey} n'existe pas`);
-  }
-
-  const response = await transport.sendMail(template);
-
-  if (!response) {
-    throw new Error("Une erreur est survenue lors de l'envoi de l'email");
-  }
-
-  return true;
-}
-
 async function checkCaptcha(captchaToken) {
   const response = await fetch(`https://api.hcaptcha.com/siteverify`, {
     method: "POST",
@@ -72,9 +52,24 @@ async function checkCaptcha(captchaToken) {
   return json.success;
 }
 
-async function sendFormContactMail(payload) {
-  const validatedPayload = validPayload(payload, mailSchema);
-  const { captchaToken, ...emailData } = validatedPayload;
+export async function sendTemplateMail(templateKey) {
+  const template = templates[templateKey];
+  if (!template) {
+    throw new Error(`Le template ${templateKey} n'existe pas`);
+  }
+
+  const response = await transport.sendMail(template);
+
+  if (!response) {
+    throw new Error("Une erreur est survenue lors de l'envoi de l'email");
+  }
+
+  return true;
+}
+
+export async function sendFormContactMail(payload: MailDTO) {
+  await validateOrReject(payload);
+  const { captchaToken, ...emailData } = payload;
 
   await checkCaptcha(captchaToken);
 
@@ -89,21 +84,10 @@ async function sendFormContactMail(payload) {
   return true;
 }
 
-async function sendSignalementToCommune(payload) {
-  let schema;
+export async function sendSignalementToCommune(payload: MailDTO) {
+  await validateOrReject(payload);
 
-  switch (payload.subject) {
-    case "Adresse non répertoriée":
-      schema = signalementMissingNumberMailSchema;
-      break;
-    case "Voie non répertoriée":
-      schema = signalementMissingStreetMailSchema;
-      break;
-    default:
-      schema = signalementOtherMailSchema;
-  }
-  const validatedPayload = validPayload(payload, schema);
-  const { captchaToken, ...emailData } = validatedPayload;
+  const { captchaToken, ...emailData } = payload;
 
   await checkCaptcha(captchaToken);
 
@@ -113,7 +97,7 @@ async function sendSignalementToCommune(payload) {
     `${apiDepotBaseUrl}/communes/${emailData.city}/current-revision`
   );
   const currentRevision = await currentRevisionResponse.json();
-  const publication = {
+  const publication: any = {
     client: currentRevision?.client?.nom,
   };
   if (currentRevision?.client?.nom === "Mes Adresses") {
@@ -143,9 +127,3 @@ async function sendSignalementToCommune(payload) {
 
   return true;
 }
-
-module.exports = {
-  sendTemplateMail,
-  sendFormContactMail,
-  sendSignalementToCommune,
-};

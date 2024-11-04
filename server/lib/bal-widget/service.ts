@@ -1,4 +1,4 @@
-import { AppDataSource } from "server/utils/typeorm-client";
+import { AppDataSource } from "../../utils/typeorm-client";
 import { BalWidget, TypeBalWidgetEnum } from "./entity";
 import { FindOptionsWhere } from "typeorm";
 
@@ -29,9 +29,9 @@ export async function setConfig(payload: any) {
   const record = await balWidgetRepository.findOneBy(where);
 
   if (!record) {
-    await balWidgetRepository.insert(payload);
+    await balWidgetRepository.insert(update);
   } else {
-    await balWidgetRepository.update(record.id, payload);
+    await balWidgetRepository.update(record.id, update);
   }
 
   return getConfig({ draft });

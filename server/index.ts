@@ -5,12 +5,16 @@ import next from "next";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import mongoClient from "./utils/mongo-client";
+import { AppDataSource } from "./utils/typeorm-client";
 import routeGuard from "./route-guard";
 // PROXY
 import ProxyApiDepot from "./proxy/api-depot.proxy";
 import ProxyMoissonneurBal from "./proxy/moissonneur-bal.proxy";
 import ProxyMesAdressesApi from "./proxy/mes-adresses-api.proxy";
+// CONTROLLER
+import PartenaireDeLaCharteController from "./lib/partenaire-de-la-charte/controller";
+import EventController from "./lib/events/controller";
+import BalWidgetController from "./lib/bal-widget/controller";
 
 function setDemoClient(req, res, next) {
   req.demo = 1;
@@ -28,7 +32,7 @@ async function main() {
 
   await nextApp.prepare();
 
-  await mongoClient.connect();
+  await AppDataSource.initialize();
 
   server.use(express.json({ limit: "5mb" }));
   server.use(
@@ -50,12 +54,9 @@ async function main() {
   server.use("/api/proxy-mes-adresses-api", routeGuard, ProxyMesAdressesApi);
 
   // Some Partenaire de la charte routes are public, others are protected by routeGuard
-  server.use(
-    "/api/partenaires-de-la-charte",
-    require("./lib/partenaire-de-la-charte/controller")
-  );
-  server.use("/api/events", require("./lib/events/controller"));
-  server.use("/api/bal-widget", require("./lib/bal-widget/controller"));
+  server.use("/api/partenaires-de-la-charte", PartenaireDeLaCharteController);
+  server.use("/api/events", EventController);
+  server.use("/api/bal-widget", BalWidgetController);
 
   server.use(async (req, res) => {
     // Authentification is handled by the next app using next-auth module

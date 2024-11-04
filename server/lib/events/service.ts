@@ -1,5 +1,5 @@
 import { EventDTO } from "./dto";
-import { AppDataSource } from "server/utils/typeorm-client";
+import { AppDataSource } from "../../utils/typeorm-client";
 import { Event } from "./entity";
 import { FindOptionsWhere } from "typeorm";
 import { validateOrReject } from "class-validator";
