@@ -10,9 +10,11 @@
     "Fabien Tafforeau <fabien.tafforeau@beta.gouv.fr>"
   ],
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/server/index.js",
     "dev": "nodemon server/index.ts",
+    "build:next": "next build",
+    "build:server": "tsc --project tsconfig.server.json",
+    "build": "yarn build:next && yarn build:server",
+    "start": "node dist/index.js",
     "lint": "eslint --ext .js,.ts,.tsx .",
     "predev": "only-include-used-icons",
     "prebuild": "only-include-used-icons",
