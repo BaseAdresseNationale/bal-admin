@@ -22,9 +22,9 @@ export async function findMany(query: any = {}) {
   } = query;
 
   const where: FindOptionsWhere<PartenaireDeLaCharte> = {
-    ...(type && type),
-    ...(dataGouvOrganizationId && dataGouvOrganizationId),
-    ...(apiDepotClientId && apiDepotClientId),
+    ...(type && { type }),
+    ...(dataGouvOrganizationId && { dataGouvOrganizationId }),
+    ...(apiDepotClientId && { apiDepotClientId }),
   };
 
   if (!withCandidates) {
@@ -70,9 +70,9 @@ export async function findManyPaginated(query: any = {}, page = 1, limit = 10) {
   const offset = (page - 1) * limit;
 
   const where: FindOptionsWhere<PartenaireDeLaCharte> = {
-    ...(type && type),
-    ...(dataGouvOrganizationId && dataGouvOrganizationId),
-    ...(apiDepotClientId && apiDepotClientId),
+    ...(type && { type }),
+    ...(dataGouvOrganizationId && { dataGouvOrganizationId }),
+    ...(apiDepotClientId && { apiDepotClientId }),
   };
 
   if (!withCandidates) {
