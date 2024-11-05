@@ -1,5 +1,6 @@
-const got = require("got");
-const { deburr } = require("lodash");
+import { isEmail } from "class-validator";
+import got from "got";
+import { deburr } from "lodash";
 
 const API_ANNUAIRE =
   process.env.API_ANNUAIRE ||
@@ -8,7 +9,7 @@ const API_ANNUAIRE =
 export async function getCommuneEmail(codeCommune: string) {
   try {
     const url = `${API_ANNUAIRE}/catalog/datasets/api-lannuaire-administration/records?where=pivot%20LIKE%20"mairie"%20AND%20code_insee_commune="${codeCommune}"`;
-    const response = await got(url, { responseType: "json" });
+    const response: any = await got(url, { responseType: "json" });
 
     // RECUPERE LA MAIRIE PRINCIPAL
     const mairie = response.body.results.find(
@@ -22,7 +23,7 @@ export async function getCommuneEmail(codeCommune: string) {
     const emails = mairie.adresse_courriel.split(";");
     const email = emails.shift();
 
-    if (validateEmail(email)) {
+    if (isEmail(email)) {
       return email;
     }
 
@@ -37,10 +38,4 @@ export async function getCommuneEmail(codeCommune: string) {
 
 function normalize(str: string): string {
   return deburr(str).toLowerCase();
-}
-
-function validateEmail(email: string): boolean {
-  const re =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([a-zA-Z\-\d]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
 }

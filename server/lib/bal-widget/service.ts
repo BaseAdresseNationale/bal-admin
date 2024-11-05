@@ -20,7 +20,7 @@ export async function setConfig(payload: BalWidget) {
     payload.id = new ObjectId().toHexString();
     await balWidgetRepository.insert(payload);
   } else {
-    const res = await balWidgetRepository.update({ id: record.id }, payload);
+    await balWidgetRepository.update({ id: record.id }, payload);
   }
 
   return getConfig();

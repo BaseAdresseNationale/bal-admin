@@ -1,1 +1,3 @@
-export const shuffle = (array) => array.sort(() => Math.random() - 0.5);
+import { random } from "lodash";
+
+export const shuffle = (array) => array.sort(() => random(0, 1) - 0.5);
