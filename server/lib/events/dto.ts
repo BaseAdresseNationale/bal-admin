@@ -36,7 +36,13 @@ export class EventDTO {
 
   @IsOptional()
   @IsObject()
-  address: Object;
+  address: {
+    nom?: string;
+    numero?: string;
+    voie?: string;
+    codePostal?: string;
+    commune?: string;
+  };
 
   @IsOptional()
   @IsString()

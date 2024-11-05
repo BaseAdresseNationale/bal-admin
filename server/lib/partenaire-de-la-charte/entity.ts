@@ -34,11 +34,6 @@ export class PartenaireDeLaCharte {
   @PrimaryColumn("varchar", { length: 24 })
   id?: string;
 
-  @BeforeInsert()
-  generatedObjectId?() {
-    this.id = new ObjectId().toHexString();
-  }
-
   @Column("text", { nullable: false })
   name: string;
 

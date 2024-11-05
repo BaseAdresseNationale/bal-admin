@@ -38,11 +38,6 @@ export class Event {
   @PrimaryColumn("varchar", { length: 24 })
   id?: string;
 
-  @BeforeInsert()
-  generatedObjectId?() {
-    this.id = new ObjectId().toHexString();
-  }
-
   @Column("text", { nullable: false })
   title: string;
 
@@ -71,7 +66,13 @@ export class Event {
   isOnlineOnly: boolean;
 
   @Column("json", { nullable: true })
-  address: Object;
+  address: {
+    nom?: string;
+    numero?: string;
+    voie?: string;
+    codePostal?: string;
+    commune?: string;
+  };
 
   @Column("text", { nullable: true })
   href: string;
