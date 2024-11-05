@@ -110,7 +110,7 @@ export class PartenaireDeLaCharte {
   @Column("enum", {
     enum: PartenaireDeLaCharteOrganismeTypeEnum,
     nullable: true,
-    name: "orgnisme_type",
+    name: "organisme_type",
   })
   organismeType: PartenaireDeLaCharteOrganismeTypeEnum;
 
