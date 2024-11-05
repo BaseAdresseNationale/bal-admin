@@ -63,5 +63,20 @@ export const EventItem = ({
         </Button>
       </Link>
     </td>
+    <td className="fr-col fr-my-1v">
+      <Link
+        passHref
+        href={{
+          pathname: `/events/new`,
+          query: {
+            duplicatEvent: id,
+          },
+        }}
+      >
+        <Button iconId="fr-icon-arrow-right-line" iconPosition="right">
+          Dupliquer
+        </Button>
+      </Link>
+    </td>
   </tr>
 );
