@@ -17,14 +17,14 @@ import PerimeterList from "@/components/api-depot/client/client-form/perimeter-l
 import Button from "@codegouvfr/react-dsfr/Button";
 import MoissoneurSourceItem from "@/components/moissonneur-bal/sources/moissonneur-source-item";
 import Link from "next/link";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { getPartenaireDeLaCharteByOrganizationDataGouv } from "@/lib/partenaires-de-la-charte";
+import { PartenaireDeLaCharte } from "../../../server/lib/partenaire-de-la-charte/entity";
 
 type OrganizationPageProps = {
   organization: OrganizationMoissoneurType;
   sources: SourceMoissoneurType[];
-  partenaires: PartenaireDeLaChartType[];
+  partenaires: PartenaireDeLaCharte[];
 };
 
 const OrganizationPage = ({
@@ -35,7 +35,7 @@ const OrganizationPage = ({
   const [perimeters, setPerimeters] = useState<PerimeterType[]>(
     organization?.perimeters ? organization.perimeters : []
   );
-  const [partenaire, setpPartenaire] = useState<PartenaireDeLaChartType | null>(
+  const [partenaire, setpPartenaire] = useState<PartenaireDeLaCharte | null>(
     partenaires.length > 0 ? partenaires[0] : null
   );
 
@@ -75,7 +75,7 @@ const OrganizationPage = ({
                 legacyBehavior
                 passHref
                 href={{
-                  pathname: `/partenaires-de-la-charte/${partenaire._id}`,
+                  pathname: `/partenaires-de-la-charte/${partenaire.id}`,
                 }}
               >
                 <Button priority="secondary">{partenaire.name}</Button>

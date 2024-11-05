@@ -6,20 +6,25 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-export enum ServicePartenaireDeLaCharteEnum {
-  ACCOMPAGNEMENT_TECHNIQUE = "accompagnement technique",
+export enum PartenaireDeLaCharteServiceEnum {
   FORMATION = "formation",
-  FORMATION_TECHNIQUE = "formation technique",
-  MISE_A_DISPOSITION = "mise à disposition d'outils mutualisés",
-  PARTAGE_EXPERIENCE = "partage d'expérience",
-  REALISATION_BAL = "réalisation de bases adresses locales",
-  SENSIBILISATION = "sensibilisation",
+  ACCOMPAGNEMENT_TECNIQUE = "accompagnement technique",
+  REALISATION_DE_BASES_ADRESSES_LOCALES = "réalisation de bases adresses locales",
+  MISE_A_DISPOSITION_D_OUTILS_MUTUALISES = "mise à disposition d'outils mutualisés",
+  PARTAGE_D_EXPERIENCE = "partage d'expérience",
 }
 
-export enum TypePartenaireDeLaCharteEnum {
+export enum PartenaireDeLaCharteTypeEnum {
   COMMUNE = "commune",
-  ORGANISME = "organisme",
   ENTREPRISE = "entreprise",
+  ORGANISME = "organisme",
+}
+
+export enum PartenaireDeLaCharteOrganismeTypeEnum {
+  EPCI = "epci",
+  DEPARTEMENT = "departement",
+  REGION = "region",
+  AUTRE = "autre",
 }
 
 @Entity({ name: "partenaire_de_la_charte" })
@@ -43,11 +48,11 @@ export class PartenaireDeLaCharte {
   contactEmail: string;
 
   @Column("enum", {
-    enum: TypePartenaireDeLaCharteEnum,
-    default: TypePartenaireDeLaCharteEnum.COMMUNE,
+    enum: PartenaireDeLaCharteTypeEnum,
+    default: PartenaireDeLaCharteTypeEnum.COMMUNE,
     nullable: false,
   })
-  type: TypePartenaireDeLaCharteEnum;
+  type: PartenaireDeLaCharteTypeEnum;
 
   @Column("text", { nullable: true })
   charteURL: string;
@@ -59,11 +64,11 @@ export class PartenaireDeLaCharte {
   codeDepartement: string[];
 
   @Column("enum", {
-    enum: ServicePartenaireDeLaCharteEnum,
+    enum: PartenaireDeLaCharteServiceEnum,
     nullable: false,
     array: true,
   })
-  services: ServicePartenaireDeLaCharteEnum[];
+  services: PartenaireDeLaCharteServiceEnum[];
 
   @Column("text", {
     nullable: true,
@@ -100,8 +105,12 @@ export class PartenaireDeLaCharte {
 
   // ORGANISME
 
-  @Column("text", { nullable: true, name: "orgnisme_type" })
-  organismeType: string;
+  @Column("enum", {
+    enum: PartenaireDeLaCharteOrganismeTypeEnum,
+    nullable: true,
+    name: "orgnisme_type",
+  })
+  organismeType: PartenaireDeLaCharteOrganismeTypeEnum;
 
   @Column("text", { nullable: true })
   infos: string;

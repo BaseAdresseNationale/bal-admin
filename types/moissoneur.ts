@@ -1,5 +1,5 @@
+import { PartenaireDeLaCharte } from "../server/lib/partenaire-de-la-charte/entity";
 import { PerimeterType } from "./api-depot";
-import { PartenaireDeLaChartType } from "./partenaire-de-la-charte";
 
 export type PageHarvests = {
   offset: number;
@@ -102,5 +102,5 @@ export interface OrganizationMoissoneurType {
 }
 
 export interface OrganizationBalAdminType extends OrganizationMoissoneurType {
-  partenaire?: PartenaireDeLaChartType;
+  partenaire?: PartenaireDeLaCharte;
 }

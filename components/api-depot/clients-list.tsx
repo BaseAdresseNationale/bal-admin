@@ -11,7 +11,7 @@ import {
   MandataireApiDepotType,
 } from "types/api-depot";
 import { getPartenairesDeLaCharte } from "@/lib/partenaires-de-la-charte";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
+import { PartenaireDeLaCharte } from "../../server/lib/partenaire-de-la-charte/entity";
 
 interface ClientsListProps {
   isDemo: boolean;
@@ -22,7 +22,7 @@ const ClientsList = ({ isDemo = false }: ClientsListProps) => {
     clients: ClientApiDepotType[];
     mandataires: MandataireApiDepotType[];
     chefsDeFile: ChefDeFileApiDepotType[];
-    partenaires: PartenaireDeLaChartType[];
+    partenaires: PartenaireDeLaCharte[];
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 

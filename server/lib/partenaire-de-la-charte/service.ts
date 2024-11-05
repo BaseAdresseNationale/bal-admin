@@ -3,7 +3,7 @@ import { validateOrReject } from "class-validator";
 import { sendTemplateMail } from "../mailer/service";
 import { PartenaireDeLaCharteDTO } from "./dto";
 import { AppDataSource } from "../../utils/typeorm-client";
-import { PartenaireDeLaCharte, TypePartenaireDeLaCharteEnum } from "./entity";
+import { PartenaireDeLaCharte, PartenaireDeLaCharteTypeEnum } from "./entity";
 import { isDate } from "date-fns";
 import { FindOptionsWhere, In, IsNull, Not } from "typeorm";
 
@@ -99,16 +99,16 @@ export async function findManyPaginated(query: any = {}, page = 1, limit = 10) {
     await queryPG.getManyAndCount();
 
   const totalCommunes: number = await partenaireDeLaCharteRepository.countBy({
-    type: TypePartenaireDeLaCharteEnum.COMMUNE,
+    type: PartenaireDeLaCharteTypeEnum.COMMUNE,
   });
 
   const totalOrganismes: number = await partenaireDeLaCharteRepository.countBy({
-    type: TypePartenaireDeLaCharteEnum.ORGANISME,
+    type: PartenaireDeLaCharteTypeEnum.ORGANISME,
   });
 
   const totalEntreprises: number = await partenaireDeLaCharteRepository.countBy(
     {
-      type: TypePartenaireDeLaCharteEnum.ENTREPRISE,
+      type: PartenaireDeLaCharteTypeEnum.ENTREPRISE,
     }
   );
 

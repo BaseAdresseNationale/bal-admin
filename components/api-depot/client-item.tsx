@@ -1,18 +1,18 @@
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Link from "next/link";
+import { PartenaireDeLaCharte } from "../../server/lib/partenaire-de-la-charte/entity";
 import {
   ChefDeFileApiDepotType,
   ClientApiDepotType,
   MandataireApiDepotType,
 } from "types/api-depot";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 
 interface ClientItemProps {
   client: ClientApiDepotType;
   mandataire: MandataireApiDepotType;
   chefDeFile: ChefDeFileApiDepotType;
-  partenaires: PartenaireDeLaChartType[];
+  partenaires: PartenaireDeLaCharte[];
   isDemo: boolean;
 }
 
@@ -49,12 +49,12 @@ const ClientItem = ({
     <td className="fr-col fr-my-1v">
       {partenaires && partenaires.length > 0 ? (
         partenaires.map((partenaire) => (
-          <div key={partenaire._id}>
+          <div key={partenaire.id}>
             <Link
               legacyBehavior
               passHref
               href={{
-                pathname: `/partenaires-de-la-charte/${partenaire._id}`,
+                pathname: `/partenaires-de-la-charte/${partenaire.id}`,
               }}
             >
               {partenaire.name}

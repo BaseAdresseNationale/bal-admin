@@ -3,7 +3,7 @@ import cors from "cors";
 import { shuffle } from "../../utils/random";
 import routeGuard from "../../route-guard";
 import * as PartenaireDeLaCharteService from "./service";
-import { ServicePartenaireDeLaCharteEnum } from "./entity";
+import { PartenaireDeLaCharteServiceEnum } from "./entity";
 
 const partenaireDeLaCharteRoutes = express.Router();
 
@@ -56,7 +56,7 @@ partenaireDeLaCharteRoutes.get("/random", async (req, res) => {
 
 partenaireDeLaCharteRoutes.get("/services", async (req, res) => {
   try {
-    res.json(Object.values(ServicePartenaireDeLaCharteEnum));
+    res.json(Object.values(PartenaireDeLaCharteServiceEnum));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });

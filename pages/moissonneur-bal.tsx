@@ -8,14 +8,14 @@ import MoissoneurSources from "@/components/moissonneur-bal/sources/index";
 import MoissoneurOrganizations from "@/components/moissonneur-bal/organizations";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 import { getPartenairesDeLaCharte } from "@/lib/partenaires-de-la-charte";
+import { PartenaireDeLaCharte } from "../server/lib/partenaire-de-la-charte/entity";
 
 type MoissoneurBALProps = {
   page: string;
   sources: ExtendedSourceMoissoneurType[];
   organizations: OrganizationMoissoneurType[];
-  partenaires: PartenaireDeLaChartType[];
+  partenaires: PartenaireDeLaCharte[];
 };
 
 const MoissoneurBAL = ({
@@ -60,8 +60,7 @@ export async function getServerSideProps({ query }) {
   const { page } = query;
   const sources: ExtendedSourceMoissoneurType[] = await getSources();
   const organizations: OrganizationMoissoneurType[] = await getOrganizations();
-  const partenaires: PartenaireDeLaChartType[] =
-    await getPartenairesDeLaCharte();
+  const partenaires: PartenaireDeLaCharte[] = await getPartenairesDeLaCharte();
 
   return {
     props: {
