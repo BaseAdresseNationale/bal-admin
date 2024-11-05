@@ -61,7 +61,7 @@ export class Event {
   @Column("text", { nullable: false })
   target: string;
 
-  @Column("timestamp", { nullable: true })
+  @Column("date", { nullable: true })
   date: Date;
 
   @Column("enum", { enum: EventTagEnum, nullable: false, array: true })

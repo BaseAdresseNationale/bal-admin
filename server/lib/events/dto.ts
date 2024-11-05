@@ -26,7 +26,7 @@ export class EventDTO {
   target: string;
 
   @IsDate()
-  date: Date;
+  date: Date | string;
 
   @IsEnum(EventTagEnum, { each: true })
   tags: EventTagEnum[];

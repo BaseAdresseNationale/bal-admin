@@ -181,7 +181,7 @@ export const EventForm = ({
               nativeInputProps={{
                 required: true,
                 type: "date",
-                value: formData.date.toDateString(),
+                value: formData.date,
                 onChange: handleEdit("date"),
               }}
             />

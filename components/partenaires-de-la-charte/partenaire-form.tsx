@@ -120,13 +120,17 @@ export const PartenaireForm = ({
 
   useEffect(() => {
     async function fetchOptions() {
-      const clients: ClientApiDepotType[] = await getClients(false);
+      let clients: ClientApiDepotType[] = [];
+      let organisations: OrganizationMoissoneurType[] = [];
+
+      try {
+        organisations = await getOrganizations();
+        clients = await getClients(false);
+      } catch {}
+
       setOptionClients(
         clients.map(({ _id, nom }) => ({ value: _id, label: nom }))
       );
-
-      const organisations: OrganizationMoissoneurType[] =
-        await getOrganizations();
       setOptionOrganizations(
         organisations.map(({ id, name }) => ({ value: id, label: name }))
       );
