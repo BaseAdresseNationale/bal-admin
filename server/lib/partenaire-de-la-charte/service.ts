@@ -6,6 +6,7 @@ import { AppDataSource } from "../../utils/typeorm-client";
 import { PartenaireDeLaCharte, PartenaireDeLaCharteTypeEnum } from "./entity";
 import { isDate } from "date-fns";
 import { FindOptionsWhere, In, IsNull, Not } from "typeorm";
+import { ObjectId } from "bson";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
@@ -151,6 +152,8 @@ export async function createOne(
     this.partenaireDeLaCharteRepository.create({
       payload,
     });
+
+  entityToSave.id = new ObjectId().toHexString();
 
   if (!isCandidate) {
     entityToSave.signatureDate = new Date();

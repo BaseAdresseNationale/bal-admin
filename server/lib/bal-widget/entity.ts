@@ -6,11 +6,6 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-export enum TypeBalWidgetEnum {
-  PUBLISHED = "published",
-  DRAFT = "draft",
-}
-
 export interface BALWidgetLink {
   label: string;
   url: string;
@@ -20,9 +15,6 @@ export interface BALWidgetLink {
 export class BalWidget {
   @PrimaryColumn("varchar", { length: 24 })
   id?: string;
-
-  @Column("enum", { enum: TypeBalWidgetEnum, nullable: false })
-  type?: TypeBalWidgetEnum;
 
   @Column("json", { nullable: true })
   global: {

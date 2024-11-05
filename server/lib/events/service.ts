@@ -3,6 +3,7 @@ import { AppDataSource } from "../../utils/typeorm-client";
 import { Event } from "./entity";
 import { FindOptionsWhere } from "typeorm";
 import { validateOrReject } from "class-validator";
+import { ObjectId } from "bson";
 
 const eventRepository = AppDataSource.getRepository(Event);
 
@@ -35,6 +36,7 @@ export async function findOneOrFail(id: string): Promise<Event> {
 export async function createOne(payload: EventDTO): Promise<Event> {
   await validateOrReject(payload);
   const entityToSave: Event = await eventRepository.create(payload);
+  entityToSave.id = new ObjectId().toHexString();
   return eventRepository.save(entityToSave);
 }
 

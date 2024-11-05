@@ -1,38 +1,27 @@
+import { ObjectId } from "bson";
 import { AppDataSource } from "../../utils/typeorm-client";
-import { BalWidget, TypeBalWidgetEnum } from "./entity";
-import { FindOptionsWhere } from "typeorm";
+import { BalWidget } from "./entity";
 
 const balWidgetRepository = AppDataSource.getRepository(BalWidget);
 
-export async function getConfig(query: any = {}) {
-  const { draft } = query;
-
-  const where: FindOptionsWhere<BalWidget> = {
-    type: draft ? TypeBalWidgetEnum.DRAFT : TypeBalWidgetEnum.PUBLISHED,
-  };
-
+export async function getConfig(): Promise<BalWidget> {
   try {
     const { id, createdAt, updatedAt, ...record } =
-      await balWidgetRepository.findOneBy(where);
-
+      await balWidgetRepository.findOneByOrFail({});
     return record;
   } catch (error) {
     return null;
   }
 }
 
-export async function setConfig(payload: any) {
-  const { draft, ...update } = payload;
-  const where: FindOptionsWhere<BalWidget> = {
-    type: draft ? TypeBalWidgetEnum.DRAFT : TypeBalWidgetEnum.PUBLISHED,
-  };
-  const record = await balWidgetRepository.findOneBy(where);
-
+export async function setConfig(payload: BalWidget) {
+  const record = await await balWidgetRepository.findOneByOrFail({});
   if (!record) {
-    await balWidgetRepository.insert(update);
+    payload.id = new ObjectId().toHexString();
+    await balWidgetRepository.insert(payload);
   } else {
-    await balWidgetRepository.update(record.id, update);
+    const res = await balWidgetRepository.update({ id: record.id }, payload);
   }
 
-  return getConfig({ draft });
+  return getConfig();
 }

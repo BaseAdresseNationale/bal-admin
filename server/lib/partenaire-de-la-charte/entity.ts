@@ -1,10 +1,12 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { ObjectId } from "bson";
 
 export enum PartenaireDeLaCharteServiceEnum {
   FORMATION = "formation",
@@ -31,6 +33,11 @@ export enum PartenaireDeLaCharteOrganismeTypeEnum {
 export class PartenaireDeLaCharte {
   @PrimaryColumn("varchar", { length: 24 })
   id?: string;
+
+  @BeforeInsert()
+  generatedObjectId?() {
+    this.id = new ObjectId().toHexString();
+  }
 
   @Column("text", { nullable: false })
   name: string;

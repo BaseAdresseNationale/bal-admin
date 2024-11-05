@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
@@ -6,6 +7,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { ObjectId } from "bson";
 
 export enum EventTypeEnum {
   FORMATION = "formation",
@@ -35,6 +37,11 @@ export enum EventTagEnum {
 export class Event {
   @PrimaryColumn("varchar", { length: 24 })
   id?: string;
+
+  @BeforeInsert()
+  generatedObjectId?() {
+    this.id = new ObjectId().toHexString();
+  }
 
   @Column("text", { nullable: false })
   title: string;

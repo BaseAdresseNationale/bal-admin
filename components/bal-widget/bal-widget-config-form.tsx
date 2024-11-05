@@ -101,6 +101,7 @@ export const BALWidgetConfigForm = ({
           [property]: value,
         },
       }));
+      console.log("EDIT", formData);
     };
 
   const handleToggle = (section: keyof BalWidget, property: string) => () => {
@@ -119,6 +120,7 @@ export const BALWidgetConfigForm = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("SUBMIT", formData);
     await onSubmit(formData);
   };
 

@@ -11,7 +11,7 @@ BALWidgetRoutes.use(cors());
 
 BALWidgetRoutes.get("/config", async (req, res) => {
   try {
-    const config = await BALWidgetService.getConfig(req.query);
+    const config = await BALWidgetService.getConfig();
     res.json(config);
   } catch (err) {
     console.error(err);
