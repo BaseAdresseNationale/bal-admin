@@ -22,7 +22,7 @@ export class BalWidget {
   id?: string;
 
   @Column("enum", { enum: TypeBalWidgetEnum, nullable: false })
-  type: TypeBalWidgetEnum;
+  type?: TypeBalWidgetEnum;
 
   @Column("json", { nullable: true })
   global: {
@@ -37,9 +37,6 @@ export class BalWidget {
     outdatedApiDepotClients: string[];
     outdatedHarvestSources: string[];
   };
-
-  @Column("json", { nullable: true })
-  gitbook: Object;
 
   @Column("json", { nullable: true, name: "contact_us" })
   contactUs: {

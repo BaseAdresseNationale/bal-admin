@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { BALWidgetConfig } from "types/bal-widget";
+import { BalWidget } from "../../server/lib/bal-widget/entity";
 import styled from "styled-components";
 
 const BAL_WIDGET_URL = process.env.NEXT_PUBLIC_BAL_WIDGET_URL;
 
 interface BALWidgetIFrameProps {
-  config: BALWidgetConfig;
+  config: BalWidget;
 }
 
 const StyledIFrame = styled.iframe<{ $isOpen: boolean }>`

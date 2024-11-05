@@ -1,16 +1,16 @@
 import React, { useMemo, useState } from "react";
 import { getBALWidgetConfig } from "../../lib/bal-widget";
-import { BALWidgetConfig } from "../../types/bal-widget";
+import { BalWidget } from "../../server/lib/bal-widget/entity";
 import { BALWidgetConfigForm } from "../../components/bal-widget/bal-widget-config-form";
 import { setBALWidgetConfig } from "../../lib/bal-widget";
 import { toast } from "react-toastify";
 import BALWidgetIFrame from "@/components/bal-widget/bal-widget-iframe";
 
 type BALWidgetPageProps = {
-  config: BALWidgetConfig;
+  config: BalWidget;
 };
 
-const defaultConfig: BALWidgetConfig = {
+const defaultConfig: BalWidget = {
   global: {
     title: "Centre d'aide Base Adresse Locale",
     hideWidget: false,
@@ -36,14 +36,14 @@ const defaultConfig: BALWidgetConfig = {
 };
 
 const BALWidgetPage = ({ config: baseConfig }: BALWidgetPageProps) => {
-  const [config, setConfig] = useState<BALWidgetConfig>(baseConfig);
+  const [config, setConfig] = useState<BalWidget>(baseConfig);
   const initialConfig = useMemo(
     () => (baseConfig ? { ...baseConfig } : { ...defaultConfig }),
     [baseConfig]
   );
 
-  const [formData, setFormData] = useState<BALWidgetConfig>(initialConfig);
-  const onSubmit = async (formData: BALWidgetConfig) => {
+  const [formData, setFormData] = useState<BalWidget>(initialConfig);
+  const onSubmit = async (formData: BalWidget) => {
     try {
       const config = await setBALWidgetConfig(formData);
       toast("Configuration du widget mise à jour", { type: "success" });
