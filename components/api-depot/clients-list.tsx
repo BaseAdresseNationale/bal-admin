@@ -9,10 +9,11 @@ import { getPartenairesDeLaCharte } from "@/lib/partenaires-de-la-charte";
 import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 
 interface ClientsListProps {
-  isDemo: boolean;
+  isDemo?: boolean;
 }
 
 const ClientsList = ({ isDemo = false }: ClientsListProps) => {
+  console.log("isDemo", isDemo);
   const [data, setData] = useState<{
     clients: Client[];
     mandataires: Mandataire[];
@@ -39,7 +40,7 @@ const ClientsList = ({ isDemo = false }: ClientsListProps) => {
     }
 
     fetchData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isDemo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (error) {
     return (
