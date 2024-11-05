@@ -10,28 +10,25 @@ const apiDepotBaseUrl =
 
 function createTransport() {
   // Use mailhog in development
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.SMTP_HOST) {
     return nodemailer.createTransport({
-      host: "localhost",
-      port: 587,
-      secure: false,
-      requireTLS: false,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT || 587,
+      secure: process.env.SMTP_SECURE === "YES",
+      ...(process.env.SMTP_USER &&
+        process.env.SMTP_PASS && {
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        }),
     });
+  } else {
+    if (process.env.NODE_ENV == "production") {
+      throw new Error("SMTP_HOST must be provided in production mode");
+    }
+    return nodemailer.createTransport();
   }
-
-  if (!process.env.SMTP_HOST) {
-    throw new Error("SMTP_HOST must be provided in production mode");
-  }
-
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT || 587,
-    secure: process.env.SMTP_SECURE === "YES",
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
 }
 
 const transport = createTransport();
