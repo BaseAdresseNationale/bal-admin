@@ -14,6 +14,8 @@ function createTransport() {
     return nodemailer.createTransport({
       host: "localhost",
       port: 587,
+      secure: false,
+      requireTLS: false,
     });
   }
 
