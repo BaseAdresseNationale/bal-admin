@@ -1,17 +1,12 @@
 import {
-  IsEmail,
-  IsMongoId,
-  ValidateIf,
   IsString,
-  IsBase64,
   IsOptional,
   IsEnum,
-  IsUrl,
   IsDate,
   IsBoolean,
   IsObject,
 } from "class-validator";
-import { TagEventsEnum, TypeEventsEnum } from "./entity";
+import { EventTypeEnum, EventTagEnum } from "./entity";
 
 export class EventDTO {
   @IsString()
@@ -24,8 +19,8 @@ export class EventDTO {
   @IsString()
   description: string;
 
-  @IsEnum(TypeEventsEnum)
-  type: TypeEventsEnum;
+  @IsEnum(EventTypeEnum)
+  type: EventTypeEnum;
 
   @IsString()
   target: string;
@@ -33,8 +28,8 @@ export class EventDTO {
   @IsDate()
   date: Date;
 
-  @IsEnum(TagEventsEnum, { each: true })
-  tags: TagEventsEnum[];
+  @IsEnum(EventTagEnum, { each: true })
+  tags: EventTagEnum[];
 
   @IsBoolean()
   isOnlineOnly: boolean;
@@ -45,7 +40,7 @@ export class EventDTO {
 
   @IsOptional()
   @IsString()
-  href: string;
+  href?: string;
 
   @IsBoolean()
   isSubscriptionClosed: boolean;

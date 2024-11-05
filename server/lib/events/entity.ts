@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-export enum TypeEventsEnum {
+export enum EventTypeEnum {
   FORMATION = "formation",
   FORMATION_LVL2 = "formation-lvl2",
   PARTENAIRE = "partenaire",
@@ -16,7 +16,7 @@ export enum TypeEventsEnum {
   PRESENTATION = "présentation",
 }
 
-export enum TagEventsEnum {
+export enum EventTagEnum {
   PROGRAMME_BAL = "Programme Base Adresse Locale",
   BAL = "Base Adresse Locale",
   COMMUNE = "Commune",
@@ -46,10 +46,10 @@ export class Event {
   description: string;
 
   @Column("enum", {
-    enum: TypeEventsEnum,
+    enum: EventTypeEnum,
     nullable: false,
   })
-  type: TypeEventsEnum;
+  type: EventTypeEnum;
 
   @Column("text", { nullable: false })
   target: string;
@@ -57,8 +57,8 @@ export class Event {
   @Column("timestamp", { nullable: true })
   date: Date;
 
-  @Column("enum", { enum: TagEventsEnum, nullable: false, array: true })
-  tags: TagEventsEnum[];
+  @Column("enum", { enum: EventTagEnum, nullable: false, array: true })
+  tags: EventTagEnum[];
 
   @Column("boolean", { nullable: false, name: "is_online_only" })
   isOnlineOnly: boolean;

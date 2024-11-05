@@ -5,12 +5,12 @@ import { useRouter } from "next/router";
 
 import { EventForm } from "@/components/events/event-form";
 import { createEvent } from "@/lib/events";
-import { EventType } from "types/event";
+import { EventDTO } from "server/lib/events/dto";
 
 const NewEventPage = () => {
   const router = useRouter();
 
-  const onCreate = async (formData: Partial<EventType>) => {
+  const onCreate = async (formData: EventDTO) => {
     try {
       const newEvent = await createEvent(formData);
       toast("Evènement créé", { type: "success" });
