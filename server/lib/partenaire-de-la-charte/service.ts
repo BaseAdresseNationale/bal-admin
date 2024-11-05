@@ -4,7 +4,6 @@ import { sendTemplateMail } from "../mailer/service";
 import { PartenaireDeLaCharteDTO } from "./dto";
 import { AppDataSource } from "../../utils/typeorm-client";
 import { PartenaireDeLaCharte, PartenaireDeLaCharteTypeEnum } from "./entity";
-import { isDate } from "date-fns";
 import { FindOptionsWhere, In, IsNull, Not } from "typeorm";
 import { ObjectId } from "bson";
 
@@ -149,9 +148,7 @@ export async function createOne(
   }
 
   const entityToSave: PartenaireDeLaCharte =
-    this.partenaireDeLaCharteRepository.create({
-      payload,
-    });
+    partenaireDeLaCharteRepository.create(payload);
 
   entityToSave.id = new ObjectId().toHexString();
 
@@ -160,7 +157,7 @@ export async function createOne(
   }
 
   const newRecord: PartenaireDeLaCharte =
-    await this.partenaireDeLaCharteRepository.save(entityToSave);
+    await partenaireDeLaCharteRepository.save(entityToSave);
 
   if (isCandidate) {
     try {
@@ -179,11 +176,12 @@ export async function updateOne(
   { acceptCandidacy = false }
 ): Promise<PartenaireDeLaCharte> {
   await validateOrReject(payload);
-
-  if (!acceptCandidacy && !isDate(payload.signatureDate)) {
+  if (
+    !acceptCandidacy &&
+    Number.isNaN(Date.parse(payload.signatureDate as string))
+  ) {
     throw Error("Invalid payload");
   }
-
   payload.signatureDate = acceptCandidacy
     ? new Date()
     : new Date(payload.signatureDate);

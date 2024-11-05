@@ -54,7 +54,7 @@ export class PartenaireDeLaCharteDTO {
 
   @IsOptional()
   @IsDate()
-  signatureDate?: Date;
+  signatureDate?: Date | string;
 
   @IsOptional()
   @IsMongoId({ each: true })
