@@ -22,7 +22,7 @@ function setDemoClient(req, res, next) {
 }
 
 async function main() {
-  const server = express();
+  const server: express.Express = express();
 
   const port: string | number = process.env.PORT || 9000;
   const dev: boolean = process.env.NODE_ENV !== "production";
