@@ -18,7 +18,6 @@ export enum EventTypeEnum {
 }
 
 export enum EventTagEnum {
-  PROGRAMME_BAL = "Programme Base Adresse Locale",
   BAL = "Base Adresse Locale",
   COMMUNE = "Commune",
   BAN = "Base Adresse Nationale",
@@ -82,10 +81,10 @@ export class Event {
   @Column("text", { nullable: true })
   instructions: string;
 
-  @Column("text", { nullable: false })
+  @Column("text", { nullable: false, name: "start_hour" })
   startHour: string;
 
-  @Column("text", { nullable: false })
+  @Column("text", { nullable: false, name: "end_hour" })
   endHour: string;
 
   @CreateDateColumn({ name: "created_at" })
@@ -93,7 +92,4 @@ export class Event {
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt?: Date;
-
-  @DeleteDateColumn({ name: "deleted_at" })
-  deletedAt?: Date;
 }

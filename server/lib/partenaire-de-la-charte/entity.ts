@@ -11,6 +11,7 @@ export enum PartenaireDeLaCharteServiceEnum {
   ACCOMPAGNEMENT_TECNIQUE = "accompagnement technique",
   REALISATION_DE_BASES_ADRESSES_LOCALES = "réalisation de bases adresses locales",
   MISE_A_DISPOSITION_D_OUTILS_MUTUALISES = "mise à disposition d'outils mutualisés",
+  SENSIBILISATION = "sensibilisation",
   PARTAGE_D_EXPERIENCE = "partage d'expérience",
 }
 
@@ -27,7 +28,7 @@ export enum PartenaireDeLaCharteOrganismeTypeEnum {
   AUTRE = "autre",
 }
 
-@Entity({ name: "partenaire_de_la_charte" })
+@Entity({ name: "partenaires_de_la_charte" })
 export class PartenaireDeLaCharte {
   @PrimaryColumn("varchar", { length: 24 })
   id?: string;
@@ -54,7 +55,7 @@ export class PartenaireDeLaCharte {
   })
   type: PartenaireDeLaCharteTypeEnum;
 
-  @Column("text", { nullable: true })
+  @Column("text", { nullable: true, name: "charte_url" })
   charteURL: string;
 
   @Column("text", { nullable: true })
@@ -97,10 +98,10 @@ export class PartenaireDeLaCharte {
   @Column("text", { nullable: true, name: "code_commune" })
   codeCommune: string;
 
-  @Column("text", { nullable: true })
+  @Column("text", { nullable: true, name: "testimony_url" })
   testimonyURL: string;
 
-  @Column("text", { nullable: true })
+  @Column("text", { nullable: true, name: "bal_url" })
   balURL: string;
 
   // ORGANISME
@@ -118,8 +119,8 @@ export class PartenaireDeLaCharte {
   @Column("text", { nullable: true })
   perimeter: string;
 
-  // ENTRPRISE
+  // ENTREPRISE
 
-  @Column("boolean", { nullable: true, name: "is_petimeter_france" })
+  @Column("boolean", { nullable: true, name: "is_perimeter_france" })
   isPerimeterFrance: boolean;
 }

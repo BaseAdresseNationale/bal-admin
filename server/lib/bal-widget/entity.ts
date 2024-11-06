@@ -11,7 +11,7 @@ export interface BALWidgetLink {
   url: string;
 }
 
-@Entity({ name: "bal-widget" })
+@Entity({ name: "bal_widget" })
 export class BalWidget {
   @PrimaryColumn("varchar", { length: 24 })
   id?: string;
