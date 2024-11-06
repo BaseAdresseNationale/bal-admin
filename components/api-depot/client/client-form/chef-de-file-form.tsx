@@ -8,7 +8,6 @@ import { checkEmail } from "@/lib/util/email";
 import { ChefDeFile, Perimeter } from "types/api-depot.types";
 import { createChefDeFile, updateChefDeFile } from "@/lib/api-depot";
 import PerimeterList from "@/components/api-depot/client/client-form/perimeter-list";
-import ChefDeFile from "../../chef-de-file";
 
 interface ChefDeFileFormProps {
   initialChefDeFile: ChefDeFile;
