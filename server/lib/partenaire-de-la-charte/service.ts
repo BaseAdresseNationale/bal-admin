@@ -4,27 +4,21 @@ import { sendTemplateMail } from "../mailer/service";
 import { PartenaireDeLaCharteDTO } from "./dto";
 import { AppDataSource } from "../../utils/typeorm-client";
 import { PartenaireDeLaCharte, PartenaireDeLaCharteTypeEnum } from "./entity";
-import { FindOptionsWhere, In, IsNull, Not } from "typeorm";
+import { ArrayContains, FindOptionsWhere, In, IsNull, Not } from "typeorm";
 import { ObjectId } from "bson";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
 
-export async function findMany(query: any = {}) {
-  const {
-    codeDepartement,
-    services,
-    type,
-    withCandidates,
-    withoutPictures,
-    dataGouvOrganizationId,
-    apiDepotClientId,
-  } = query;
-
+function createWherePG({
+  services,
+  type,
+  withCandidates,
+  dataGouvOrganizationId,
+  apiDepotClientId,
+}) {
   const where: FindOptionsWhere<PartenaireDeLaCharte> = {
     ...(type && { type }),
-    ...(dataGouvOrganizationId && { dataGouvOrganizationId }),
-    ...(apiDepotClientId && { apiDepotClientId }),
   };
 
   if (!withCandidates) {
@@ -32,8 +26,35 @@ export async function findMany(query: any = {}) {
   }
 
   if (services) {
-    where.services = In(services.split(","));
+    if (typeof services === "string") {
+      where.services = ArrayContains([services]);
+    } else if (Array.isArray(services)) {
+      where.services = ArrayContains(services);
+    }
   }
+
+  if (dataGouvOrganizationId) {
+    if (typeof dataGouvOrganizationId === "string") {
+      where.dataGouvOrganizationId = ArrayContains([dataGouvOrganizationId]);
+    } else if (Array.isArray(dataGouvOrganizationId)) {
+      where.dataGouvOrganizationId = ArrayContains(dataGouvOrganizationId);
+    }
+  }
+
+  if (apiDepotClientId) {
+    if (typeof apiDepotClientId === "string") {
+      where.apiDepotClientId = ArrayContains([apiDepotClientId]);
+    } else if (Array.isArray(apiDepotClientId)) {
+      where.apiDepotClientId = ArrayContains(apiDepotClientId);
+    }
+  }
+
+  return where;
+}
+
+export async function findMany(query: any = {}) {
+  const { codeDepartement, withoutPictures } = query;
+  const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder()
@@ -57,31 +78,10 @@ export async function findMany(query: any = {}) {
 }
 
 export async function findManyPaginated(query: any = {}, page = 1, limit = 10) {
-  const {
-    codeDepartement,
-    services,
-    type,
-    withCandidates,
-    withoutPictures,
-    dataGouvOrganizationId,
-    apiDepotClientId,
-  } = query;
-
   const offset = (page - 1) * limit;
 
-  const where: FindOptionsWhere<PartenaireDeLaCharte> = {
-    ...(type && { type }),
-    ...(dataGouvOrganizationId && { dataGouvOrganizationId }),
-    ...(apiDepotClientId && { apiDepotClientId }),
-  };
-
-  if (!withCandidates) {
-    where.signatureDate = Not(IsNull());
-  }
-
-  if (services) {
-    where.services = In(services.split(","));
-  }
+  const { codeDepartement, withoutPictures } = query;
+  const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder()

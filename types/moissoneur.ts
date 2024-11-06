@@ -92,6 +92,7 @@ export type RevisionMoissoneurType = {
 
 export interface OrganizationMoissoneurType {
   id?: string;
+  email?: string;
   name?: string;
   page?: string;
   logo?: string;
