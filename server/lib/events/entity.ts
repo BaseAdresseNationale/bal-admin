@@ -7,7 +7,6 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { ObjectId } from "bson";
 
 export enum EventTypeEnum {
   FORMATION = "formation",

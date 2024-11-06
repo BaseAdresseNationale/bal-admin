@@ -65,6 +65,7 @@ const newEventForm: EventDTO = {
   date: null,
   startHour: "",
   endHour: "",
+  href: null,
   isOnlineOnly: true,
   address: {},
   isSubscriptionClosed: false,

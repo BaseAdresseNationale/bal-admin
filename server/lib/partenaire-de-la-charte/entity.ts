@@ -1,12 +1,10 @@
 import {
-  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { ObjectId } from "bson";
 
 export enum PartenaireDeLaCharteServiceEnum {
   FORMATION = "formation",
