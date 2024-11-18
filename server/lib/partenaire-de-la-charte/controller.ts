@@ -4,6 +4,7 @@ import { shuffle } from "../../utils/random";
 import routeGuard from "../../route-guard";
 import * as PartenaireDeLaCharteService from "./service";
 import { PartenaireDeLaCharteServiceEnum } from "./entity";
+import { Logger } from "../../utils/logger.utils";
 
 const partenaireDeLaCharteRoutes = express.Router();
 
@@ -17,7 +18,7 @@ partenaireDeLaCharteRoutes.get("/", async (req, res) => {
     );
     res.json(partenairesDeLaCharte);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de récupérer les partenaires`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -33,7 +34,7 @@ partenaireDeLaCharteRoutes.get("/paginated", async (req, res) => {
       );
     res.json(partenairesDeLaCharte);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de récupérer les partenaires`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -49,7 +50,7 @@ partenaireDeLaCharteRoutes.get("/random", async (req, res) => {
 
     res.json(randomizedPartners);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de récupérer les partenaires`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -58,7 +59,7 @@ partenaireDeLaCharteRoutes.get("/services", async (req, res) => {
   try {
     res.json(Object.values(PartenaireDeLaCharteServiceEnum));
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de récupérer les services de partenaires`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -70,7 +71,7 @@ partenaireDeLaCharteRoutes.post("/", routeGuard, async (req, res) => {
     );
     res.json(partenaireDeLaCharte);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de créer un partenaire`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -83,7 +84,7 @@ partenaireDeLaCharteRoutes.post("/candidate", async (req, res) => {
     );
     res.json(partenaireDeLaCharte);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de candidater pour être partenaire`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -94,18 +95,7 @@ partenaireDeLaCharteRoutes.get("/:id", async (req, res) => {
       await PartenaireDeLaCharteService.findOneOrFail(req.params.id);
     res.json(partenaireDeLaCharte);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-partenaireDeLaCharteRoutes.get("/:id", async (req, res) => {
-  try {
-    const partenaireDeLaCharte =
-      await PartenaireDeLaCharteService.findOneOrFail(req.params.id);
-    res.json(partenaireDeLaCharte);
-  } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de récupérer le partenaire`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -120,7 +110,7 @@ partenaireDeLaCharteRoutes.put("/:id", routeGuard, async (req, res) => {
     );
     res.json(partenaireDeLaCharte);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de modifier le partenaire`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -130,7 +120,7 @@ partenaireDeLaCharteRoutes.delete("/:id", routeGuard, async (req, res) => {
     const response = await PartenaireDeLaCharteService.deleteOne(req.params.id);
     res.json(response);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de supprimer le partenaire`, err);
     res.status(500).json({ error: err.message });
   }
 });

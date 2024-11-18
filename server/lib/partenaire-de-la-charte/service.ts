@@ -6,6 +6,7 @@ import { AppDataSource } from "../../utils/typeorm-client";
 import { PartenaireDeLaCharte, PartenaireDeLaCharteTypeEnum } from "./entity";
 import { ArrayContains, FindOptionsWhere, In, IsNull, Not } from "typeorm";
 import { ObjectId } from "bson";
+import { Logger } from "../../utils/logger.utils";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
@@ -163,7 +164,10 @@ export async function createOne(
     try {
       await sendTemplateMail("candidature-partenaire-de-la-charte");
     } catch (error) {
-      console.error(error);
+      Logger.error(
+        `Une erreur est survenue lors de l'envoie de mail de candidature`,
+        error
+      );
     }
   }
 

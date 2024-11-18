@@ -15,6 +15,7 @@ import ProxyMesAdressesApi from "./proxy/mes-adresses-api.proxy";
 import PartenaireDeLaCharteController from "./lib/partenaire-de-la-charte/controller";
 import EventController from "./lib/events/controller";
 import BalWidgetController from "./lib/bal-widget/controller";
+import { Logger } from "./utils/logger.utils";
 
 function setDemoClient(req, res, next) {
   req.demo = 1;
@@ -64,11 +65,11 @@ async function main() {
   });
 
   server.listen(port, () => {
-    console.log(`Start listening on port ${port}`);
+    Logger.info(`Start listening on port ${port}`);
   });
 }
 
 main().catch((error) => {
-  console.error(error);
+  Logger.error(`Server main crash`, error);
   process.exit(1);
 });

@@ -3,6 +3,7 @@ import cors from "cors";
 import routeGuard from "../../route-guard";
 import * as BALWidgetService from "./service";
 import * as MailerService from "../mailer/service";
+import { Logger } from "../../utils/logger.utils";
 
 const BALWidgetRoutes = express.Router();
 
@@ -14,7 +15,7 @@ BALWidgetRoutes.get("/config", async (req, res) => {
     const config = await BALWidgetService.getConfig();
     res.json(config);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de récupérer le config de BalWidget`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -24,7 +25,7 @@ BALWidgetRoutes.post("/config", routeGuard, async (req, res) => {
     const config = await BALWidgetService.setConfig(req.body);
     res.json(config);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible de créer le config de BalWidget`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -34,7 +35,7 @@ BALWidgetRoutes.post("/send-mail", async (req, res) => {
     await MailerService.sendFormContactMail(req.body);
     res.json(true);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible d'envoyer l'email de contact`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -44,7 +45,7 @@ BALWidgetRoutes.post("/send-mail-to-commune", async (req, res) => {
     await MailerService.sendSignalementToCommune(req.body);
     res.json(true);
   } catch (err) {
-    console.error(err);
+    Logger.error(`Impossible d'envoyer l'email à la commune`, err);
     res.status(500).json({ error: err.message });
   }
 });

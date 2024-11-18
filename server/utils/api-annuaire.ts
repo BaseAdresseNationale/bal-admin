@@ -1,6 +1,7 @@
 import { isEmail } from "class-validator";
 import got from "got";
 import { deburr } from "lodash";
+import { Logger } from "./logger.utils";
 
 const API_ANNUAIRE =
   process.env.API_ANNUAIRE ||
@@ -29,7 +30,7 @@ export async function getCommuneEmail(codeCommune: string) {
 
     throw new Error(`L’adresse email " ${email} " ne peut pas être utilisée`);
   } catch (error) {
-    console.error(
+    Logger.error(
       `Une erreur s’est produite lors de la récupération de l’adresse email de la mairie (Code commune: ${codeCommune}).`,
       error
     );
