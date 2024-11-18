@@ -59,11 +59,11 @@ export async function findMany(query: any = {}) {
 
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder()
-    .where(where);
+    .where(where)
   if (codeDepartement) {
     queryPG.andWhere(
-      "codeDepartement = :codeDepartement OR isPerimeterFrance IS true",
-      { codeDepartement }
+      `code_departement @> :arraySearch OR is_perimeter_france IS true`,
+      { arraySearch: [codeDepartement] }
     );
   }
   const records: PartenaireDeLaCharte[] = await queryPG.getMany();
@@ -92,10 +92,11 @@ export async function findManyPaginated(query: any = {}, page = 1, limit = 10) {
 
   if (codeDepartement) {
     queryPG.andWhere(
-      "codeDepartement = :codeDepartement OR isPerimeterFrance IS true",
-      { codeDepartement }
+      `code_departement @> :arraySearch OR is_perimeter_france IS true`,
+      { arraySearch: [codeDepartement] }
     );
   }
+  console.log(queryPG.getSql())
   const [records, total]: [PartenaireDeLaCharte[], number] =
     await queryPG.getManyAndCount();
 
