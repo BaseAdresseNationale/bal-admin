@@ -29,7 +29,7 @@ export async function getCommuneEmail(codeCommune: string) {
 
     throw new Error(`L’adresse email " ${email} " ne peut pas être utilisée`);
   } catch (error) {
-    console.log(
+    console.error(
       `Une erreur s’est produite lors de la récupération de l’adresse email de la mairie (Code commune: ${codeCommune}).`,
       error
     );

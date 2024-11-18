@@ -35,7 +35,7 @@ const EventsPage = ({ incommingEvents, pastEvents }: EventsPageProps) => {
         "Un problème est survenu pendant l'import, aucun évènement n'a été importé",
         { type: "error" }
       );
-      console.log(error);
+      console.error(error);
     }
   };
 

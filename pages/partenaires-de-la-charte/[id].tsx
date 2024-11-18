@@ -44,7 +44,7 @@ const PartenaireDeLaChartePage = ({
         await router.push("/partenaires-de-la-charte");
       }
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       const errorMessage = isCandidate
         ? "Erreur lors de l’enregistrement de la candidature"
         : "Erreur lors de l’enregistrement des modifications";
@@ -63,7 +63,7 @@ const PartenaireDeLaChartePage = ({
       toast(successMessage, { type: "success" });
       await router.push("/partenaires-de-la-charte");
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       const errorMessage = isCandidate
         ? "Erreur lors de la suppression du candidat"
         : "Erreur lors de la suppression du partenaire";

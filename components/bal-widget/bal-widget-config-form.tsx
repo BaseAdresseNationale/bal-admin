@@ -67,13 +67,13 @@ export const BALWidgetConfigForm = ({
         const clients = await getClients();
         setApiDepotClients(clients);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
       try {
         const sources = await getSources();
         setHarvestSources(sources);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
 
@@ -101,7 +101,6 @@ export const BALWidgetConfigForm = ({
           [property]: value,
         },
       }));
-      console.log("EDIT", formData);
     };
 
   const handleToggle = (section: keyof BalWidget, property: string) => () => {
@@ -120,7 +119,6 @@ export const BALWidgetConfigForm = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("SUBMIT", formData);
     await onSubmit(formData);
   };
 

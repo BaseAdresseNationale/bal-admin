@@ -27,7 +27,7 @@ const EventPage = ({ event }: EventPageProps) => {
       await updateEvent(event.id, formData);
       toast("Modifications enregistrées", { type: "success" });
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       toast("Erreur lors de l’enregistrement des modifications", {
         type: "error",
       });
@@ -40,7 +40,7 @@ const EventPage = ({ event }: EventPageProps) => {
       toast("Evènement supprimé", { type: "success" });
       await router.push("/events");
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       toast("Erreur lors de la suppression de l'évènement", { type: "error" });
     }
   };

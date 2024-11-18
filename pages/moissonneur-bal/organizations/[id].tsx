@@ -51,7 +51,7 @@ const OrganizationPage = ({
       onResetPerimeter();
       toast("Modifications enregistrées", { type: "success" });
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       toast("Erreur lors de l’enregistrement des modifications", {
         type: "error",
       });

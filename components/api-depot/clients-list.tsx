@@ -18,7 +18,6 @@ interface ClientsListProps {
 }
 
 const ClientsList = ({ isDemo = false }: ClientsListProps) => {
-  console.log("isDemo", isDemo);
   const [data, setData] = useState<{
     clients: ClientApiDepotType[];
     mandataires: MandataireApiDepotType[];

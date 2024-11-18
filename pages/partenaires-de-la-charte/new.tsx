@@ -15,7 +15,7 @@ const NewPartenaireDeLaChartePage = () => {
       toast("Partenaire créé", { type: "success" });
       await router.push(`/partenaires-de-la-charte/${newPartenaire.id}`);
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       toast("Erreur lors de la création du partenaire", { type: "error" });
     }
   };

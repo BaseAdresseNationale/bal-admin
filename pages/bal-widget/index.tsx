@@ -49,7 +49,7 @@ const BALWidgetPage = ({ config: baseConfig }: BALWidgetPageProps) => {
       toast("Configuration du widget mise à jour", { type: "success" });
       setConfig(config);
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       toast("Erreur lors de la mise à jour de la configuration du widget", {
         type: "error",
       });

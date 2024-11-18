@@ -21,7 +21,7 @@ const NewEventPage = ({ duplicatEvent }: NewEventPageProps) => {
       toast("Evènement créé", { type: "success" });
       await router.push("/events");
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       toast("Erreur lors de la création de l'évènement", { type: "error" });
     }
   };
