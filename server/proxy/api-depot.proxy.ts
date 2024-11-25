@@ -1,6 +1,6 @@
 import express from "express";
 import got from "got";
-
+import cors from "cors";
 import w from "./w";
 
 const API_DEPOT_URL =
@@ -159,6 +159,7 @@ async function validateHabilitation(req, res) {
 const app = express.Router();
 
 app.use(express.json());
+app.use(cors());
 
 // Ajoutez le middleware handleClient
 app.use(handleClient);
