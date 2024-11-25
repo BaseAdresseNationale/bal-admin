@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import routeGuard from "../../route-guard";
 import * as BALWidgetService from "./service";
 import * as MailerService from "../mailer/service";
@@ -8,7 +7,6 @@ import { Logger } from "../../utils/logger.utils";
 const BALWidgetRoutes = express.Router();
 
 BALWidgetRoutes.use(express.json());
-BALWidgetRoutes.use(cors());
 
 BALWidgetRoutes.get("/config", async (req, res) => {
   try {

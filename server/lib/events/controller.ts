@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 
 import routeGuard from "../../route-guard";
 import * as EventsService from "./service";
@@ -8,7 +7,6 @@ import { Logger } from "../../utils/logger.utils";
 const eventsRoutes = express.Router();
 
 eventsRoutes.use(express.json());
-eventsRoutes.use(cors());
 
 eventsRoutes.get("/", async (req, res) => {
   try {
