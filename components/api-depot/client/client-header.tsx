@@ -4,12 +4,12 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 
 import CopyToClipBoard from "@/components/copy-to-clipboard";
 import { Client } from "types/api-depot.types";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import { PartenaireDeLaCharte } from "../../../server/lib/partenaire-de-la-charte/entity";
 
 interface ClientHeaderProps {
   client: Client;
-  partenaire: PartenaireDeLaChartType;
+  partenaire: PartenaireDeLaCharte;
 }
 
 const ClientHeader = ({ client, partenaire }: ClientHeaderProps) => (
@@ -56,7 +56,7 @@ const ClientHeader = ({ client, partenaire }: ClientHeaderProps) => (
                 legacyBehavior
                 passHref
                 href={{
-                  pathname: `/partenaires-de-la-charte/${partenaire._id}`,
+                  pathname: `/partenaires-de-la-charte/${partenaire.id}`,
                 }}
               >
                 <Button priority="secondary">{partenaire.name}</Button>

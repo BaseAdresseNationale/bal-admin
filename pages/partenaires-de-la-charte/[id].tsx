@@ -1,100 +1,115 @@
-import React from 'react'
-import {toast} from 'react-toastify'
+import React from "react";
+import { toast } from "react-toastify";
 
-import type {PartenaireDeLaChartType} from 'types/partenaire-de-la-charte'
-import {useRouter} from 'next/router'
-import {Button} from '@codegouvfr/react-dsfr/Button'
-import {createModal} from '@codegouvfr/react-dsfr/Modal'
+import { useRouter } from "next/router";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
-import {PartenaireForm} from '@/components/partenaires-de-la-charte/partenaire-form'
+import { PartenaireForm } from "@/components/partenaires-de-la-charte/partenaire-form";
 import {
   deletePartenaireDeLaCharte,
   getPartenaireDeLaCharte,
   updatePartenaireDeLaCharte,
-} from '@/lib/partenaires-de-la-charte'
+} from "@/lib/partenaires-de-la-charte";
+import { PartenaireDeLaCharte } from "../../server/lib/partenaire-de-la-charte/entity";
 
 type PartenaireDeLaChartePageProps = {
-  partenaireDeLaCharte: PartenaireDeLaChartType;
-}
+  partenaireDeLaCharte: PartenaireDeLaCharte;
+};
 
 const deletePartenaireModale = createModal({
-  id: 'delete-partenaire-modale',
+  id: "delete-partenaire-modale",
   isOpenedByDefault: false,
-})
+});
 
 const PartenaireDeLaChartePage = ({
   partenaireDeLaCharte,
 }: PartenaireDeLaChartePageProps) => {
-  const isCandidate = !partenaireDeLaCharte.signatureDate
+  const isCandidate = !partenaireDeLaCharte.signatureDate;
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const onUpdate = async formData => {
+  const onUpdate = async (formData) => {
     try {
-      await updatePartenaireDeLaCharte(partenaireDeLaCharte._id, formData, isCandidate)
+      await updatePartenaireDeLaCharte(
+        partenaireDeLaCharte.id,
+        formData,
+        isCandidate
+      );
       const successMessage = isCandidate
-        ? 'Candidature enregistrée'
-        : 'Modifications enregistrées'
-      toast(successMessage, {type: 'success'})
+        ? "Candidature enregistrée"
+        : "Modifications enregistrées";
+      toast(successMessage, { type: "success" });
       if (isCandidate) {
-        await router.push('/partenaires-de-la-charte')
+        await router.push("/partenaires-de-la-charte");
       }
     } catch (error: unknown) {
-      console.log(error)
+      console.error(error);
       const errorMessage = isCandidate
-        ? 'Erreur lors de l’enregistrement de la candidature'
-        : 'Erreur lors de l’enregistrement des modifications'
+        ? "Erreur lors de l’enregistrement de la candidature"
+        : "Erreur lors de l’enregistrement des modifications";
       toast(errorMessage, {
-        type: 'error',
-      })
+        type: "error",
+      });
     }
-  }
+  };
 
   const onDelete = async () => {
     try {
-      await deletePartenaireDeLaCharte(partenaireDeLaCharte._id)
+      await deletePartenaireDeLaCharte(partenaireDeLaCharte.id);
       const successMessage = isCandidate
-        ? 'Candidat supprimé'
-        : 'Partenaire supprimé'
-      toast(successMessage, {type: 'success'})
-      await router.push('/partenaires-de-la-charte')
+        ? "Candidat supprimé"
+        : "Partenaire supprimé";
+      toast(successMessage, { type: "success" });
+      await router.push("/partenaires-de-la-charte");
     } catch (error: unknown) {
-      console.log(error)
+      console.error(error);
       const errorMessage = isCandidate
-        ? 'Erreur lors de la suppression du candidat'
-        : 'Erreur lors de la suppression du partenaire'
-      toast(errorMessage, {type: 'error'})
+        ? "Erreur lors de la suppression du candidat"
+        : "Erreur lors de la suppression du partenaire";
+      toast(errorMessage, { type: "error" });
     }
-  }
+  };
 
   return (
-    <div className='fr-container'>
+    <div className="fr-container">
       <PartenaireForm
-        title={<h3>{partenaireDeLaCharte.name} {isCandidate && '(candidat)'}</h3>}
+        title={
+          <h3>
+            {partenaireDeLaCharte.name} {isCandidate && "(candidat)"}
+          </h3>
+        }
         data={partenaireDeLaCharte}
         onSubmit={onUpdate}
-        submitLabel={isCandidate ? 'Enregistrer et accepter la candidature' : 'Enregistrer les modifications'}
+        submitLabel={
+          isCandidate
+            ? "Enregistrer et accepter la candidature"
+            : "Enregistrer les modifications"
+        }
         controls={
           <Button
-            type='button'
-            priority='tertiary'
+            type="button"
+            priority="tertiary"
             onClick={() => {
-              deletePartenaireModale.open()
+              deletePartenaireModale.open();
             }}
           >
             Supprimer
           </Button>
         }
       />
-      <deletePartenaireModale.Component title='Suppression'>
-        <p>Êtes-vous sûr de vouloir supprimer ce {isCandidate ? 'candidat' : 'partenaire'}?</p>
+      <deletePartenaireModale.Component title="Suppression">
+        <p>
+          Êtes-vous sûr de vouloir supprimer ce{" "}
+          {isCandidate ? "candidat" : "partenaire"}?
+        </p>
         <div>
           <Button onClick={onDelete}>Supprimer</Button>
           <Button
-            style={{marginLeft: '1rem'}}
-            priority='tertiary'
+            style={{ marginLeft: "1rem" }}
+            priority="tertiary"
             onClick={() => {
-              deletePartenaireModale.close()
+              deletePartenaireModale.close();
             }}
           >
             Annuler
@@ -102,16 +117,16 @@ const PartenaireDeLaChartePage = ({
         </div>
       </deletePartenaireModale.Component>
     </div>
-  )
-}
+  );
+};
 
-export async function getServerSideProps({params}) {
-  const {id} = params
-  const partenaireDeLaCharte = await getPartenaireDeLaCharte(id)
+export async function getServerSideProps({ params }) {
+  const { id } = params;
+  const partenaireDeLaCharte = await getPartenaireDeLaCharte(id);
 
   return {
-    props: {partenaireDeLaCharte},
-  }
+    props: { partenaireDeLaCharte },
+  };
 }
 
-export default PartenaireDeLaChartePage
+export default PartenaireDeLaChartePage;

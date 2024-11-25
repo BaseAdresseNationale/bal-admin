@@ -8,9 +8,9 @@ https://adresse-data-gouv-fr.gitbook.io/bal/bal-admin
 
 ## Pré-requis
 
-- [Node.js](https://nodejs.org) 18+
+- [Node.js](https://nodejs.org) 22
 - [yarn](https://www.yarnpkg.com)
-- [MongoDB](https://www.mongodb.com) 4+
+- [PostgresSQL](https://www.postgresql.org/)
 
 ## Utilisation
 
@@ -67,8 +67,7 @@ Elles peuvent être définies classiquement ou en créant un fichier `.env` sur 
 | `NEXT_PUBLIC_API_DEPOT_DEMO_URL` | URL de base de l'api de depot demo                                   |
 | `NEXT_PUBLIC_BAL_WIDGET_URL`     | URL de base du Bal widget                                            |
 | ---                              | ---                                                                  |
-| `MONGODB_URL`                    | Paramètre de connexion à MongoDB                                     |
-| `MONGODB_DBNAME`                 | Nom de la base de données à utiliser                                 |
+| `POSTGRES_URL`                   | Paramètre de connexion à Postgres                                    |
 | `PORT`                           | Port à utiliser pour l'API                                           |
 | `API_MOISSONEUR_BAL_TOKEN`       | TOKEN admin du moissoneur                                            |
 | `API_DEPOT_TOKEN`                | TOKEN admin de l'api de depot                                        |

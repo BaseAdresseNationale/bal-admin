@@ -1,14 +1,16 @@
-const got = require("got");
-const { deburr } = require("lodash");
+import { isEmail } from "class-validator";
+import got from "got";
+import { deburr } from "lodash";
+import { Logger } from "./logger.utils";
 
 const API_ANNUAIRE =
   process.env.API_ANNUAIRE ||
   "https://api-lannuaire.service-public.fr/api/explore/v2.1";
 
-async function getCommuneEmail(codeCommune) {
+export async function getCommuneEmail(codeCommune: string) {
   try {
     const url = `${API_ANNUAIRE}/catalog/datasets/api-lannuaire-administration/records?where=pivot%20LIKE%20"mairie"%20AND%20code_insee_commune="${codeCommune}"`;
-    const response = await got(url, { responseType: "json" });
+    const response: any = await got(url, { responseType: "json" });
 
     // RECUPERE LA MAIRIE PRINCIPAL
     const mairie = response.body.results.find(
@@ -22,29 +24,19 @@ async function getCommuneEmail(codeCommune) {
     const emails = mairie.adresse_courriel.split(";");
     const email = emails.shift();
 
-    if (validateEmail(email)) {
+    if (isEmail(email)) {
       return email;
     }
 
     throw new Error(`L’adresse email " ${email} " ne peut pas être utilisée`);
   } catch (error) {
-    console.log(
+    Logger.error(
       `Une erreur s’est produite lors de la récupération de l’adresse email de la mairie (Code commune: ${codeCommune}).`,
       error
     );
   }
 }
 
-function normalize(str) {
+function normalize(str: string): string {
   return deburr(str).toLowerCase();
 }
-
-function validateEmail(email) {
-  const re =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([a-zA-Z\-\d]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-}
-
-module.exports = {
-  getCommuneEmail,
-};

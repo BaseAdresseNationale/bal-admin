@@ -1,9 +1,11 @@
 import React from "react";
-import type { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
-import { PartenaireDeLaCharteTypeEnum } from "types/partenaire-de-la-charte";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Link from "next/link";
+import {
+  PartenaireDeLaCharte,
+  PartenaireDeLaCharteTypeEnum,
+} from "../../server/lib/partenaire-de-la-charte/entity";
 
 const getPartenaireTypeColor = (type: PartenaireDeLaCharteTypeEnum) => {
   switch (type) {
@@ -16,7 +18,7 @@ const getPartenaireTypeColor = (type: PartenaireDeLaCharteTypeEnum) => {
   }
 };
 
-const getDate = (signatureDate: string, creationDate: string) => {
+const getDate = (signatureDate: Date, creationDate: Date) => {
   if (signatureDate) {
     return new Date(signatureDate).toLocaleDateString();
   }
@@ -25,23 +27,23 @@ const getDate = (signatureDate: string, creationDate: string) => {
 };
 
 export const PartenaireItem = ({
-  _id,
-  _created,
+  id,
+  createdAt,
   type,
   name,
   signatureDate,
   services,
   dataGouvOrganizationId,
   apiDepotClientId,
-}: PartenaireDeLaChartType) => (
-  <tr key={_id}>
+}: PartenaireDeLaCharte) => (
+  <tr key={id}>
     <td className="fr-col fr-my-1v">
       <Badge severity={getPartenaireTypeColor(type)} noIcon>
         {type}
       </Badge>
     </td>
     <td className="fr-col fr-my-1v">{name}</td>
-    <td className="fr-col fr-my-1v">{getDate(signatureDate, _created)}</td>
+    <td className="fr-col fr-my-1v">{getDate(signatureDate, createdAt)}</td>
     <td className="fr-col fr-my-1v">
       {services?.map((service) => (
         <Badge
@@ -70,7 +72,7 @@ export const PartenaireItem = ({
         legacyBehavior
         passHref
         href={{
-          pathname: `/partenaires-de-la-charte/${_id}`,
+          pathname: `/partenaires-de-la-charte/${id}`,
         }}
       >
         <Button iconId="fr-icon-arrow-right-line" iconPosition="right">

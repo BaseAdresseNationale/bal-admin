@@ -3,13 +3,13 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Link from "next/link";
 import { ChefDeFile, Client, Mandataire } from "types/api-depot.types";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
+import { PartenaireDeLaCharte } from "../../server/lib/partenaire-de-la-charte/entity";
 
 interface ClientItemProps {
   client: Client;
   mandataire: Mandataire;
   chefDeFile: ChefDeFile;
-  partenaires: PartenaireDeLaChartType[];
+  partenaires: PartenaireDeLaCharte[];
   isDemo: boolean;
 }
 
@@ -56,12 +56,12 @@ const ClientItem = ({
     <td className="fr-col fr-my-1v">
       {partenaires && partenaires.length > 0 ? (
         partenaires.map((partenaire) => (
-          <div key={partenaire._id}>
+          <div key={partenaire.id}>
             <Link
               legacyBehavior
               passHref
               href={{
-                pathname: `/partenaires-de-la-charte/${partenaire._id}`,
+                pathname: `/partenaires-de-la-charte/${partenaire.id}`,
               }}
             >
               {partenaire.name}

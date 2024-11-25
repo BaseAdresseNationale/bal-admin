@@ -1,28 +1,40 @@
-import {useState, useEffect} from 'react'
-import {getPartenairesDeLaCharte} from '../lib/partenaires-de-la-charte'
-import type {PartenaireDeLaChartType} from '../types/partenaire-de-la-charte'
+import { useState, useEffect } from "react";
+import { getPartenairesDeLaCharte } from "../lib/partenaires-de-la-charte";
+import { PartenaireDeLaCharte } from "../server/lib/partenaire-de-la-charte/entity";
 
 export function usePartenairesDeLaCharteData() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [partenairesDeLaCharteData, setPartenairesDeLaCharteData] = useState<PartenaireDeLaChartType[]>([])
-  const [candidaturesEnAttenteData, setCandidaturesEnAttenteData] = useState<PartenaireDeLaChartType[]>([])
+  const [isLoading, setIsLoading] = useState(false);
+  const [partenairesDeLaCharteData, setPartenairesDeLaCharteData] = useState<
+    PartenaireDeLaCharte[]
+  >([]);
+  const [candidaturesEnAttenteData, setCandidaturesEnAttenteData] = useState<
+    PartenaireDeLaCharte[]
+  >([]);
 
   useEffect(() => {
     async function fetchData() {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        const partenairesDeLaCharte = await getPartenairesDeLaCharte()
-        setPartenairesDeLaCharteData(partenairesDeLaCharte.filter(partenaireDeLaCharte => partenaireDeLaCharte.signatureDate))
-        setCandidaturesEnAttenteData(partenairesDeLaCharte.filter(partenaireDeLaCharte => !partenaireDeLaCharte.signatureDate))
+        const partenairesDeLaCharte = await getPartenairesDeLaCharte();
+        setPartenairesDeLaCharteData(
+          partenairesDeLaCharte.filter(
+            (partenaireDeLaCharte) => partenaireDeLaCharte.signatureDate
+          )
+        );
+        setCandidaturesEnAttenteData(
+          partenairesDeLaCharte.filter(
+            (partenaireDeLaCharte) => !partenaireDeLaCharte.signatureDate
+          )
+        );
       } catch (err: unknown) {
-        console.error(err)
+        console.error(err);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
 
-    void fetchData()
-  }, [])
+    void fetchData();
+  }, []);
 
-  return {isLoading, partenairesDeLaCharteData, candidaturesEnAttenteData}
+  return { isLoading, partenairesDeLaCharteData, candidaturesEnAttenteData };
 }

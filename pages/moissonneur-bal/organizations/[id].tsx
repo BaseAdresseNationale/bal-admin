@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { isEqual } from "lodash";
 import { toast } from "react-toastify";
 
@@ -12,19 +12,19 @@ import {
   updateOrganization,
 } from "@/lib/api-moissonneur-bal";
 import CopyToClipBoard from "@/components/copy-to-clipboard";
-import { Perimeter } from "types/api-depot.types";
 import PerimeterList from "@/components/api-depot/client/client-form/perimeter-list";
 import Button from "@codegouvfr/react-dsfr/Button";
 import MoissoneurSourceItem from "@/components/moissonneur-bal/sources/moissonneur-source-item";
 import Link from "next/link";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { getPartenaireDeLaCharteByOrganizationDataGouv } from "@/lib/partenaires-de-la-charte";
+import { PartenaireDeLaCharte } from "../../../server/lib/partenaire-de-la-charte/entity";
+import TextInput from "@/components/text-input";
 
 type OrganizationPageProps = {
   organization: OrganizationMoissoneurType;
   sources: SourceMoissoneurType[];
-  partenaires: PartenaireDeLaChartType[];
+  partenaires: PartenaireDeLaCharte[];
 };
 
 const OrganizationPage = ({
@@ -32,34 +32,50 @@ const OrganizationPage = ({
   sources,
   partenaires,
 }: OrganizationPageProps) => {
-  const [perimeters, setPerimeters] = useState<Perimeter[]>(
-    organization?.perimeters ? organization.perimeters : []
-  );
-  const [partenaire, setpPartenaire] = useState<PartenaireDeLaChartType | null>(
-    partenaires.length > 0 ? partenaires[0] : null
+  const [formData, setFormData] = useState<Partial<OrganizationMoissoneurType>>(
+    {
+      perimeters: organization.perimeters || [],
+      email: organization.email,
+    }
   );
 
-  const onUpdatePerimeter = async () => {
+  const partenaire: PartenaireDeLaCharte | null = useMemo(() => {
+    return partenaires.length > 0 ? partenaires[0] : null;
+  }, [partenaires]);
+
+  const onUpdate = async () => {
     try {
-      const res = await updateOrganization(organization.id, { perimeters });
-      organization.perimeters = [...perimeters];
+      const res = await updateOrganization(organization.id, formData);
+      organization.perimeters = res.perimeters;
+      organization.email = res.email;
       onResetPerimeter();
       toast("Modifications enregistrées", { type: "success" });
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       toast("Erreur lors de l’enregistrement des modifications", {
         type: "error",
       });
     }
   };
 
+  const handleEdit = useCallback(
+    (property: string) => (value: any) => {
+      setFormData((state) => ({ ...state, [property]: value }));
+    },
+    []
+  );
+
   const onResetPerimeter = async () => {
-    setPerimeters(organization.perimeters);
+    handleEdit("perimeters")(organization.perimeters);
   };
 
   const perimeterChange = useMemo(() => {
-    return !isEqual(perimeters, organization.perimeters);
-  }, [perimeters, organization.perimeters]);
+    return !isEqual(formData.perimeters, organization.perimeters);
+  }, [formData.perimeters, organization.perimeters]);
+
+  const emailChange = useMemo(() => {
+    return !isEqual(formData.email, organization.email);
+  }, [formData.email, organization.email]);
 
   return (
     <div className="fr-container fr-py-12v">
@@ -75,7 +91,7 @@ const OrganizationPage = ({
                 legacyBehavior
                 passHref
                 href={{
-                  pathname: `/partenaires-de-la-charte/${partenaire._id}`,
+                  pathname: `/partenaires-de-la-charte/${partenaire.id}`,
                 }}
               >
                 <Button priority="secondary">{partenaire.name}</Button>
@@ -86,15 +102,27 @@ const OrganizationPage = ({
           )}
 
           <div className="fr-py-12v">
+            <div className="fr-grid-row fr-grid-row--gutters">
+              <div className="fr-col-6">
+                <TextInput
+                  label="Email"
+                  value={formData.email}
+                  hint="Email de l'organization"
+                  onChange={(e) => {
+                    handleEdit("email")(e.target.value);
+                  }}
+                />
+              </div>
+            </div>
             <PerimeterList
-              perimeters={perimeters}
-              handlePerimeter={setPerimeters}
+              perimeters={formData.perimeters}
+              handlePerimeter={handleEdit("perimeters")}
             />
             <div className="fr-py-6v">
               <Button
                 priority="primary"
-                onClick={onUpdatePerimeter}
-                disabled={!perimeterChange}
+                onClick={onUpdate}
+                disabled={!perimeterChange && !emailChange}
               >
                 Enregistrer
               </Button>

@@ -1,4 +1,5 @@
-import type { EventType } from "types/event";
+import { EventDTO } from "server/lib/events/dto";
+import type { Event } from "../server/lib/events/entity";
 
 const NEXT_PUBLIC_BAL_ADMIN_URL =
   process.env.NEXT_PUBLIC_BAL_ADMIN_URL || "http://localhost:3000";
@@ -12,23 +13,23 @@ async function processResponse(response) {
   return response.json();
 }
 
-export async function getEvent(id: string) {
+export async function getEvent(id: string): Promise<Event> {
   const response = await fetch(`${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/${id}`);
   const event = await processResponse(response);
 
-  return event as EventType;
+  return event as Event;
 }
 
-export async function getEvents() {
+export async function getEvents(): Promise<Event[]> {
   const url = new URL(`${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events`);
 
   const response = await fetch(url);
   const events = await processResponse(response);
 
-  return events as EventType[];
+  return events as Event[];
 }
 
-export async function massImportEvents(payload) {
+export async function massImportEvents(payload): Promise<Event[]> {
   const response = await fetch(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/mass-import`,
     {
@@ -39,10 +40,10 @@ export async function massImportEvents(payload) {
   );
   const event = await processResponse(response);
 
-  return event as EventType;
+  return event as Event[];
 }
 
-export async function createEvent(payload) {
+export async function createEvent(payload: EventDTO): Promise<Event> {
   const response = await fetch(`${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -50,10 +51,13 @@ export async function createEvent(payload) {
   });
   const event = await processResponse(response);
 
-  return event as EventType;
+  return event as Event;
 }
 
-export async function updateEvent(id: string, payload) {
+export async function updateEvent(
+  id: string,
+  payload: EventDTO
+): Promise<Event> {
   const url = new URL(`${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/${id}`);
   const response = await fetch(url, {
     method: "PUT",
@@ -62,10 +66,10 @@ export async function updateEvent(id: string, payload) {
   });
   const event = await processResponse(response);
 
-  return event as EventType;
+  return event as Event;
 }
 
-export async function deleteEvent(id: string) {
+export async function deleteEvent(id: string): Promise<boolean> {
   const response = await fetch(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/${id}`,
     {

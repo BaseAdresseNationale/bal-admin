@@ -6,19 +6,18 @@ import { getChefsDeFile, getClients, getMandataires } from "@/lib/api-depot";
 import ClientItem from "@/components/api-depot/client-item";
 import { ChefDeFile, Client, Mandataire } from "types/api-depot.types";
 import { getPartenairesDeLaCharte } from "@/lib/partenaires-de-la-charte";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
+import { PartenaireDeLaCharte } from "../../server/lib/partenaire-de-la-charte/entity";
 
 interface ClientsListProps {
   isDemo?: boolean;
 }
 
 const ClientsList = ({ isDemo = false }: ClientsListProps) => {
-  console.log("isDemo", isDemo);
   const [data, setData] = useState<{
     clients: Client[];
     mandataires: Mandataire[];
     chefsDeFile: ChefDeFile[];
-    partenaires: PartenaireDeLaChartType[];
+    partenaires: PartenaireDeLaCharte[];
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 

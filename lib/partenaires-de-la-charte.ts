@@ -1,4 +1,5 @@
-import type { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
+import { PartenaireDeLaCharteDTO } from "server/lib/partenaire-de-la-charte/dto";
+import { PartenaireDeLaCharte } from "../server/lib/partenaire-de-la-charte/entity";
 
 const NEXT_PUBLIC_BAL_ADMIN_URL =
   process.env.NEXT_PUBLIC_BAL_ADMIN_URL || "http://localhost:3000";
@@ -18,10 +19,12 @@ export async function getPartenaireDeLaCharte(id: string) {
   );
   const partenaireDeLaCharte = await processResponse(response);
 
-  return partenaireDeLaCharte as PartenaireDeLaChartType;
+  return partenaireDeLaCharte as PartenaireDeLaCharte;
 }
 
-export async function getPartenairesDeLaCharte() {
+export async function getPartenairesDeLaCharte(): Promise<
+  PartenaireDeLaCharte[]
+> {
   const url = new URL(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/`
   );
@@ -31,12 +34,12 @@ export async function getPartenairesDeLaCharte() {
   const response = await fetch(url);
   const partenairesDeLaCharte = await processResponse(response);
 
-  return partenairesDeLaCharte as PartenaireDeLaChartType[];
+  return partenairesDeLaCharte as PartenaireDeLaCharte[];
 }
 
 export async function getPartenaireDeLaCharteByClientApiDepot(
   apiDepotClientId: string
-) {
+): Promise<PartenaireDeLaCharte[]> {
   const url = new URL(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/`
   );
@@ -45,12 +48,12 @@ export async function getPartenaireDeLaCharteByClientApiDepot(
   const response = await fetch(url);
   const partenairesDeLaCharte = await processResponse(response);
 
-  return partenairesDeLaCharte as PartenaireDeLaChartType[];
+  return partenairesDeLaCharte as PartenaireDeLaCharte[];
 }
 
 export async function getPartenaireDeLaCharteByOrganizationDataGouv(
   dataGouvOrganizationId: string
-) {
+): Promise<PartenaireDeLaCharte[]> {
   const url = new URL(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/`
   );
@@ -59,10 +62,12 @@ export async function getPartenaireDeLaCharteByOrganizationDataGouv(
   const response = await fetch(url);
   const partenairesDeLaCharte = await processResponse(response);
 
-  return partenairesDeLaCharte as PartenaireDeLaChartType[];
+  return partenairesDeLaCharte as PartenaireDeLaCharte[];
 }
 
-export async function createPartenaireDeLaCharte(payload) {
+export async function createPartenaireDeLaCharte(
+  payload: PartenaireDeLaCharteDTO
+): Promise<PartenaireDeLaCharte> {
   const response = await fetch(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/`,
     {
@@ -73,14 +78,14 @@ export async function createPartenaireDeLaCharte(payload) {
   );
   const partenaireDeLaCharte = await processResponse(response);
 
-  return partenaireDeLaCharte as PartenaireDeLaChartType;
+  return partenaireDeLaCharte as PartenaireDeLaCharte;
 }
 
 export async function updatePartenaireDeLaCharte(
   id: string,
-  payload,
+  payload: PartenaireDeLaCharteDTO,
   acceptCandidacy = false
-) {
+): Promise<PartenaireDeLaCharte> {
   const url = new URL(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/${id}`
   );
@@ -95,10 +100,10 @@ export async function updatePartenaireDeLaCharte(
   });
   const partenaireDeLaCharte = await processResponse(response);
 
-  return partenaireDeLaCharte as PartenaireDeLaChartType;
+  return partenaireDeLaCharte as PartenaireDeLaCharte;
 }
 
-export async function deletePartenaireDeLaCharte(id: string) {
+export async function deletePartenaireDeLaCharte(id: string): Promise<boolean> {
   const response = await fetch(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/${id}`,
     {

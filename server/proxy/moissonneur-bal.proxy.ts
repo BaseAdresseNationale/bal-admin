@@ -1,7 +1,7 @@
-const express = require("express");
-const got = require("got");
-
-const w = require("./w");
+import express from "express";
+import got from "got";
+import cors from "cors";
+import w from "./w";
 
 const API_MOISSONEUR_BAL =
   process.env.NEXT_PUBLIC_API_MOISSONEUR_BAL ||
@@ -59,9 +59,10 @@ async function updateOrganization(req, res) {
   forward(response, res);
 }
 
-const app = new express.Router();
+const app = express.Router();
 
 app.use(express.json());
+app.use(cors());
 
 // Sources
 app.post("/sources/:sourceId/harvest", w(harvestSource));
@@ -70,4 +71,4 @@ app.put("/sources/:sourceId", w(updateSource));
 app.post("/revisions/:revisionId/publish", w(publishRevision));
 app.get("/communes/:codeCommune/revisions", w(getRevisionsByCommune));
 
-module.exports = app;
+export default app;

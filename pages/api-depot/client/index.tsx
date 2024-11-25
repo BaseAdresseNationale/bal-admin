@@ -16,7 +16,7 @@ import ClientHeader from "@/components/api-depot/client/client-header";
 import Mandataire from "@/components/api-depot/mandataire";
 import ChefDeFile from "@/components/api-depot/chef-de-file";
 import { getPartenaireDeLaCharteByClientApiDepot } from "@/lib/partenaires-de-la-charte";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
+import { PartenaireDeLaCharte } from "../../../server/lib/partenaire-de-la-charte/entity";
 
 const Client = () => {
   const router = useRouter();
@@ -25,7 +25,7 @@ const Client = () => {
   const [client, setClient] = useState<ClientApiDepot>(null);
   const [chefDeFile, setChefDeFile] = useState<ChefDeFileApiDepot>(null);
   const [mandataire, setMandataire] = useState<MandataireApiDepot>(null);
-  const [partenaire, setPartenaire] = useState<PartenaireDeLaChartType>(null);
+  const [partenaire, setPartenaire] = useState<PartenaireDeLaCharte>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
