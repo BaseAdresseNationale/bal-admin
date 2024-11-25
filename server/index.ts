@@ -2,7 +2,6 @@
 
 import express from "express";
 import next from "next";
-import cors from "cors";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -26,7 +25,6 @@ function setDemoClient(req, res, next) {
 async function main() {
   const server: express.Express = express();
 
-  server.use(cors());
   const port: string | number = process.env.PORT || 9000;
   const dev: boolean = process.env.NODE_ENV !== "production";
 

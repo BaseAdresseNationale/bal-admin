@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { shuffle } from "../../utils/random";
 import routeGuard from "../../route-guard";
 import * as PartenaireDeLaCharteService from "./service";
@@ -8,6 +9,7 @@ import { Logger } from "../../utils/logger.utils";
 const partenaireDeLaCharteRoutes = express.Router();
 
 partenaireDeLaCharteRoutes.use(express.json());
+partenaireDeLaCharteRoutes.use(cors());
 
 partenaireDeLaCharteRoutes.get("/", async (req, res) => {
   try {
