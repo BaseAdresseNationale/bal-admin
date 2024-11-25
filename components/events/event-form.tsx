@@ -3,27 +3,31 @@ import styled from "styled-components";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
-import { EventType, EventTypeTypeEnum } from "types/event";
+import {
+  Event,
+  EventTypeEnum,
+  EventTagEnum,
+} from "../../server/lib/events/entity";
 import SelectInput from "@/components/select-input";
 import { capitalize } from "@/lib/util/string";
-import { EventTypeTagEnum } from "../../types/event";
 import { MultiSelectInput } from "../multi-select-input";
+import { EventDTO } from "../../server/lib/events/dto";
 
 type EventFormProps = {
   title: string | React.ReactNode;
-  data?: EventType;
-  onSubmit?: (formData: Partial<EventType>) => Promise<void>;
+  data?: Event;
+  onSubmit?: (formData: Partial<EventDTO>) => Promise<void>;
   submitLabel?: string;
   controls?: React.ReactNode;
   isCreation?: boolean;
 };
 
-const typeOptions = Object.values(EventTypeTypeEnum).map((value) => ({
+const typeOptions = Object.values(EventTypeEnum).map((value) => ({
   value,
   label: capitalize(value),
 }));
 
-const tagOptions = Object.values(EventTypeTagEnum).map((value) => ({
+const tagOptions = Object.values(EventTagEnum).map((value) => ({
   value,
   label: capitalize(value),
 }));
@@ -52,15 +56,16 @@ const StyledForm = styled.form`
   }
 `;
 
-const newEventForm = {
-  type: EventTypeTypeEnum.FORMATION,
+const newEventForm: EventDTO = {
+  type: EventTypeEnum.FORMATION,
   title: "",
   subtitle: "",
   description: "",
   target: "",
-  date: "",
+  date: null,
   startHour: "",
   endHour: "",
+  href: null,
   isOnlineOnly: true,
   address: {},
   isSubscriptionClosed: false,
@@ -75,9 +80,7 @@ export const EventForm = ({
   submitLabel,
   controls,
 }: EventFormProps) => {
-  const [formData, setFormData] = useState<Partial<EventType>>(
-    data || newEventForm
-  );
+  const [formData, setFormData] = useState<EventDTO>(data || newEventForm);
 
   const handleEdit =
     (property: string) =>
@@ -110,7 +113,7 @@ export const EventForm = ({
               handleChange={(type) => {
                 setFormData((state) => ({
                   ...state,
-                  type: type as EventTypeTypeEnum,
+                  type: type as EventTypeEnum,
                 }));
               }}
             />
@@ -179,7 +182,7 @@ export const EventForm = ({
               nativeInputProps={{
                 required: true,
                 type: "date",
-                value: formData.date,
+                value: formData.date as string,
                 onChange: handleEdit("date"),
               }}
             />

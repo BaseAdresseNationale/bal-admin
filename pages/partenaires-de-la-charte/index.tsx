@@ -7,12 +7,12 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
 import { EditableList } from "../../components/editable-list";
 import { getPartenairesDeLaCharte } from "../../lib/partenaires-de-la-charte";
-import type { PartenaireDeLaChartType } from "../../types/partenaire-de-la-charte";
 import { PartenaireItem } from "@/components/partenaires-de-la-charte/partenaire-item";
+import { PartenaireDeLaCharte } from "../../server/lib/partenaire-de-la-charte/entity";
 
 type PartenairesDeLaChartePageProps = {
-  partenaires: PartenaireDeLaChartType[];
-  candidates: PartenaireDeLaChartType[];
+  partenaires: PartenaireDeLaCharte[];
+  candidates: PartenaireDeLaCharte[];
   tab?: string;
 };
 

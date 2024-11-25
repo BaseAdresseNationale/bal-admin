@@ -8,13 +8,13 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
 import { EditableList } from "../../components/editable-list";
 import { getEvents, massImportEvents } from "../../lib/events";
-import type { EventType } from "../../types/event";
+import { Event } from "../../server/lib/events/entity";
 import { EventItem } from "@/components/events/event-item";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
 type EventsPageProps = {
-  incommingEvents: EventType[];
-  pastEvents: EventType[];
+  incommingEvents: Event[];
+  pastEvents: Event[];
 };
 
 const massImportEventsModale = createModal({
@@ -35,7 +35,7 @@ const EventsPage = ({ incommingEvents, pastEvents }: EventsPageProps) => {
         "Un problème est survenu pendant l'import, aucun évènement n'a été importé",
         { type: "error" }
       );
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -56,7 +56,7 @@ const EventsPage = ({ incommingEvents, pastEvents }: EventsPageProps) => {
               ),
               content: (
                 <EditableList
-                  headers={["Type", "Nom", "Date", "Horaires", ""]}
+                  headers={["Type", "Nom", "Date", "Horaires", "", ""]}
                   caption="Liste des évènements"
                   data={incommingEvents}
                   filter={{

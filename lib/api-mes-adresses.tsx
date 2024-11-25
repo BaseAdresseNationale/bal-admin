@@ -19,7 +19,7 @@ export type SearchBasesLocalesParams = {
 async function processReponse(res: Response) {
   if (!res.ok) {
     const error = await res.json();
-    console.log(error);
+    console.error(error);
     throw new Error(error.message);
   }
 

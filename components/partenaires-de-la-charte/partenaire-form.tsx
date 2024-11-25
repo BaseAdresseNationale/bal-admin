@@ -1,17 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { uniqueId } from "lodash";
-import type {
-  PartenaireDeLaCharteCommuneType,
-  PartenaireDeLaCharteEntrepriseType,
-  PartenaireDeLaCharteOrganismeType,
-} from "types/partenaire-de-la-charte";
-import {
-  PartenaireDeLaCharteServiceEnum,
-  PartenaireDeLaCharteTypeEnum,
-  type PartenaireDeLaChartType,
-  PartenaireDeLaCharteOrganismeTypeEnum,
-} from "types/partenaire-de-la-charte";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
@@ -26,11 +15,18 @@ import { getClients } from "@/lib/api-depot";
 import { ClientApiDepotType } from "types/api-depot";
 import { OrganizationMoissoneurType } from "types/moissoneur";
 import { getOrganizations } from "@/lib/api-moissonneur-bal";
+import { PartenaireDeLaCharteDTO } from "../../server/lib/partenaire-de-la-charte/dto";
+import {
+  PartenaireDeLaCharte,
+  PartenaireDeLaCharteTypeEnum,
+  PartenaireDeLaCharteOrganismeTypeEnum,
+  PartenaireDeLaCharteServiceEnum,
+} from "../../server/lib/partenaire-de-la-charte/entity";
 
 type PartenaireFormProps = {
   title: string | React.ReactNode;
-  data?: PartenaireDeLaChartType;
-  onSubmit?: (formData: Partial<PartenaireDeLaChartType>) => Promise<void>;
+  data?: PartenaireDeLaCharte;
+  onSubmit?: (formData: Partial<PartenaireDeLaCharteDTO>) => Promise<void>;
   submitLabel?: string;
   controls?: React.ReactNode;
   isCreation?: boolean;
@@ -111,13 +107,9 @@ export const PartenaireForm = ({
   controls,
   isCreation,
 }: PartenaireFormProps) => {
-  const [formData, setFormData] = useState<
-    Partial<
-      | PartenaireDeLaCharteCommuneType
-      | PartenaireDeLaCharteOrganismeType
-      | PartenaireDeLaCharteEntrepriseType
-    >
-  >(data || newPartenaireForm);
+  const [formData, setFormData] = useState<PartenaireDeLaCharteDTO>(
+    data || newPartenaireForm
+  );
   const [optionClients, setOptionClients] = useState<
     { value: string; label: string }[]
   >([]);
@@ -128,13 +120,17 @@ export const PartenaireForm = ({
 
   useEffect(() => {
     async function fetchOptions() {
-      const clients: ClientApiDepotType[] = await getClients(false);
+      let clients: ClientApiDepotType[] = [];
+      let organisations: OrganizationMoissoneurType[] = [];
+
+      try {
+        organisations = await getOrganizations();
+        clients = await getClients(false);
+      } catch {}
+
       setOptionClients(
         clients.map(({ _id, nom }) => ({ value: _id, label: nom }))
       );
-
-      const organisations: OrganizationMoissoneurType[] =
-        await getOrganizations();
       setOptionOrganizations(
         organisations.map(({ id, name }) => ({ value: id, label: name }))
       );

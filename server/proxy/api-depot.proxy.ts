@@ -1,7 +1,7 @@
-const express = require("express");
-const got = require("got");
+import express from "express";
+import got from "got";
 
-const w = require("./w");
+import w from "./w";
 
 const API_DEPOT_URL =
   process.env.NEXT_PUBLIC_API_DEPOT_URL ||
@@ -156,7 +156,7 @@ async function validateHabilitation(req, res) {
   forward(response, res);
 }
 
-const app = new express.Router();
+const app = express.Router();
 
 app.use(express.json());
 
@@ -188,4 +188,4 @@ app.get("/communes/:codeCommune/revisions", w(getAllRevisionsByCommune));
 
 app.put("/habilitations/:habilitationId/validate", w(validateHabilitation));
 
-module.exports = app;
+export default app;

@@ -7,10 +7,11 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
 import { EventForm } from "@/components/events/event-form";
 import { deleteEvent, getEvent, updateEvent } from "@/lib/events";
-import { EventType } from "types/event";
+import { Event } from "../../server/lib/events/entity";
+import { EventDTO } from "server/lib/events/dto";
 
 type EventPageProps = {
-  event: EventType;
+  event: Event;
 };
 
 const deleteEventModale = createModal({
@@ -21,12 +22,12 @@ const deleteEventModale = createModal({
 const EventPage = ({ event }: EventPageProps) => {
   const router = useRouter();
 
-  const onUpdate = async (formData) => {
+  const onUpdate = async (formData: EventDTO) => {
     try {
-      await updateEvent(event._id, formData);
+      await updateEvent(event.id, formData);
       toast("Modifications enregistrées", { type: "success" });
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       toast("Erreur lors de l’enregistrement des modifications", {
         type: "error",
       });
@@ -35,11 +36,11 @@ const EventPage = ({ event }: EventPageProps) => {
 
   const onDelete = async () => {
     try {
-      await deleteEvent(event._id);
+      await deleteEvent(event.id);
       toast("Evènement supprimé", { type: "success" });
       await router.push("/events");
     } catch (error: unknown) {
-      console.log(error);
+      console.error(error);
       toast("Erreur lors de la suppression de l'évènement", { type: "error" });
     }
   };

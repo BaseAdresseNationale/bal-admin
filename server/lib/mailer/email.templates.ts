@@ -1,7 +1,7 @@
-const sanitizeHtml = require("sanitize-html");
-const { getMailToCommuneTemplate } = require("./mail-to-communes-template");
+import sanitizeHtml from "sanitize-html";
+import { getMailToCommuneTemplate } from "./mail-to-communes-template";
 
-module.exports = {
+const Emails = {
   "candidature-partenaire-de-la-charte": {
     from: process.env.SMTP_FROM || "adresse@data.gouv.fr",
     to: "adresse@data.gouv.fr",
@@ -33,7 +33,20 @@ module.exports = {
       from: process.env.SMTP_FROM || "adresse@data.gouv.fr",
       to,
       subject: `Signalement d'un problème d'adressage - ${subject}`,
-      html: getMailToCommuneTemplate({ firstName: sanitizeHtml(firstName), lastName: sanitizeHtml(lastName), email: sanitizeHtml(email), message: sanitizeHtml(message), subject, street: sanitizeHtml(street), number: sanitizeHtml(number) }, publication),
+      html: getMailToCommuneTemplate(
+        {
+          firstName: sanitizeHtml(firstName),
+          lastName: sanitizeHtml(lastName),
+          email: sanitizeHtml(email),
+          message: sanitizeHtml(message),
+          subject,
+          street: sanitizeHtml(street),
+          number: sanitizeHtml(number),
+        },
+        publication
+      ),
     };
   },
 };
+
+export default Emails;

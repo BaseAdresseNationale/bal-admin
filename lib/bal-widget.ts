@@ -1,9 +1,9 @@
-import { BALWidgetConfig } from "../types/bal-widget";
+import { BalWidget } from "../server/lib/bal-widget/entity";
 
 const NEXT_PUBLIC_BAL_ADMIN_URL =
   process.env.NEXT_PUBLIC_BAL_ADMIN_URL || "http://localhost:3000";
 
-export async function getBALWidgetConfig() {
+export async function getBALWidgetConfig(): Promise<BalWidget> {
   const response = await fetch(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/bal-widget/config`
   );
@@ -14,10 +14,12 @@ export async function getBALWidgetConfig() {
 
   const data = await response.json();
 
-  return data as BALWidgetConfig;
+  return data as BalWidget;
 }
 
-export async function setBALWidgetConfig(payload) {
+export async function setBALWidgetConfig(
+  payload: BalWidget
+): Promise<BalWidget> {
   const response = await fetch(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/bal-widget/config`,
     {
@@ -33,5 +35,5 @@ export async function setBALWidgetConfig(payload) {
 
   const data = await response.json();
 
-  return data as BALWidgetConfig;
+  return data as BalWidget;
 }

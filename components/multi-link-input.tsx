@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import styled from "styled-components";
-import { BALWidgetLink } from "../types/bal-widget";
+import { BALWidgetLink } from "../server/lib/bal-widget/entity";
 
 type MultiLinkInputProps = {
   label: string;

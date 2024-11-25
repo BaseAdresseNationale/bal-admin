@@ -1,30 +1,29 @@
 import React from "react";
-import type { EventType } from "types/event";
-import { EventTypeTypeEnum } from "types/event";
+import { Event, EventTypeEnum } from "../../server/lib/events/entity";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Link from "next/link";
 
-const getEventTypeColor = (type: EventTypeTypeEnum) => {
+const getEventTypeColor = (type: EventTypeEnum) => {
   switch (type) {
-    case EventTypeTypeEnum.FORMATION:
+    case EventTypeEnum.FORMATION:
       return "rgb(15, 111, 0)";
-    case EventTypeTypeEnum.FORMATION_LVL2:
+    case EventTypeEnum.FORMATION_LVL2:
       return "rgb(3, 189, 91)";
-    case EventTypeTypeEnum.PARTENAIRE:
+    case EventTypeEnum.PARTENAIRE:
       return "rgb(0, 83, 179)";
-    case EventTypeTypeEnum.ADRESSE_LAB:
+    case EventTypeEnum.ADRESSE_LAB:
       return "rgb(209, 51, 91)";
-    case EventTypeTypeEnum.ADRESSE_REGION:
+    case EventTypeEnum.ADRESSE_REGION:
       return "rgb(130, 0, 191)";
-    case EventTypeTypeEnum.PRESENTATION:
+    case EventTypeEnum.PRESENTATION:
       return "rgb(26, 168, 255)";
     default:
       return "black";
   }
 };
 
-const getDate = (date: string) => {
+const getDate = (date: Date) => {
   return new Date(date).toLocaleDateString();
 };
 
@@ -33,14 +32,14 @@ const getHours = (startHour: string, endHour: string) => {
 };
 
 export const EventItem = ({
-  _id,
+  id,
   type,
   title,
   date,
   startHour,
   endHour,
-}: EventType) => (
-  <tr key={_id}>
+}: Event) => (
+  <tr key={id}>
     <td className="fr-col fr-my-1v">
       <Badge
         style={{ background: getEventTypeColor(type), color: "white" }}
@@ -56,11 +55,26 @@ export const EventItem = ({
       <Link
         passHref
         href={{
-          pathname: `/events/${_id}`,
+          pathname: `/events/${id}`,
         }}
       >
         <Button iconId="fr-icon-arrow-right-line" iconPosition="right">
           Consulter
+        </Button>
+      </Link>
+    </td>
+    <td className="fr-col fr-my-1v">
+      <Link
+        passHref
+        href={{
+          pathname: `/events/new`,
+          query: {
+            duplicatEvent: id,
+          },
+        }}
+      >
+        <Button iconId="fr-icon-arrow-right-line" iconPosition="right">
+          Dupliquer
         </Button>
       </Link>
     </td>

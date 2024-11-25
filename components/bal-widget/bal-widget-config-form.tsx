@@ -5,7 +5,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 
-import { BALWidgetConfig } from "../../types/bal-widget";
+import { BalWidget } from "../../server/lib/bal-widget/entity";
 import { MultiStringInput } from "../multi-string-input";
 import { MultiLinkInput } from "../multi-link-input";
 import { MultiSelectInput } from "../multi-select-input";
@@ -15,10 +15,10 @@ import { getClients } from "@/lib/api-depot";
 import { getSources } from "@/lib/api-moissonneur-bal";
 
 type BALWidgetConfigFormProps = {
-  baseConfig: BALWidgetConfig;
-  formData: BALWidgetConfig;
-  setFormData: React.Dispatch<React.SetStateAction<BALWidgetConfig>>;
-  onSubmit: (data: BALWidgetConfig) => Promise<void>;
+  baseConfig: BalWidget;
+  formData: BalWidget;
+  setFormData: React.Dispatch<React.SetStateAction<BalWidget>>;
+  onSubmit: (data: BalWidget) => Promise<void>;
 };
 
 const StyledForm = styled.form`
@@ -67,13 +67,13 @@ export const BALWidgetConfigForm = ({
         const clients = await getClients();
         setApiDepotClients(clients);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
       try {
         const sources = await getSources();
         setHarvestSources(sources);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
 
@@ -91,28 +91,27 @@ export const BALWidgetConfigForm = ({
   }, [tabRef]);
 
   const handleEdit =
-    (section: keyof BALWidgetConfig, property: string) =>
+    (section: keyof BalWidget, property: string) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { value } = e.target;
       setFormData((state) => ({
         ...state,
         [section]: {
-          ...state[section],
+          ...(state[section] as any),
           [property]: value,
         },
       }));
     };
 
-  const handleToggle =
-    (section: keyof BALWidgetConfig, property: string) => () => {
-      setFormData((state) => ({
-        ...state,
-        [section]: {
-          ...state[section],
-          [property]: !state[section][property],
-        },
-      }));
-    };
+  const handleToggle = (section: keyof BalWidget, property: string) => () => {
+    setFormData((state) => ({
+      ...state,
+      [section]: {
+        ...(state[section] as any),
+        [property]: !state[section][property],
+      },
+    }));
+  };
 
   const resetForm = () => {
     setFormData(baseConfig);

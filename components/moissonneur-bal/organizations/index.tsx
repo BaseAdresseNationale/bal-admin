@@ -4,11 +4,11 @@ import {
 } from "types/moissoneur";
 import { useState } from "react";
 import MoissoneurOrganizationItem from "./moissonneur-organization-item";
-import { PartenaireDeLaChartType } from "types/partenaire-de-la-charte";
+import { PartenaireDeLaCharte } from "../../../server/lib/partenaire-de-la-charte/entity";
 
 type MoissoneurOrganizationsProps = {
   organizations: OrganizationMoissoneurType[];
-  partenaires: PartenaireDeLaChartType[];
+  partenaires: PartenaireDeLaCharte[];
 };
 
 const MoissoneurOrganizations = ({

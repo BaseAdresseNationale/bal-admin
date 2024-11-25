@@ -44,7 +44,7 @@ const MoissoneurOrganizationItem = ({
           legacyBehavior
           passHref
           href={{
-            pathname: `/partenaires-de-la-charte/${partenaire._id}`,
+            pathname: `/partenaires-de-la-charte/${partenaire.id}`,
           }}
         >
           {partenaire.name}
