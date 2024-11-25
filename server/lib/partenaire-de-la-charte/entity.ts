@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   PrimaryColumn,
   UpdateDateColumn,
@@ -86,6 +87,9 @@ export class PartenaireDeLaCharte {
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
+
+  @DeleteDateColumn({ name: "deleted_at" })
+  deletedAt: Date;
 
   @Column("timestamp", { nullable: true, name: "signature_date" })
   signatureDate: Date;
