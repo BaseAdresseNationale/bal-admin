@@ -14,7 +14,6 @@ const PROXY_API_DEPOT_DEMO_URL =
 async function processResponse(res: Response) {
   if (!res.ok) {
     const error = await res.json();
-    console.log(error);
     throw new Error(error.message);
   }
 
