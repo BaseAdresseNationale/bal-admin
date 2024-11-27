@@ -23,7 +23,7 @@
     "typeorm:migration:down": "yarn typeorm migration:revert -- -d ./typeorm.config.ts"
   },
   "dependencies": {
-    "@codegouvfr/react-dsfr": "^0.69.0",
+    "@codegouvfr/react-dsfr": "^1.14.7",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@etalab/decoupage-administratif": "^4.0.0",

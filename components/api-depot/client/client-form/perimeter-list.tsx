@@ -50,13 +50,14 @@ const PerimeterList = ({ perimeters, handlePerimeter }: PerimeterListProps) => {
               key={idx}
               className="fr-container fr-my-2w fr-grid-row fr-grid-row--gutters fr-grid-row--bottom"
             >
-              <Perimeter
-                type={p.type}
-                code={p.code}
-                handlePerimeter={(p) => handleChange(p, idx)}
-              />
-
-              <div className="fr-col-1">
+              <div className="fr-col-8">
+                <Perimeter
+                  type={p.type}
+                  code={p.code}
+                  handlePerimeter={(p) => handleChange(p, idx)}
+                />
+              </div>
+              <div className="fr-col-2">
                 <Button
                   iconId="fr-icon-delete-bin-line"
                   onClick={(e) => removePerimeter(e, idx)}
