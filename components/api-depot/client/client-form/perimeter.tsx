@@ -11,6 +11,7 @@ import {
   Perimeter as PerimeterType,
   TypePerimeterEnum,
 } from "types/api-depot.types";
+import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 
 const typeOptions = [
   { label: "EPCI", value: "epci" },
@@ -76,9 +77,19 @@ const Perimeter = ({ type, code, handlePerimeter }: PerimetreProps) => {
     }
   };
 
+  const communeFromEPCI = useMemo(() => {
+    if (type === TypePerimeterEnum.EPCI) {
+      return epcis
+        .find((epci) => epci.code === code)
+        ?.membres.map((commune) => `${commune.nom} (${commune.code})`)
+        .join(", ");
+    }
+    return null;
+  }, [type, code]);
+
   return (
     <div className="fr-grid-row fr-grid-row--gutters">
-      <div className="fr-col-6">
+      <div className="fr-col-5">
         <SelectInput
           label="Type"
           value={type}
@@ -90,7 +101,7 @@ const Perimeter = ({ type, code, handlePerimeter }: PerimetreProps) => {
         />
       </div>
 
-      <div className="fr-col-6">
+      <div className="fr-col-5">
         <AutocompleteInput
           id={uniqueId()}
           label="Code"
@@ -98,6 +109,11 @@ const Perimeter = ({ type, code, handlePerimeter }: PerimetreProps) => {
           value={code}
           onChange={handleChange}
         />
+      </div>
+      <div className="fr-col-2" style={{ alignContent: "end" }}>
+        {type === TypePerimeterEnum.EPCI && (
+          <Tooltip kind="hover" title={communeFromEPCI} />
+        )}
       </div>
     </div>
   );
