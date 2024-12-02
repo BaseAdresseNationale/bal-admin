@@ -4,12 +4,13 @@ import { getEPCI, getDepartement, getCommune } from "@/lib/cog";
 
 import CopyToClipBoard from "@/components/copy-to-clipboard";
 import {
-  ChefDeFileApiDepotType,
-  PerimeterType,
+  ChefDeFile as ChefDeFileApiDepot,
+  Perimeter,
   TypePerimeterEnum,
-} from "types/api-depot";
+} from "types/api-depot.types";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
-function getPerimeters(perimetre: PerimeterType[]) {
+function getPerimeters(perimetre: Perimeter[]) {
   return perimetre
     ? perimetre.map((p) => {
         const { type, code } = p;
@@ -31,20 +32,20 @@ function getPerimeters(perimetre: PerimeterType[]) {
     : null;
 }
 
-interface ChefDeFileProps extends ChefDeFileApiDepotType {
+interface ChefDeFileProps extends ChefDeFileApiDepot {
   hasChefDeFile: boolean;
 }
 
 const ChefDeFile = ({
   hasChefDeFile,
-  _id,
+  id,
   nom,
   email,
   isEmailPublic,
-  perimetre,
-  signataireCharte,
+  perimeters,
+  isSignataireCharte,
 }: ChefDeFileProps) => {
-  const perimeters = getPerimeters(perimetre);
+  const perimetersString = getPerimeters(perimeters);
   return (
     <div className="fr-py-4v">
       <h1 className="fr-m-1v">Chef de file</h1>
@@ -53,41 +54,40 @@ const ChefDeFile = ({
           <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             <div className="fr-col-10">
               <h3>{nom}</h3>
-              <CopyToClipBoard text={_id} title="Id" />
+              <CopyToClipBoard text={id} title="Id" />
               <CopyToClipBoard text={email} title="Email" />
-              <div className="fr-col">
-                <input
-                  type="checkbox"
-                  id="checkbox"
-                  name="checkbox"
-                  checked={isEmailPublic}
-                  disabled
-                />
-                <label className="fr-label" htmlFor="checkbox">
-                  Email Public
-                </label>
-              </div>
-            </div>
-
-            <div className="fr-col">
-              <input
-                type="checkbox"
-                id="checkbox"
-                name="checkbox"
-                checked={signataireCharte}
-                disabled
+              <Checkbox
+                state={isEmailPublic ? "success" : "error"}
+                options={[
+                  {
+                    label: "Email public",
+                    nativeInputProps: {
+                      checked: isEmailPublic,
+                      disabled: true,
+                    },
+                  },
+                ]}
               />
-              <label className="fr-label" htmlFor="checkbox">
-                signataire de la charte
-              </label>
+              <Checkbox
+                state={isSignataireCharte ? "success" : "error"}
+                options={[
+                  {
+                    label: "Signataire de la charte",
+                    nativeInputProps: {
+                      checked: isSignataireCharte,
+                      disabled: true,
+                    },
+                  },
+                ]}
+              />
             </div>
           </div>
 
           <div className="fr-my-2w">
             <label className="fr-label">Périmètre :</label>
             <ul>
-              {perimeters
-                ? perimeters.map((p) => <li key={p}>{p}</li>)
+              {perimetersString
+                ? perimetersString.map((p) => <li key={p}>{p}</li>)
                 : "Aucune périmètre n’est défini"}
             </ul>
           </div>

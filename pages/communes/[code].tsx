@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import type { RevisionMoissoneurType } from "../../types/moissoneur";
-import type { RevisionApiDepotType } from "../../types/api-depot";
+import type { Revision as RevisionApiDepot } from "../../types/api-depot.types";
 import type { BaseLocaleType } from "../../types/mes-adresses";
 import { getCommune } from "@/lib/cog";
 
@@ -32,7 +32,7 @@ type CommuneSourcePageProps = {
 const CommuneSource = ({ code }: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<
-    RevisionApiDepotType[]
+    RevisionApiDepot[]
   >([]);
   const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] =
     useState<RevisionMoissoneurType[]>([]);
@@ -93,7 +93,7 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const initialRevisionsApiDepot: RevisionApiDepotType[] =
+      const initialRevisionsApiDepot: RevisionApiDepot[] =
         await getAllRevisionByCommune(code);
       const initialRevisionsMoissonneur: RevisionMoissoneurType[] =
         await getRevisionsByCommune(code);

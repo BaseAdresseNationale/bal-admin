@@ -2,7 +2,10 @@ import { Dispatch, SetStateAction, useCallback } from "react";
 import Button from "@codegouvfr/react-dsfr/Button";
 
 import Perimeter from "@/components/api-depot/client/client-form/perimeter";
-import { PerimeterType, TypePerimeterEnum } from "types/api-depot";
+import {
+  Perimeter as PerimeterType,
+  TypePerimeterEnum,
+} from "types/api-depot.types";
 
 interface PerimeterListProps {
   perimeters: PerimeterType[];
