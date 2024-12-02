@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { uniqueId } from "lodash";
 import Fuse from "fuse.js";
 import epcis from "@etalab/decoupage-administratif/data/epci.json";
