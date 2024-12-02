@@ -29,7 +29,7 @@ const ClientHeader = ({ client, partenaire }: ClientHeaderProps) => (
                 label: "Activé",
                 nativeInputProps: {
                   checked: client.isActive,
-                  readOnly: true,
+                  disabled: true,
                 },
               },
             ]}
@@ -41,7 +41,7 @@ const ClientHeader = ({ client, partenaire }: ClientHeaderProps) => (
                 label: "Mode relax",
                 nativeInputProps: {
                   checked: client.isRelaxMode,
-                  readOnly: true,
+                  disabled: true,
                 },
               },
             ]}

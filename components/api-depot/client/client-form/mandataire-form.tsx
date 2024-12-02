@@ -65,7 +65,7 @@ const MandataireForm = ({
           <div className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-6">
               <Input
-                label="Titre sur la page d'accueil"
+                label="Nom"
                 nativeInputProps={{
                   required: true,
                   value: nom,
@@ -75,7 +75,7 @@ const MandataireForm = ({
             </div>
             <div className="fr-col-6">
               <Input
-                label="Titre sur la page d'accueil"
+                label="Email"
                 state={isEmailValid === false ? "error" : "default"}
                 stateRelatedMessage="L’email n’est pas valide"
                 nativeInputProps={{

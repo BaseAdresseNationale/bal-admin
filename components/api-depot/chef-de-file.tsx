@@ -63,7 +63,7 @@ const ChefDeFile = ({
                     label: "Email public",
                     nativeInputProps: {
                       checked: isEmailPublic,
-                      readOnly: true,
+                      disabled: true,
                     },
                   },
                 ]}
@@ -75,7 +75,7 @@ const ChefDeFile = ({
                     label: "Signataire de la charte",
                     nativeInputProps: {
                       checked: isSignataireCharte,
-                      readOnly: true,
+                      disabled: true,
                     },
                   },
                 ]}

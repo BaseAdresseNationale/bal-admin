@@ -32,7 +32,7 @@ const ClientItem = ({
             label: "",
             nativeInputProps: {
               checked: client.isActive,
-              readOnly: true,
+              disabled: true,
             },
           },
         ]}
@@ -45,7 +45,7 @@ const ClientItem = ({
             label: "",
             nativeInputProps: {
               checked: client.isRelaxMode,
-              readOnly: true,
+              disabled: true,
             },
           },
         ]}
