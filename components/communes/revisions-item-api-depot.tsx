@@ -5,6 +5,7 @@ import type { RevisionApiDepotType } from "../../types/api-depot";
 import { formatDate } from "@/lib/util/date";
 import MongoId from "@/components/mongo-id";
 import Tooltip from "@/components/tooltip";
+import TypeCLientBadge from "../type-client-badge";
 
 export const RevisionItemApiDepot = ({
   _id,
@@ -20,18 +21,7 @@ export const RevisionItemApiDepot = ({
       <MongoId id={_id} />
     </td>
     <td className="fr-col fr-my-1v">
-      <Tooltip text={client.nom}>
-        <Link
-          legacyBehavior
-          passHref
-          href={{
-            pathname: "/api-depot/client",
-            query: { clientId: client._id },
-          }}
-        >
-          {client._id}
-        </Link>
-      </Tooltip>
+      <TypeCLientBadge client={client} />
     </td>
     <td className="fr-col fr-my-1v">
       <Badge severity={status === "published" ? "success" : "warning"} noIcon>
