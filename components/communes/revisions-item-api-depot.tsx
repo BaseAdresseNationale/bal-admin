@@ -5,6 +5,7 @@ import type { Revision } from "../../types/api-depot.types";
 import { formatDate } from "@/lib/util/date";
 import MongoId from "@/components/mongo-id";
 import Tooltip from "@/components/tooltip";
+import TypeClientBadge from "../type-client-badge";
 
 export const RevisionItemApiDepot = ({
   id,
@@ -20,18 +21,7 @@ export const RevisionItemApiDepot = ({
       <MongoId id={id} />
     </td>
     <td className="fr-col fr-my-1v">
-      <Tooltip text={client.nom}>
-        <Link
-          legacyBehavior
-          passHref
-          href={{
-            pathname: "/api-depot/client",
-            query: { clientId: client.id },
-          }}
-        >
-          {client.id}
-        </Link>
-      </Tooltip>
+      <TypeClientBadge client={client} />
     </td>
     <td className="fr-col fr-my-1v">
       <Badge severity={status === "published" ? "success" : "warning"} noIcon>
@@ -61,6 +51,19 @@ export const RevisionItemApiDepot = ({
     </td>
     <td className="fr-col fr-my-1v">
       {publishedAt ? formatDate(publishedAt) : "inconnu"}
+    </td>
+    <td className="fr-col fr-my-1v">
+      {status == "published" && (
+        <Link
+          target="_blank"
+          passHref
+          href={{
+            pathname: `${process.env.NEXT_PUBLIC_API_DEPOT_URL}/revisions/${_id}/files/bal/download`,
+          }}
+        >
+          Télécharger
+        </Link>
+      )}
     </td>
   </tr>
 );

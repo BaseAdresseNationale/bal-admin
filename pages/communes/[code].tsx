@@ -206,6 +206,7 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
           "Validation",
           "Date création",
           "Date publication",
+          "Fichier BAL",
         ]}
         caption="Révisions Api Depot"
         data={revisionsApiDepot}
