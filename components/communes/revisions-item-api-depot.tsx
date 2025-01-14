@@ -58,7 +58,7 @@ export const RevisionItemApiDepot = ({
           target="_blank"
           passHref
           href={{
-            pathname: `${process.env.NEXT_PUBLIC_API_DEPOT_URL}/revisions/${_id}/files/bal/download`,
+            pathname: `${process.env.NEXT_PUBLIC_API_DEPOT_URL}/revisions/${id}/files/bal/download`,
           }}
         >
           Télécharger
