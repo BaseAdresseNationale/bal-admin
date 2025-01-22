@@ -72,10 +72,12 @@ eventsRoutes.delete("/:id", routeGuard, async (req, res) => {
   }
 });
 
-eventsRoutes.get("/:id/participants", async (req, res) => {
+eventsRoutes.get("/:id/participants", routeGuard, async (req, res) => {
   try {
-    const event = await ParticipantsService.findManyByEvent(req.params.id);
-    res.json(event);
+    const participants = await ParticipantsService.findManyByEvent(
+      req.params.id
+    );
+    res.json(participants);
   } catch (err) {
     Logger.error(`Impossible de récupérer les participants`, err);
     res.status(500).json({ error: err.message });
@@ -84,11 +86,11 @@ eventsRoutes.get("/:id/participants", async (req, res) => {
 
 eventsRoutes.post("/:id/participants", async (req, res) => {
   try {
-    const event = await ParticipantsService.createOneByEvent(
+    const participant = await ParticipantsService.createOneByEvent(
       req.params.id,
       req.body
     );
-    res.json(event);
+    res.json(participant);
   } catch (err) {
     Logger.error(`Impossible de créer un participant`, err);
     res.status(500).json({ error: err.message });
