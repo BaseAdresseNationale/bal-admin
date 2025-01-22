@@ -86,8 +86,9 @@ eventsRoutes.get("/:id/participants", routeGuard, async (req, res) => {
 
 eventsRoutes.post("/:id/participants", async (req, res) => {
   try {
+    const event = await EventsService.findOneOrFail(req.params.id);
     const participant = await ParticipantsService.createOneByEvent(
-      req.params.id,
+      event,
       req.body
     );
     res.json(participant);
