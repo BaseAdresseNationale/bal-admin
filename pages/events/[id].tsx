@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { useRouter } from "next/router";
@@ -6,9 +6,16 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
 import { EventForm } from "@/components/events/event-form";
-import { deleteEvent, getEvent, updateEvent } from "@/lib/events";
+import {
+  deleteEvent,
+  getEvent,
+  getEventParticipants,
+  updateEvent,
+} from "@/lib/events";
 import { Event } from "../../server/lib/events/entity";
 import { EventDTO } from "server/lib/events/dto";
+import { Participant } from "server/lib/participant/entity";
+import EventParticipantTable from "@/components/events/event-participants-table";
 
 type EventPageProps = {
   event: Event;
@@ -21,6 +28,16 @@ const deleteEventModale = createModal({
 
 const EventPage = ({ event }: EventPageProps) => {
   const router = useRouter();
+  const [participants, setParticipants] = useState<Participant[]>([]);
+
+  useEffect(() => {
+    const loadParticpants = async () => {
+      const res = await getEventParticipants(event.id);
+      setParticipants(res);
+    };
+
+    loadParticpants();
+  }, [event.id]);
 
   const onUpdate = async (formData: EventDTO) => {
     try {
@@ -79,6 +96,7 @@ const EventPage = ({ event }: EventPageProps) => {
           </Button>
         </div>
       </deleteEventModale.Component>
+      <EventParticipantTable participants={participants} />
     </div>
   );
 };

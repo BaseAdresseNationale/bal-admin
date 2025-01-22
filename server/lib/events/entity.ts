@@ -4,9 +4,11 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Participant } from "../participant/entity";
 
 export enum EventTypeEnum {
   FORMATION = "formation",
@@ -86,6 +88,9 @@ export class Event {
 
   @Column("text", { nullable: false, name: "end_hour" })
   endHour: string;
+
+  @OneToMany('Participant', 'event')
+  participants?: Participant[];
 
   @CreateDateColumn({ name: "created_at" })
   createdAt?: Date;

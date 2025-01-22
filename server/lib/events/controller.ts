@@ -3,6 +3,7 @@ import cors from "cors";
 
 import routeGuard from "../../route-guard";
 import * as EventsService from "./service";
+import * as ParticipantsService from "./../participant/service";
 import { Logger } from "../../utils/logger.utils";
 
 const eventsRoutes = express.Router();
@@ -67,6 +68,32 @@ eventsRoutes.delete("/:id", routeGuard, async (req, res) => {
     res.json(event);
   } catch (err) {
     Logger.error(`Impossible de supprimer l'évènement`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+eventsRoutes.get("/:id/participants", routeGuard, async (req, res) => {
+  try {
+    const participants = await ParticipantsService.findManyByEvent(
+      req.params.id
+    );
+    res.json(participants);
+  } catch (err) {
+    Logger.error(`Impossible de récupérer les participants`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+eventsRoutes.post("/:id/participants", async (req, res) => {
+  try {
+    const event = await EventsService.findOneOrFail(req.params.id);
+    const participant = await ParticipantsService.createOneByEvent(
+      event,
+      req.body
+    );
+    res.json(participant);
+  } catch (err) {
+    Logger.error(`Impossible de créer un participant`, err);
     res.status(500).json({ error: err.message });
   }
 });
