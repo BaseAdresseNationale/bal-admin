@@ -72,7 +72,7 @@ eventsRoutes.delete("/:id", routeGuard, async (req, res) => {
   }
 });
 
-eventsRoutes.get("/:id/participants", routeGuard, async (req, res) => {
+eventsRoutes.get("/:id/participants", async (req, res) => {
   try {
     const event = await ParticipantsService.findManyByEvent(req.params.id);
     res.json(event);
@@ -82,7 +82,7 @@ eventsRoutes.get("/:id/participants", routeGuard, async (req, res) => {
   }
 });
 
-eventsRoutes.post("/:id/participants", routeGuard, async (req, res) => {
+eventsRoutes.post("/:id/participants", async (req, res) => {
   try {
     const event = await ParticipantsService.createOneByEvent(
       req.params.id,
