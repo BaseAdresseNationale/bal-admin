@@ -96,7 +96,7 @@ const EventPage = ({ event }: EventPageProps) => {
           </Button>
         </div>
       </deleteEventModale.Component>
-      <EventParticipantTable participants={participants} />
+      <EventParticipantTable eventId={event.id} participants={participants} />
     </div>
   );
 };

@@ -21,6 +21,15 @@ export async function getEvent(id: string): Promise<Event> {
   return event as Event;
 }
 
+export async function getEventParticipantsCSV(id: string): Promise<any> {
+  const response = await fetch(
+    `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/${id}/participants.csv`
+  );
+  const csvText = await response.text();
+
+  return csvText;
+}
+
 export async function getEventParticipants(id: string): Promise<Participant[]> {
   const response = await fetch(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/${id}/participants`
