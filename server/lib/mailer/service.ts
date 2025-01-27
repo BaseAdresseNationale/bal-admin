@@ -129,12 +129,11 @@ export async function sendSignalementToCommune(payload: MailDTO) {
   return true;
 }
 
-export async function sendParticipationEvenement(event: Event, participant: Participant) {
-
-  const template = templates.participationEvenement(
-    event,
-    participant.email,
-  );
+export async function sendParticipationEvenement(
+  event: Event,
+  participant: Participant
+) {
+  const template = templates.participationEvenement(event, participant.email);
 
   const response = await transport.sendMail(template);
 

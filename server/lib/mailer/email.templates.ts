@@ -27,7 +27,7 @@ const Emails = {
   },
   participationEvenement: (
     { title, date, startHour, endHour, href }: Event,
-    to,
+    to: string
   ) => {
     return {
       from: process.env.SMTP_FROM || "adresse@data.gouv.fr",
@@ -39,7 +39,6 @@ const Emails = {
       ),
     };
   },
-
   signalementToCommune: (
     { firstName, lastName, email, message, subject, street, number },
     to,

@@ -74,6 +74,9 @@ export class Event {
     commune?: string;
   };
 
+  @Column("boolean", { nullable: false, name: "reminder_send", default: false })
+  reminderSend: boolean;
+
   @Column("text", { nullable: true })
   href: string;
 
@@ -89,7 +92,7 @@ export class Event {
   @Column("text", { nullable: false, name: "end_hour" })
   endHour: string;
 
-  @OneToMany('Participant', 'event')
+  @OneToMany("Participant", "event")
   participants?: Participant[];
 
   @CreateDateColumn({ name: "created_at" })
