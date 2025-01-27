@@ -7,6 +7,7 @@ dotenv.config();
 
 import { AppDataSource } from "./utils/typeorm-client";
 import routeGuard from "./route-guard";
+import { cronEvents } from "./lib/events/cron";
 // PROXY
 import ProxyApiDepot from "./proxy/api-depot.proxy";
 import ProxyMoissonneurBal from "./proxy/moissonneur-bal.proxy";
@@ -63,6 +64,9 @@ async function main() {
     // Authentification is handled by the next app using next-auth module
     await nextAppRequestHandler(req, res);
   });
+
+  // Start cron events
+  cronEvents();
 
   server.listen(port, () => {
     Logger.info(`Start listening on port ${port}`);

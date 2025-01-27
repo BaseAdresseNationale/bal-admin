@@ -1,5 +1,6 @@
 import { EventDTO } from "server/lib/events/dto";
 import type { Event } from "../server/lib/events/entity";
+import { Participant } from "server/lib/participant/entity";
 
 const NEXT_PUBLIC_BAL_ADMIN_URL =
   process.env.NEXT_PUBLIC_BAL_ADMIN_URL || "http://localhost:3000";
@@ -18,6 +19,24 @@ export async function getEvent(id: string): Promise<Event> {
   const event = await processResponse(response);
 
   return event as Event;
+}
+
+export async function getEventParticipantsCSV(id: string): Promise<any> {
+  const response = await fetch(
+    `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/${id}/participants.csv`
+  );
+  const csvText = await response.text();
+
+  return csvText;
+}
+
+export async function getEventParticipants(id: string): Promise<Participant[]> {
+  const response = await fetch(
+    `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/events/${id}/participants`
+  );
+  const participants = await processResponse(response);
+
+  return participants as Participant[];
 }
 
 export async function getEvents(): Promise<Event[]> {
