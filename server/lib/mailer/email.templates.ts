@@ -35,7 +35,8 @@ const Emails = {
       subject: `Vous êtes inscris - ${title}`,
       html: sanitizeHtml(
         `<p>Bonjour,</p><p>Vous êtes inscrit a l'évènement ${title} le ${date} de ${startHour} à ${endHour}.</p>
-        <p>Voici le lien pour participer à la réunion <a href='${href}'>${href}</a></p>`
+        <p>Voici le lien pour participer à la réunion <a href='${href}'>${href}</a></p>
+        <p>Bonne journée,</p><p>L’équipe BAL</p>`
       ),
     };
   },
