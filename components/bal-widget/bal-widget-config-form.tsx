@@ -9,7 +9,7 @@ import { BalWidget } from "../../server/lib/bal-widget/entity";
 import { MultiStringInput } from "../multi-string-input";
 import { MultiLinkInput } from "../multi-link-input";
 import { MultiSelectInput } from "../multi-select-input";
-import { ClientApiDepotType } from "types/api-depot";
+import { Client } from "types/api-depot.types";
 import { SourceMoissoneurType } from "types/moissoneur";
 import { getClients } from "@/lib/api-depot";
 import { getSources } from "@/lib/api-moissonneur-bal";
@@ -50,9 +50,7 @@ export const BALWidgetConfigForm = ({
 }: BALWidgetConfigFormProps) => {
   const tabRef = useRef(null);
   const [selectedTabId, setSelectedTabId] = useState("communes");
-  const [apiDepotClients, setApiDepotClients] = useState<ClientApiDepotType[]>(
-    []
-  );
+  const [apiDepotClients, setApiDepotClients] = useState<Client[]>([]);
   const [harvestSources, setHarvestSources] = useState<SourceMoissoneurType[]>(
     []
   );
@@ -181,7 +179,7 @@ export const BALWidgetConfigForm = ({
                 label="Clients API Dépôt caducs"
                 value={formData.communes?.outdatedApiDepotClients || []}
                 options={apiDepotClients.map((client) => ({
-                  value: client._id,
+                  value: client.id,
                   label: client.nom,
                 }))}
                 placeholder="Sélectionner les clients API Dépôt caducs"
