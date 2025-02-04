@@ -1,10 +1,10 @@
 import { validateOrReject } from "class-validator";
 
 import { sendTemplateMail } from "../mailer/service";
-import { PartenaireDeLaCharteDTO } from "./dto";
+import { PartenaireDeLaCharteDTO, PartenaireDeLaCharteQuery } from "./dto";
 import { AppDataSource } from "../../utils/typeorm-client";
 import { PartenaireDeLaCharte, PartenaireDeLaCharteTypeEnum } from "./entity";
-import { ArrayContains, FindOptionsWhere, In, IsNull, Not } from "typeorm";
+import { ArrayContains, FindOptionsWhere, IsNull, Not, ILike } from "typeorm";
 import { ObjectId } from "bson";
 import { Logger } from "../../utils/logger.utils";
 
@@ -12,14 +12,16 @@ const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
 
 function createWherePG({
+  search,
   services,
   type,
   withCandidates,
   dataGouvOrganizationId,
   apiDepotClientId,
-}) {
+}: Partial<PartenaireDeLaCharteQuery>) {
   const where: FindOptionsWhere<PartenaireDeLaCharte> = {
     ...(type && { type }),
+    ...(search && { name: ILike(`%${search}%`) }),
   };
 
   if (!withCandidates) {
@@ -53,19 +55,21 @@ function createWherePG({
   return where;
 }
 
-export async function findMany(query: any = {}) {
+export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
   const { codeDepartement, withoutPictures } = query;
   const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder()
     .where(where);
+
   if (codeDepartement) {
     queryPG.andWhere(
       `code_departement @> :arraySearch OR is_perimeter_france IS true`,
       { arraySearch: [codeDepartement] }
     );
   }
+
   const records: PartenaireDeLaCharte[] = await queryPG.getMany();
 
   if (withoutPictures) {
@@ -78,7 +82,11 @@ export async function findMany(query: any = {}) {
   return records;
 }
 
-export async function findManyPaginated(query: any = {}, page = 1, limit = 10) {
+export async function findManyPaginated(
+  query: PartenaireDeLaCharteQuery = {},
+  page = 1,
+  limit = 10
+) {
   const offset = (page - 1) * limit;
 
   const { codeDepartement, withoutPictures } = query;

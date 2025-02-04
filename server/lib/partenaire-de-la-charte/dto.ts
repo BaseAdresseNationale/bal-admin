@@ -8,13 +8,25 @@ import {
   IsEnum,
   IsUrl,
   IsDate,
-  isEnum,
 } from "class-validator";
 import {
   PartenaireDeLaCharteTypeEnum,
   PartenaireDeLaCharteServiceEnum,
   PartenaireDeLaCharteOrganismeTypeEnum,
 } from "./entity";
+
+export interface PartenaireDeLaCharteQuery {
+  codeDepartement?: string;
+  search?: string;
+  withoutPictures?: boolean;
+  services?:
+    | PartenaireDeLaCharteServiceEnum
+    | PartenaireDeLaCharteServiceEnum[];
+  type?: PartenaireDeLaCharteTypeEnum;
+  withCandidates?: boolean;
+  dataGouvOrganizationId?: string | string[];
+  apiDepotClientId?: string | string[];
+}
 
 export class PartenaireDeLaCharteDTO {
   @IsString()
