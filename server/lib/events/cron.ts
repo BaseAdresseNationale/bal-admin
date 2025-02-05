@@ -9,8 +9,8 @@ import { Logger } from "../../utils/logger.utils";
 async function sendReminderEvents() {
   const today = new Date().toISOString().split("T")[0];
   const events: Event[] = await EventService.findMany({
-    // date: today,
-    // reminderSent: false,
+    date: today,
+    reminderSent: false,
   });
   for (const event of events) {
     const participants: Participant[] = await findManyByEvent(event.id);
