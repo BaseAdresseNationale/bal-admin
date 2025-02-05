@@ -3,6 +3,8 @@ import templates from "./email.templates";
 import { getCommuneEmail } from "../../utils/api-annuaire";
 import { MailDTO } from "./dto";
 import { validateOrReject } from "class-validator";
+import { Participant } from "../participant/entity";
+import { Event } from "../events/entity";
 
 const apiDepotBaseUrl =
   process.env.NEXT_PUBLIC_API_DEPOT_URL ||
@@ -117,6 +119,21 @@ export async function sendSignalementToCommune(payload: MailDTO) {
     communeEmail,
     publication
   );
+
+  const response = await transport.sendMail(template);
+
+  if (!response) {
+    throw new Error("Une erreur est survenue lors de l'envoi de l'email");
+  }
+
+  return true;
+}
+
+export async function sendParticipationEvenement(
+  event: Event,
+  participant: Participant
+) {
+  const template = templates.participationEvenement(event, participant.email);
 
   const response = await transport.sendMail(template);
 

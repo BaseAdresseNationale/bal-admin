@@ -8,8 +8,7 @@ import { ObjectId } from "bson";
 const eventRepository = AppDataSource.getRepository(Event);
 
 export async function findMany(query: any = {}): Promise<Event[]> {
-  const { type, isSubscriptionClosed } = query;
-
+  const { type, isSubscriptionClosed, date, reminderSent } = query;
   const where: FindOptionsWhere<Event> = {};
 
   if (type) {
@@ -18,6 +17,14 @@ export async function findMany(query: any = {}): Promise<Event[]> {
 
   if (isSubscriptionClosed) {
     where.isSubscriptionClosed = isSubscriptionClosed;
+  }
+
+  if (date) {
+    where.date = date;
+  }
+
+  if (reminderSent !== undefined) {
+    where.reminderSent = reminderSent;
   }
 
   return eventRepository.findBy(where);
@@ -52,6 +59,11 @@ export async function createMany(events: EventDTO[]): Promise<void> {
 
 export async function updateOne(id: string, payload: EventDTO) {
   await eventRepository.update({ id }, payload);
+  return findOneOrFail(id);
+}
+
+export async function updateReminderSent(id: string) {
+  await eventRepository.update({ id }, { reminderSent: true });
   return findOneOrFail(id);
 }
 
