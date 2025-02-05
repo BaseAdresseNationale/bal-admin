@@ -75,7 +75,7 @@ export class Event {
   };
 
   @Column("boolean", { nullable: false, name: "reminder_send", default: false })
-  reminderSend: boolean;
+  reminderSent: boolean;
 
   @Column("text", { nullable: true })
   href: string;

@@ -1,6 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 import { getMailToCommuneTemplate } from "./mail-to-communes-template";
 import { Event } from "../events/entity";
+import { getMailToParticipantTemplate } from "./mail-to-participant-template";
 
 const Emails = {
   "candidature-partenaire-de-la-charte": {
@@ -32,12 +33,15 @@ const Emails = {
     return {
       from: process.env.SMTP_FROM || "adresse@data.gouv.fr",
       to,
-      subject: `Vous êtes inscris - ${title}`,
-      html: sanitizeHtml(
-        `<p>Bonjour,</p><p>Vous êtes inscrit a l'évènement ${title} le ${date} de ${startHour} à ${endHour}.</p>
-        <p>Voici le lien pour participer à la réunion <a href='${href}'>${href}</a></p>
-        <p>Bonne journée,</p><p>L’équipe BAL</p>`
-      ),
+      subject: `Vous êtes inscrit à l'évènement ${title}`,
+      html: getMailToParticipantTemplate({
+        subject: `Vous êtes inscrit à l'évènement ${title}`,
+        title: sanitizeHtml(title),
+        date: sanitizeHtml(new Date(date).toLocaleDateString()),
+        startHour: sanitizeHtml(startHour),
+        endHour: sanitizeHtml(endHour),
+        href: sanitizeHtml(href),
+      }),
     };
   },
   signalementToCommune: (
