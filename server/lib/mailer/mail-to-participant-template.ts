@@ -5,6 +5,7 @@ export const getMailToParticipantTemplate = ({
   startHour,
   endHour,
   href,
+  instructions,
 }) => `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html
@@ -738,6 +739,20 @@ export const getMailToParticipantTemplate = ({
                                         Voici le lien pour participer à
                                         l'évènement
                                         <a href="${href}">${href}</a>
+                                      </p>`
+                                        : ""
+                                    }
+                                    ${
+                                      instructions && instructions !== ''
+                                        ? `<br />
+                                      <p
+                                        style="
+                                          font-family: Arial, helvetica,
+                                            sans-serif;
+                                          font-size: 14px;
+                                        "
+                                      >
+                                        ${instructions}
                                       </p>`
                                         : ""
                                     }

@@ -27,7 +27,7 @@ const Emails = {
     };
   },
   participationEvenement: (
-    { title, date, startHour, endHour, href }: Event,
+    { title, date, startHour, endHour, href, instructions }: Event,
     to: string
   ) => {
     return {
@@ -41,6 +41,7 @@ const Emails = {
         startHour: sanitizeHtml(startHour),
         endHour: sanitizeHtml(endHour),
         href: sanitizeHtml(href),
+        instructions: sanitizeHtml(instructions),
       }),
     };
   },

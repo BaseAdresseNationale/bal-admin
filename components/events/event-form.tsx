@@ -213,9 +213,9 @@ export const EventForm = ({
           </div>
           <div className="fr-col-6">
             <Input
-              label="Lien d'inscription*"
+              label="Lien visio"
               nativeInputProps={{
-                required: true,
+                required: false,
                 value: formData.href,
                 onChange: handleEdit("href"),
                 type: "url",
@@ -225,6 +225,7 @@ export const EventForm = ({
           <div className="fr-col-6">
             <Input
               label="Instructions"
+              hintText='Elles seront envoyées dans le mail de confirmation'
               nativeInputProps={{
                 value: formData.instructions,
                 onChange: handleEdit("instructions"),
