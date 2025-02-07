@@ -204,6 +204,21 @@ export async function updateOne(
   return findOneOrFail(id);
 }
 
+export async function findServicesWithCount(
+  query: PartenaireDeLaCharteQuery = {}
+) {
+  const records = await findMany(query);
+
+  const services = records.reduce((acc, record) => {
+    record.services.forEach((service) => {
+      acc[service] = acc[service] ? acc[service] + 1 : 1;
+    });
+    return acc;
+  }, {});
+
+  return services;
+}
+
 export async function deleteOne(id: string): Promise<boolean> {
   await partenaireDeLaCharteRepository.delete({ id });
   return true;
