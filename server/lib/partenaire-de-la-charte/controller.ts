@@ -3,7 +3,10 @@ import cors from "cors";
 import { shuffle } from "../../utils/random";
 import routeGuard from "../../route-guard";
 import * as PartenaireDeLaCharteService from "./service";
-import { PartenaireDeLaCharteServiceEnum } from "./entity";
+import {
+  PartenaireDeLaCharteServiceEnum,
+  PartenaireDeLaCharteTypeEnum,
+} from "./entity";
 import { Logger } from "../../utils/logger.utils";
 
 const partenaireDeLaCharteRoutes = express.Router();
@@ -57,7 +60,11 @@ partenaireDeLaCharteRoutes.get("/random", async (req, res) => {
 
 partenaireDeLaCharteRoutes.get("/services", async (req, res) => {
   try {
-    res.json(Object.values(PartenaireDeLaCharteServiceEnum));
+    const result = await PartenaireDeLaCharteService.findServicesWithCount(
+      req.query
+    );
+
+    res.json(result);
   } catch (err) {
     Logger.error(`Impossible de récupérer les services de partenaires`, err);
     res.status(500).json({ error: err.message });
