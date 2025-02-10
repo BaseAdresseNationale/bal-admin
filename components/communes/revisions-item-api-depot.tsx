@@ -38,7 +38,7 @@ export const RevisionItemApiDepot = ({
       />
     </td>
     <td className="fr-col fr-my-1v">
-      {validation.valid ? (
+      {validation?.valid ? (
         <input type="checkbox" id="checkbox" name="checkbox" checked disabled />
       ) : (
         <Tooltip text={validation?.errors?.join(",") || "Erreur inconnue"}>
@@ -66,4 +66,4 @@ export const RevisionItemApiDepot = ({
       )}
     </td>
   </tr>
-);
+)
