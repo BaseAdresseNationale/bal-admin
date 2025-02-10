@@ -92,18 +92,20 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDataApiDepot = async () => {
       const initialRevisionsApiDepot: RevisionApiDepot[] =
         await getAllRevisionByCommune(code);
-      const initialRevisionsMoissonneur: RevisionMoissoneurType[] =
-        await getRevisionsByCommune(code);
-
       // Show the last revisions first
       setInitialRevisionsApiDepot(initialRevisionsApiDepot.reverse());
       setPageApiDepot((pageApiDepot) => ({
         ...pageApiDepot,
         count: initialRevisionsApiDepot.length,
       }));
+
+    };
+    const fetchDataMoissonneur = async () => {
+      const initialRevisionsMoissonneur: RevisionMoissoneurType[] =
+        await getRevisionsByCommune(code);
 
       setInitialRevisionsMoissonneur(initialRevisionsMoissonneur.reverse());
       setPageMoissonneur((pageMoissonneur) => ({
@@ -112,7 +114,8 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
       }));
     };
 
-    fetchData().catch(console.error);
+    fetchDataApiDepot().catch(console.error);
+    fetchDataMoissonneur().catch(console.error);
   }, [code]);
 
   useEffect(() => {
