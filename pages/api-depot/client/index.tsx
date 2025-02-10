@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import type {
-  ClientApiDepotType,
-  MandataireApiDepotType,
-  ChefDeFileApiDepotType,
-} from "types/api-depot";
+  Client as ClientApiDepot,
+  Mandataire as MandataireApiDepot,
+  ChefDeFile as ChefDeFileApiDepot,
+} from "types/api-depot.types";
 import Loader from "@/components/loader";
 import { getChefDeFile, getClient, getMandataire } from "@/lib/api-depot";
 
@@ -22,9 +22,9 @@ const Client = () => {
   const router = useRouter();
   const { clientId, demo } = router.query;
   const isDemo = demo === "1";
-  const [client, setClient] = useState<ClientApiDepotType>(null);
-  const [chefDeFile, setChefDeFile] = useState<ChefDeFileApiDepotType>(null);
-  const [mandataire, setMandataire] = useState<MandataireApiDepotType>(null);
+  const [client, setClient] = useState<ClientApiDepot>(null);
+  const [chefDeFile, setChefDeFile] = useState<ChefDeFileApiDepot>(null);
+  const [mandataire, setMandataire] = useState<MandataireApiDepot>(null);
   const [partenaire, setPartenaire] = useState<PartenaireDeLaCharte>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,11 +34,11 @@ const Client = () => {
       const client = await getClient(clientId, isDemo);
       setClient(client);
 
-      const mandataire = await getMandataire(client.mandataire, isDemo);
+      const mandataire = await getMandataire(client.mandataireId, isDemo);
       setMandataire(mandataire);
 
-      if (client.chefDeFile) {
-        const chefDeFile = await getChefDeFile(client.chefDeFile, isDemo);
+      if (client.chefDeFileId) {
+        const chefDeFile = await getChefDeFile(client.chefDeFileId, isDemo);
         setChefDeFile(chefDeFile);
       }
 
@@ -75,7 +75,7 @@ const Client = () => {
             passHref
             href={{
               pathname: "/api-depot/client/client-form",
-              query: { clientId: client._id, demo: isDemo ? 1 : 0 },
+              query: { clientId: client.id, demo: isDemo ? 1 : 0 },
             }}
           >
             <Button iconId="fr-icon-edit-line">Modifier le client</Button>

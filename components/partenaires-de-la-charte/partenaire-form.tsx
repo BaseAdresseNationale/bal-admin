@@ -12,7 +12,7 @@ import { CommuneInput } from "../commune-input";
 import SelectInput from "@/components/select-input";
 import { capitalize } from "@/lib/util/string";
 import { getClients } from "@/lib/api-depot";
-import { ClientApiDepotType } from "types/api-depot";
+import { Client } from "types/api-depot.types";
 import { OrganizationMoissoneurType } from "types/moissoneur";
 import { getOrganizations } from "@/lib/api-moissonneur-bal";
 import { PartenaireDeLaCharteDTO } from "../../server/lib/partenaire-de-la-charte/dto";
@@ -120,7 +120,7 @@ export const PartenaireForm = ({
 
   useEffect(() => {
     async function fetchOptions() {
-      let clients: ClientApiDepotType[] = [];
+      let clients: Client[] = [];
       let organisations: OrganizationMoissoneurType[] = [];
 
       try {
@@ -129,7 +129,7 @@ export const PartenaireForm = ({
       } catch {}
 
       setOptionClients(
-        clients.map(({ _id, nom }) => ({ value: _id, label: nom }))
+        clients.map(({ id, nom }) => ({ value: id, label: nom }))
       );
       setOptionOrganizations(
         organisations.map(({ id, name }) => ({ value: id, label: name }))

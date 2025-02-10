@@ -1,10 +1,8 @@
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
-import { UpdateStatusEnum } from "../types/moissoneur";
-import Tooltip from "./tooltip";
-import { ClientApiDepotType } from "types/api-depot";
 import Link from "next/link";
 import { useMemo } from "react";
+import { PublicClient } from "types/api-depot.types";
 
 const ClientIdToBadge = {
   "mes-adresses": {
@@ -21,24 +19,24 @@ const ClientIdToBadge = {
   },
 };
 
-type TypeCLientBadgeProps = {
-  client: ClientApiDepotType;
+type TypeClientBadgeProps = {
+  client: PublicClient;
 };
 
-const TypeCLientBadge = ({ client }: TypeCLientBadgeProps) => {
+const TypeClientBadge = ({ client }: TypeClientBadgeProps) => {
   const getBadge = useMemo(() => {
     if (
-      client.id === "mes-adresses" ||
-      client.id === "moissonneur-bal" ||
-      client.id === "formulaire-publication"
+      client.legacyId === "mes-adresses" ||
+      client.legacyId === "moissonneur-bal" ||
+      client.legacyId === "formulaire-publication"
     ) {
       return (
         <Badge
-          severity={ClientIdToBadge[client.id].severity}
+          severity={ClientIdToBadge[client.legacyId].severity}
           noIcon
           style={{ cursor: "pointer" }}
         >
-          {ClientIdToBadge[client.id].text}
+          {ClientIdToBadge[client.legacyId].text}
         </Badge>
       );
     }
@@ -48,7 +46,7 @@ const TypeCLientBadge = ({ client }: TypeCLientBadgeProps) => {
         API DEPOT
       </Badge>
     );
-  }, [client.id]);
+  }, [client.legacyId]);
 
   return (
     <Link
@@ -56,7 +54,7 @@ const TypeCLientBadge = ({ client }: TypeCLientBadgeProps) => {
       passHref
       href={{
         pathname: "/api-depot/client",
-        query: { clientId: client._id },
+        query: { clientId: client.id },
       }}
     >
       {getBadge}
@@ -64,4 +62,4 @@ const TypeCLientBadge = ({ client }: TypeCLientBadgeProps) => {
   );
 };
 
-export default TypeCLientBadge;
+export default TypeClientBadge;

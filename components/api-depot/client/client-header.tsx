@@ -3,11 +3,12 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 
 import CopyToClipBoard from "@/components/copy-to-clipboard";
-import { ClientApiDepotType } from "types/api-depot";
+import { Client } from "types/api-depot.types";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { PartenaireDeLaCharte } from "../../../server/lib/partenaire-de-la-charte/entity";
 
 interface ClientHeaderProps {
-  client: ClientApiDepotType;
+  client: Client;
   partenaire: PartenaireDeLaCharte;
 }
 
@@ -18,8 +19,33 @@ const ClientHeader = ({ client, partenaire }: ClientHeaderProps) => (
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-10">
           <h2>{client.nom}</h2>
-          <CopyToClipBoard text={client._id} title="Id" />
+          <CopyToClipBoard text={client.id} title="Id" />
           <CopyToClipBoard text={client.token} title="Token" />
+
+          <Checkbox
+            state={client.isActive ? "success" : "error"}
+            options={[
+              {
+                label: "Activé",
+                nativeInputProps: {
+                  checked: client.isActive,
+                  disabled: true,
+                },
+              },
+            ]}
+          />
+          <Checkbox
+            state={client.isRelaxMode ? "success" : "error"}
+            options={[
+              {
+                label: "Mode relax",
+                nativeInputProps: {
+                  checked: client.isRelaxMode,
+                  disabled: true,
+                },
+              },
+            ]}
+          />
 
           {partenaire ? (
             <>

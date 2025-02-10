@@ -1,27 +1,27 @@
 import Link from "next/link";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
-import type { RevisionApiDepotType } from "../../types/api-depot";
+import type { Revision } from "../../types/api-depot.types";
 import { formatDate } from "@/lib/util/date";
 import MongoId from "@/components/mongo-id";
 import Tooltip from "@/components/tooltip";
-import TypeCLientBadge from "../type-client-badge";
+import TypeClientBadge from "../type-client-badge";
 
 export const RevisionItemApiDepot = ({
-  _id,
+  id,
   status,
-  current = false,
+  isCurrent = false,
   client,
   validation,
   createdAt,
-  publishedAt = "",
-}: RevisionApiDepotType) => (
-  <tr key={_id}>
+  publishedAt = null,
+}: Revision) => (
+  <tr key={id}>
     <td className="fr-col fr-my-1v">
-      <MongoId id={_id} />
+      <MongoId id={id} />
     </td>
     <td className="fr-col fr-my-1v">
-      <TypeCLientBadge client={client} />
+      <TypeClientBadge client={client} />
     </td>
     <td className="fr-col fr-my-1v">
       <Badge severity={status === "published" ? "success" : "warning"} noIcon>
@@ -33,7 +33,7 @@ export const RevisionItemApiDepot = ({
         type="checkbox"
         id="checkbox"
         name="checkbox"
-        checked={current}
+        checked={isCurrent}
         disabled
       />
     </td>
@@ -58,7 +58,7 @@ export const RevisionItemApiDepot = ({
           target="_blank"
           passHref
           href={{
-            pathname: `${process.env.NEXT_PUBLIC_API_DEPOT_URL}/revisions/${_id}/files/bal/download`,
+            pathname: `${process.env.NEXT_PUBLIC_API_DEPOT_URL}/revisions/${id}/files/bal/download`,
           }}
         >
           Télécharger

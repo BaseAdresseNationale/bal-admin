@@ -1,17 +1,14 @@
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Link from "next/link";
+import { ChefDeFile, Client, Mandataire } from "types/api-depot.types";
 import { PartenaireDeLaCharte } from "../../server/lib/partenaire-de-la-charte/entity";
-import {
-  ChefDeFileApiDepotType,
-  ClientApiDepotType,
-  MandataireApiDepotType,
-} from "types/api-depot";
 
 interface ClientItemProps {
-  client: ClientApiDepotType;
-  mandataire: MandataireApiDepotType;
-  chefDeFile: ChefDeFileApiDepotType;
+  client: Client;
+  mandataire: Mandataire;
+  chefDeFile: ChefDeFile;
   partenaires: PartenaireDeLaCharte[];
   isDemo: boolean;
 }
@@ -29,21 +26,29 @@ const ClientItem = ({
     <td className="fr-col fr-my-1v">{chefDeFile ? chefDeFile.nom : "-"}</td>
     <td className="fr-col fr-my-1v">{client.authorizationStrategy}</td>
     <td className="fr-col fr-my-1v">
-      <input
-        type="checkbox"
-        id="checkbox"
-        name="checkbox"
-        checked={client.active}
-        disabled
+      <Checkbox
+        options={[
+          {
+            label: "",
+            nativeInputProps: {
+              checked: client.isActive,
+              disabled: true,
+            },
+          },
+        ]}
       />
     </td>
     <td className="fr-col fr-my-1v">
-      <input
-        type="checkbox"
-        id="checkbox"
-        name="checkbox"
-        checked={client.options.relaxMode}
-        disabled
+      <Checkbox
+        options={[
+          {
+            label: "",
+            nativeInputProps: {
+              checked: client.isRelaxMode,
+              disabled: true,
+            },
+          },
+        ]}
       />
     </td>
     <td className="fr-col fr-my-1v">
@@ -71,7 +76,7 @@ const ClientItem = ({
         passHref
         href={{
           pathname: "/api-depot/client/client-form",
-          query: { clientId: client._id, demo: isDemo ? 1 : 0 },
+          query: { clientId: client.id, demo: isDemo ? 1 : 0 },
         }}
       >
         <Button iconId="fr-icon-edit-line" iconPosition="right">
@@ -85,7 +90,7 @@ const ClientItem = ({
         passHref
         href={{
           pathname: "/api-depot/client",
-          query: { clientId: client._id, demo: isDemo ? 1 : 0 },
+          query: { clientId: client.id, demo: isDemo ? 1 : 0 },
         }}
       >
         <Button iconId="fr-icon-arrow-right-line" iconPosition="right">

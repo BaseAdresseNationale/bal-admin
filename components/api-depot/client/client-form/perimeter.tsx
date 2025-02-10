@@ -7,9 +7,11 @@ import allCommunes from "@etalab/decoupage-administratif/data/communes.json";
 
 import AutocompleteInput from "@/components/autocomplete-input";
 import SelectInput from "@/components/select-input";
-import { PerimeterType, TypePerimeterEnum } from "types/api-depot";
+import {
+  Perimeter as PerimeterType,
+  TypePerimeterEnum,
+} from "types/api-depot.types";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
-import Badge from "@codegouvfr/react-dsfr/Badge";
 
 const typeOptions = [
   { label: "EPCI", value: "epci" },

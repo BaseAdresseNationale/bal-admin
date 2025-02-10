@@ -1,29 +1,44 @@
+import {
+  ChefDeFile,
+  Client,
+  Mandataire,
+  Revision,
+} from "types/api-depot.types";
+
 const NEXT_PUBLIC_BAL_ADMIN_URL =
   process.env.NEXT_PUBLIC_BAL_ADMIN_URL || "http://localhost:3000";
 const PROXY_API_DEPOT_URL = NEXT_PUBLIC_BAL_ADMIN_URL + "/api/proxy-api-depot";
 const PROXY_API_DEPOT_DEMO_URL =
   NEXT_PUBLIC_BAL_ADMIN_URL + "/api/proxy-api-depot-demo";
 
-async function processResponse(response) {
-  if (!response.ok) {
-    const body = await response.json();
-    throw new Error(body.message);
+async function processResponse(res: Response) {
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message);
   }
 
-  return response.json();
+  try {
+    return await res.json();
+  } catch {
+    return res;
+  }
 }
 
-function getProxyURL(isDemo) {
+function getProxyURL(isDemo: boolean = false): string {
   return isDemo ? PROXY_API_DEPOT_DEMO_URL : PROXY_API_DEPOT_URL;
 }
 
-export async function getClient(clientId, isDemo) {
+export async function getClient(clientId, isDemo): Promise<Client> {
   const response = await fetch(`${getProxyURL(isDemo)}/clients/${clientId}`);
 
   return processResponse(response);
 }
 
-export async function updateClient(clientId, body, isDemo) {
+export async function updateClient(
+  clientId: string,
+  body: Partial<Client>,
+  isDemo: boolean = false
+): Promise<Client> {
   const response = await fetch(`${getProxyURL(isDemo)}/clients/${clientId}`, {
     method: "PUT",
     headers: { "content-type": "application/json" },
@@ -33,7 +48,10 @@ export async function updateClient(clientId, body, isDemo) {
   return processResponse(response);
 }
 
-export async function createClient(body, isDemo) {
+export async function createClient(
+  body: Partial<Client>,
+  isDemo: boolean = false
+): Promise<Client> {
   const response = await fetch(`${getProxyURL(isDemo)}/clients`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -43,13 +61,16 @@ export async function createClient(body, isDemo) {
   return processResponse(response);
 }
 
-export async function getClients(isDemo) {
+export async function getClients(isDemo: boolean = false): Promise<Client[]> {
   const response = await fetch(`${getProxyURL(isDemo)}/clients`);
 
   return processResponse(response);
 }
 
-export async function createMandataire(body, isDemo) {
+export async function createMandataire(
+  body: Partial<Mandataire>,
+  isDemo: boolean = false
+): Promise<Mandataire> {
   const response = await fetch(`${getProxyURL(isDemo)}/mandataires`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -59,7 +80,10 @@ export async function createMandataire(body, isDemo) {
   return processResponse(response);
 }
 
-export async function getMandataire(mandataireId, isDemo) {
+export async function getMandataire(
+  mandataireId: string,
+  isDemo: boolean = false
+): Promise<Mandataire> {
   const response = await fetch(
     `${getProxyURL(isDemo)}/mandataires/${mandataireId}`
   );
@@ -67,13 +91,18 @@ export async function getMandataire(mandataireId, isDemo) {
   return processResponse(response);
 }
 
-export async function getMandataires(isDemo) {
+export async function getMandataires(
+  isDemo: boolean = false
+): Promise<Mandataire[]> {
   const response = await fetch(`${getProxyURL(isDemo)}/mandataires`);
 
   return processResponse(response);
 }
 
-export async function createChefDeFile(body, isDemo) {
+export async function createChefDeFile(
+  body: Partial<ChefDeFile>,
+  isDemo: boolean = false
+): Promise<ChefDeFile> {
   const response = await fetch(`${getProxyURL(isDemo)}/chefs-de-file`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -83,7 +112,11 @@ export async function createChefDeFile(body, isDemo) {
   return processResponse(response);
 }
 
-export async function updateChefDeFile(chefDeFileId, body, isDemo) {
+export async function updateChefDeFile(
+  chefDeFileId: string,
+  body: Partial<ChefDeFile>,
+  isDemo: boolean = false
+): Promise<ChefDeFile> {
   const response = await fetch(
     `${getProxyURL(isDemo)}/chefs-de-file/${chefDeFileId}`,
     {
@@ -96,7 +129,10 @@ export async function updateChefDeFile(chefDeFileId, body, isDemo) {
   return processResponse(response);
 }
 
-export async function getChefDeFile(chefDeFileId, isDemo) {
+export async function getChefDeFile(
+  chefDeFileId: string,
+  isDemo: boolean = false
+): Promise<ChefDeFile> {
   const response = await fetch(
     `${getProxyURL(isDemo)}/chefs-de-file/${chefDeFileId}`
   );
@@ -104,13 +140,18 @@ export async function getChefDeFile(chefDeFileId, isDemo) {
   return processResponse(response);
 }
 
-export async function getChefsDeFile(isDemo) {
+export async function getChefsDeFile(
+  isDemo: boolean = false
+): Promise<ChefDeFile[]> {
   const response = await fetch(`${getProxyURL(isDemo)}/chefs-de-file`);
 
   return processResponse(response);
 }
 
-export async function getStatFirstPublicationEvolution({ from, to }, isDemo) {
+export async function getStatFirstPublicationEvolution(
+  { from, to }: { from: string; to: string },
+  isDemo: boolean = false
+) {
   const res = await fetch(
     `${getProxyURL(isDemo)}/stats/firsts-publications?from=${from}&to=${to}`
   );
@@ -120,7 +161,10 @@ export async function getStatFirstPublicationEvolution({ from, to }, isDemo) {
   }
 }
 
-export async function getStatPublications({ from, to }, isDemo) {
+export async function getStatPublications(
+  { from, to }: { from: string; to: string },
+  isDemo: boolean = false
+) {
   const res = await fetch(
     `${getProxyURL(isDemo)}/stats/publications?from=${from}&to=${to}`
   );
@@ -130,7 +174,10 @@ export async function getStatPublications({ from, to }, isDemo) {
   }
 }
 
-export async function getAllRevisionByCommune(codeCommune, isDemo = false) {
+export async function getAllRevisionByCommune(
+  codeCommune: string,
+  isDemo: boolean = false
+): Promise<Revision[]> {
   const response = await fetch(
     `${getProxyURL(isDemo)}/communes/${codeCommune}/revisions`
   );
@@ -138,9 +185,12 @@ export async function getAllRevisionByCommune(codeCommune, isDemo = false) {
   return processResponse(response);
 }
 
-export async function validateHabilitation(habilitationId) {
+export async function validateHabilitation(
+  habilitationId: string,
+  isDemo: boolean = false
+) {
   const response = await fetch(
-    `${getProxyURL(false)}/habilitations/${habilitationId}/validate`,
+    `${getProxyURL(isDemo)}/habilitations/${habilitationId}/validate`,
     {
       method: "PUT",
       headers: { "content-type": "application/json" },
