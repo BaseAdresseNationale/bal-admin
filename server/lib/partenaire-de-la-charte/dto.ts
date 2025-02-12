@@ -34,7 +34,7 @@ export class PartenaireDeLaCharteDTO {
 
   @IsOptional()
   @IsBase64()
-  picture: string;
+  picture?: string;
 
   @IsString()
   contactLastName: string;

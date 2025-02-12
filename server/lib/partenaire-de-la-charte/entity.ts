@@ -3,9 +3,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryColumn,
+  Relation,
   UpdateDateColumn,
 } from "typeorm";
+import { Review } from "./reviews/entity";
 
 export enum PartenaireDeLaCharteServiceEnum {
   FORMATION = "formation",
@@ -38,7 +41,7 @@ export class PartenaireDeLaCharte {
   name: string;
 
   @Column("text", { nullable: true })
-  picture: string;
+  picture?: string;
 
   @Column("text", { nullable: false, name: "contact_last_name" })
   contactLastName: string;
@@ -127,4 +130,7 @@ export class PartenaireDeLaCharte {
 
   @Column("boolean", { nullable: true, name: "is_perimeter_france" })
   isPerimeterFrance: boolean;
+
+  @OneToMany(() => Review, (review) => review.partenaire, { eager: true })
+  reviews?: Relation<Review>[];
 }

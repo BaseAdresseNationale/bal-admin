@@ -1,5 +1,4 @@
 import { validateOrReject } from "class-validator";
-
 import { sendTemplateMail } from "../mailer/service";
 import { PartenaireDeLaCharteDTO, PartenaireDeLaCharteQuery } from "./dto";
 import { AppDataSource } from "../../utils/typeorm-client";
@@ -60,7 +59,8 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
   const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
-    .createQueryBuilder()
+    .createQueryBuilder("partenaireDeLaCharte")
+    .leftJoinAndSelect("partenaireDeLaCharte.reviews", "reviews")
     .where(where);
 
   if (codeDepartement) {
@@ -93,7 +93,8 @@ export async function findManyPaginated(
   const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
-    .createQueryBuilder()
+    .createQueryBuilder("partenaireDeLaCharte")
+    .leftJoinAndSelect("partenaireDeLaCharte.reviews", "reviews")
     .where(where)
     .limit(limit)
     .offset(offset);
@@ -122,19 +123,17 @@ export async function findManyPaginated(
     }
   );
 
-  if (withoutPictures) {
-    return records.map((record) => {
-      const { picture, ...rest } = record;
-      return rest;
-    });
-  }
-
   return {
     total,
     totalCommunes,
     totalOrganismes,
     totalEntreprises,
-    data: records,
+    data: withoutPictures
+      ? records.map((record) => {
+          const { picture, ...rest } = record;
+          return rest;
+        })
+      : records,
   };
 }
 

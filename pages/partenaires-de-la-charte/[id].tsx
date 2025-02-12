@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 
 import { useRouter } from "next/router";
@@ -8,10 +8,14 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { PartenaireForm } from "@/components/partenaires-de-la-charte/partenaire-form";
 import {
   deletePartenaireDeLaCharte,
+  deleteReview,
   getPartenaireDeLaCharte,
   updatePartenaireDeLaCharte,
+  updateReview,
 } from "@/lib/partenaires-de-la-charte";
 import { PartenaireDeLaCharte } from "../../server/lib/partenaire-de-la-charte/entity";
+import ReviewsTable from "@/components/partenaires-de-la-charte/reviews/reviews-table";
+import { Review } from "server/lib/partenaire-de-la-charte/reviews/entity";
 
 type PartenaireDeLaChartePageProps = {
   partenaireDeLaCharte: PartenaireDeLaCharte;
@@ -22,12 +26,76 @@ const deletePartenaireModale = createModal({
   isOpenedByDefault: false,
 });
 
+const reviewModale = createModal({
+  id: "review-modale",
+  isOpenedByDefault: false,
+});
+
 const PartenaireDeLaChartePage = ({
-  partenaireDeLaCharte,
+  partenaireDeLaCharte: initialPartenaireDeLaCharte,
 }: PartenaireDeLaChartePageProps) => {
+  const [partenaireDeLaCharte, setPartenaireDeLaCharte] =
+    useState<PartenaireDeLaCharte>(initialPartenaireDeLaCharte);
+  const [selectedReview, setSelectedReview] = useState<Review>();
   const isCandidate = !partenaireDeLaCharte.signatureDate;
 
   const router = useRouter();
+
+  const handleShowReview = (review: Review) => {
+    setSelectedReview(review);
+    reviewModale.open();
+  };
+
+  const handleCloseReview = () => {
+    setSelectedReview(undefined);
+    reviewModale.close();
+  };
+
+  const onUpdateReview = async () => {
+    if (!selectedReview) {
+      return;
+    }
+
+    try {
+      await updateReview(selectedReview.id, {
+        isPublished: !selectedReview.isPublished,
+      });
+      const successMessage = selectedReview.isPublished
+        ? "Avis dé-publié"
+        : "Avis publié";
+      const updatedPartenaireDeLaCharte = await getPartenaireDeLaCharte(
+        partenaireDeLaCharte.id
+      );
+      setPartenaireDeLaCharte(updatedPartenaireDeLaCharte);
+      toast(successMessage, { type: "success" });
+      handleCloseReview();
+    } catch (error: unknown) {
+      console.error(error);
+      const errorMessage = selectedReview.isPublished
+        ? "Erreur lors de la dé-publication de l’avis"
+        : "Erreur lors de la publication de l’avis";
+      toast(errorMessage, { type: "error" });
+    }
+  };
+
+  const onDeleteReview = async () => {
+    if (!selectedReview) {
+      return;
+    }
+
+    try {
+      await deleteReview(selectedReview.id);
+      const updatedPartenaireDeLaCharte = await getPartenaireDeLaCharte(
+        partenaireDeLaCharte.id
+      );
+      setPartenaireDeLaCharte(updatedPartenaireDeLaCharte);
+      toast("Avis supprimé", { type: "success" });
+      handleCloseReview();
+    } catch (error: unknown) {
+      console.error(error);
+      toast("Erreur lors de la suppression de l’avis", { type: "error" });
+    }
+  };
 
   const onUpdate = async (formData) => {
     try {
@@ -116,13 +184,71 @@ const PartenaireDeLaChartePage = ({
           </Button>
         </div>
       </deletePartenaireModale.Component>
+      {partenaireDeLaCharte.reviews.length > 0 && (
+        <ReviewsTable
+          partenaireDeLaCharte={partenaireDeLaCharte}
+          onShowReview={handleShowReview}
+        />
+      )}
+      <reviewModale.Component title={`Avis de ${selectedReview?.fullname}`}>
+        {selectedReview && (
+          <>
+            <p>
+              Avis déposé le{" "}
+              <b>
+                {new Date(selectedReview.createdAt).toLocaleDateString("fr")}
+              </b>
+            </p>
+            <p>
+              Par{" "}
+              <b>
+                {selectedReview.fullname} ({selectedReview.email}){" "}
+                {selectedReview.community
+                  ? `de ${selectedReview.community} `
+                  : ""}
+                {selectedReview.isAnonymous && "(anonyme)"}
+              </b>
+            </p>
+            <p>
+              Note : <b>{selectedReview.rating} / 5</b>
+            </p>
+            <p>
+              {selectedReview.comment
+                ? `Commentaire : ${selectedReview.comment}`
+                : ""}
+            </p>
+            <div>
+              <Button onClick={onUpdateReview}>
+                {selectedReview.isPublished ? "Dé-publier" : "Publier"}
+              </Button>
+              <Button
+                priority="secondary"
+                onClick={onDeleteReview}
+                style={{ marginLeft: "1rem" }}
+              >
+                Supprimer
+              </Button>
+              <Button
+                style={{ marginLeft: "1rem" }}
+                priority="tertiary"
+                onClick={handleCloseReview}
+              >
+                Annuler
+              </Button>
+            </div>
+          </>
+        )}
+      </reviewModale.Component>
     </div>
   );
 };
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, ...context }) {
+  const cookies = context.req.headers.cookie;
   const { id } = params;
-  const partenaireDeLaCharte = await getPartenaireDeLaCharte(id);
+  const partenaireDeLaCharte = await getPartenaireDeLaCharte(id, {
+    cookie: cookies,
+  });
 
   return {
     props: { partenaireDeLaCharte },
