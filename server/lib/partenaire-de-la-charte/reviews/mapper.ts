@@ -8,12 +8,18 @@ export const mapPartenairePublicReviews = (
     reviews: (partenaire.reviews || [])
       .filter((review) => review.isPublished)
       .map((review) => {
-        const { isAnonymous, fullname, community, email, ...rest } = review;
+        const {
+          isAnonymous,
+          community,
+          email,
+          isEmailVerified,
+          verificationToken,
+          ...rest
+        } = review;
         return isAnonymous
           ? { ...rest }
           : {
               ...rest,
-              fullname,
               community,
             };
       }),

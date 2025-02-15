@@ -132,5 +132,5 @@ export class PartenaireDeLaCharte {
   isPerimeterFrance: boolean;
 
   @OneToMany(() => Review, (review) => review.partenaire, { eager: true })
-  reviews?: Relation<Review>[];
+  reviews?: Relation<Partial<Review>>[];
 }

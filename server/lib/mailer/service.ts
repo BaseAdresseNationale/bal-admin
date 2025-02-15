@@ -155,3 +155,18 @@ export async function sendReviewReceived(partenaireId: string) {
 
   return true;
 }
+
+export async function sendEmailVerification(
+  email: string,
+  verificationLink: string
+) {
+  const template = templates.emailVerification(verificationLink, email);
+
+  const response = await transport.sendMail(template);
+
+  if (!response) {
+    throw new Error("Une erreur est survenue lors de l'envoi de l'email");
+  }
+
+  return true;
+}

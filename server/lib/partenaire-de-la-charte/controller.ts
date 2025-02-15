@@ -148,33 +148,4 @@ partenaireDeLaCharteRoutes.post("/:id/review", async (req, res) => {
   }
 });
 
-partenaireDeLaCharteRoutes.put("/reviews/:id", routeGuard, async (req, res) => {
-  try {
-    const updatedReview = await ReviewsService.updateReview(
-      req.params.id,
-      req.body
-    );
-
-    res.json(updatedReview);
-  } catch (err) {
-    Logger.error(`Impossible de publier l'avis`, err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-partenaireDeLaCharteRoutes.delete(
-  "/reviews/:id",
-  routeGuard,
-  async (req, res) => {
-    try {
-      await ReviewsService.deleteReview(req.params.id);
-
-      res.json(true);
-    } catch (err) {
-      Logger.error(`Impossible de supprimer l'avis`, err);
-      res.status(500).json({ error: err.message });
-    }
-  }
-);
-
 export default partenaireDeLaCharteRoutes;

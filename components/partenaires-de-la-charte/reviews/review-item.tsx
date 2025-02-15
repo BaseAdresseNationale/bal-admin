@@ -9,7 +9,6 @@ interface ReviewItemProps {
 
 const ReviewItem = ({ review, onShowReview }: ReviewItemProps) => (
   <tr>
-    <td className="fr-col fr-my-1v">{review.fullname}</td>
     <td className="fr-col fr-my-1v">{review.email}</td>
     <td className="fr-col fr-my-1v">{review.community}</td>
     <td className="fr-col fr-my-1v">{review.rating} / 5</td>
