@@ -190,7 +190,7 @@ const PartenaireDeLaChartePage = ({
           onShowReview={handleShowReview}
         />
       )}
-      <reviewModale.Component title={`Avis de ${selectedReview?.fullname}`}>
+      <reviewModale.Component title={`Avis de ${selectedReview?.community}`}>
         {selectedReview && (
           <>
             <p>
@@ -202,11 +202,9 @@ const PartenaireDeLaChartePage = ({
             <p>
               Par{" "}
               <b>
-                {selectedReview.fullname} ({selectedReview.email}){" "}
-                {selectedReview.community
-                  ? `de ${selectedReview.community} `
-                  : ""}
-                {selectedReview.isAnonymous && "(anonyme)"}
+                {`${selectedReview.email} - ${selectedReview.community} ${
+                  selectedReview.isAnonymous ? "(anonyme)" : ""
+                }`}
               </b>
             </p>
             <p>
