@@ -2,6 +2,7 @@ import sanitizeHtml from "sanitize-html";
 import { getMailToCommuneTemplate } from "./mail-to-communes-template";
 import { Event } from "../events/entity";
 import { getMailToParticipantTemplate } from "./mail-to-participant-template";
+import { getEmailVerificationTemplate } from "./mail-to-email-verification-template";
 
 const Emails = {
   "candidature-partenaire-de-la-charte": {
@@ -49,6 +50,18 @@ const Emails = {
         endHour: sanitizeHtml(endHour),
         href: sanitizeHtml(href),
         instructions: sanitizeHtml(instructions),
+      }),
+    };
+  },
+  emailVerification: (verificationLink: string, to: string) => {
+    const subject = `Nous avons bien reçu votre avis`;
+    return {
+      from: process.env.SMTP_FROM || "adresse@data.gouv.fr",
+      to,
+      subject,
+      html: getEmailVerificationTemplate({
+        subject,
+        verificationLink,
       }),
     };
   },

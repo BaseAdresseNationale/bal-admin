@@ -27,13 +27,13 @@ export class Review {
   partenaire: Relation<PartenaireDeLaCharte>;
 
   @Column("text", { nullable: false })
-  fullname?: string;
-
-  @Column("text", { nullable: true })
-  community?: string;
+  community: string;
 
   @Column("text", { nullable: false })
-  email?: string;
+  email: string;
+
+  @Column("text", { nullable: false })
+  verificationToken: string = Math.random().toString(36).slice(2);
 
   @Column("bool", { nullable: true, name: "is_anonymous" })
   isAnonymous?: boolean;
@@ -44,8 +44,11 @@ export class Review {
   @Column("text", { nullable: true })
   comment: string;
 
-  @Column("bool", { nullable: true, name: "is_published" })
-  isPublished?: boolean;
+  @Column("bool", { nullable: false })
+  isEmailVerified: boolean = false;
+
+  @Column("bool", { nullable: false, name: "is_published" })
+  isPublished: boolean;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt?: Date;
