@@ -16,7 +16,7 @@ export class Review {
   @PrimaryColumn("varchar", { length: 24 })
   id: string;
 
-  @Index("IDX_partenaire_de_la_charte__id")
+  @Index("IDX_reviews_partenaire_id")
   @Column("varchar", { length: 24, name: "partenaire_id", nullable: false })
   partenaireId: string;
 
@@ -32,11 +32,11 @@ export class Review {
   @Column("text", { nullable: false })
   email: string;
 
-  @Column("text", { nullable: false })
+  @Column("text", { nullable: false, name: "verification_token" })
   verificationToken: string = Math.random().toString(36).slice(2);
 
-  @Column("bool", { nullable: true, name: "is_anonymous" })
-  isAnonymous?: boolean;
+  @Column("bool", { nullable: false, name: "is_anonymous", default: false })
+  isAnonymous?: boolean = false;
 
   @Column("int", { nullable: false })
   rating: number;
@@ -44,11 +44,15 @@ export class Review {
   @Column("text", { nullable: true })
   comment: string;
 
-  @Column("bool", { nullable: false })
+  @Column("bool", {
+    nullable: false,
+    name: "is_email_verified",
+    default: false,
+  })
   isEmailVerified: boolean = false;
 
-  @Column("bool", { nullable: false, name: "is_published" })
-  isPublished: boolean;
+  @Column("bool", { nullable: false, name: "is_published", default: false })
+  isPublished: boolean = false;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt?: Date;

@@ -12,7 +12,9 @@ reviewsRoutes.use(cors());
 reviewsRoutes.get("/:id/:token", async (req, res) => {
   try {
     await ReviewsService.verifyEmail(req.params.id, req.params.token);
-    res.send("Votre email a bien été vérifié");
+    res.send(
+      "Merci, votre email a bien été vérifié. Si votre avis est validé, il sera publié prochainement."
+    );
   } catch (err) {
     Logger.error(
       `Une erreur est survenue lors de la vérification de l'email`,

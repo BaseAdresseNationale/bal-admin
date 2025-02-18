@@ -122,7 +122,7 @@ export async function updateReview(
   payload: Partial<Review>
 ): Promise<boolean> {
   const response = await fetch(
-    `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/reviews/${id}`,
+    `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/reviews/${id}`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -136,7 +136,7 @@ export async function updateReview(
 
 export async function deleteReview(id: string): Promise<boolean> {
   const response = await fetch(
-    `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/reviews/${id}`,
+    `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/reviews/${id}`,
     {
       method: "DELETE",
     }
