@@ -17,7 +17,6 @@ const ReviewsTable = ({
         <caption>Liste des avis</caption>
         <thead>
           <tr>
-            <th scope="col">Nom et prénom</th>
             <th scope="col">Email</th>
             <th scope="col">Commune/Collectivité</th>
             <th scope="col">Note</th>
