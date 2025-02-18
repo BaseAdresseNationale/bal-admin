@@ -3,8 +3,8 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { Review } from "server/lib/partenaire-de-la-charte/reviews/entity";
 
 interface ReviewItemProps {
-  review: Review;
-  onShowReview: (review: Review) => void;
+  review: Partial<Review>;
+  onShowReview: (review: Partial<Review>) => void;
 }
 
 const ReviewItem = ({ review, onShowReview }: ReviewItemProps) => (
@@ -16,7 +16,7 @@ const ReviewItem = ({ review, onShowReview }: ReviewItemProps) => (
       {review.isPublished ? (
         <Badge severity="success">Publié</Badge>
       ) : (
-        <Badge severity="warning">En attente de validation</Badge>
+        <Badge severity="warning">Non publié</Badge>
       )}
     </td>
     <td className="fr-col fr-my-1v">

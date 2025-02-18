@@ -19,6 +19,7 @@ export interface PartenaireDeLaCharteQuery {
   codeDepartement?: string;
   search?: string;
   withoutPictures?: boolean;
+  shuffleResults?: boolean;
   services?:
     | PartenaireDeLaCharteServiceEnum
     | PartenaireDeLaCharteServiceEnum[];
