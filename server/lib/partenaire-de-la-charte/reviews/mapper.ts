@@ -1,27 +1,35 @@
 import { PartenaireDeLaCharte } from "../entity";
 
 export const mapPartenairePublicReviews = (
-  partenaire: PartenaireDeLaCharte
+  partenaire: PartenaireDeLaCharte,
+  isAdmin: boolean
 ): PartenaireDeLaCharte => {
-  return {
-    ...partenaire,
-    reviews: (partenaire.reviews || [])
-      .filter((review) => review.isPublished)
-      .map((review) => {
-        const {
-          isAnonymous,
-          community,
-          email,
-          isEmailVerified,
-          verificationToken,
-          ...rest
-        } = review;
-        return isAnonymous
-          ? { ...rest }
-          : {
-              ...rest,
+  return isAdmin
+    ? {
+        ...partenaire,
+        reviews: (partenaire.reviews || []).filter(
+          (review) => review.isEmailVerified
+        ),
+      }
+    : {
+        ...partenaire,
+        reviews: (partenaire.reviews || [])
+          .filter((review) => review.isPublished)
+          .map((review) => {
+            const {
+              isAnonymous,
               community,
-            };
-      }),
-  };
+              email,
+              isEmailVerified,
+              verificationToken,
+              ...rest
+            } = review;
+            return isAnonymous
+              ? { ...rest }
+              : {
+                  ...rest,
+                  community,
+                };
+          }),
+      };
 };

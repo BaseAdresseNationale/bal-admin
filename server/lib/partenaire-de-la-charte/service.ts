@@ -65,7 +65,7 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
 
   if (codeDepartement) {
     queryPG.andWhere(
-      `code_departement @> :arraySearch OR is_perimeter_france IS true`,
+      `(code_departement @> :arraySearch OR is_perimeter_france IS true)`,
       { arraySearch: [codeDepartement] }
     );
   }
@@ -89,7 +89,7 @@ export async function findManyPaginated(
 ) {
   const offset = (page - 1) * limit;
 
-  const { codeDepartement, withoutPictures } = query;
+  const { codeDepartement, withoutPictures, shuffleResults } = query;
   const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
@@ -101,7 +101,7 @@ export async function findManyPaginated(
 
   if (codeDepartement) {
     queryPG.andWhere(
-      `code_departement @> :arraySearch OR is_perimeter_france IS true`,
+      `(code_departement @> :arraySearch OR is_perimeter_france IS true)`,
       { arraySearch: [codeDepartement] }
     );
   }
@@ -123,17 +123,25 @@ export async function findManyPaginated(
     }
   );
 
+  let data = records;
+
+  if (shuffleResults) {
+    data = records.sort(() => Math.random() - 0.5);
+  }
+
+  if (withoutPictures) {
+    data = records.map((record) => {
+      const { picture, ...rest } = record;
+      return rest;
+    });
+  }
+
   return {
     total,
     totalCommunes,
     totalOrganismes,
     totalEntreprises,
-    data: withoutPictures
-      ? records.map((record) => {
-          const { picture, ...rest } = record;
-          return rest;
-        })
-      : records,
+    data,
   };
 }
 

@@ -727,9 +727,7 @@ export const getEmailVerificationTemplate = ({ subject, verificationLink }) => `
                                             font-size: 14px;
                                           "
                                         >
-                                          Voici le lien pour participer à
-                                          l'évènement
-                                          <a href="${verificationLink}">Vérifier mon email</a>
+                                          Veuillez cliquer sur <a href="${verificationLink}">ce lien</a> pour vérifier votre adresse email.
                                         </p>
                                       <br />
                                       <p

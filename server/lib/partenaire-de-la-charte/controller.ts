@@ -19,11 +19,9 @@ partenaireDeLaCharteRoutes.get("/", isAdmin, async (req, res) => {
     );
 
     res.json(
-      (req as any).isAdmin
-        ? partenairesDeLaCharte
-        : partenairesDeLaCharte.map((partenaire) =>
-            mapPartenairePublicReviews(partenaire)
-          )
+      partenairesDeLaCharte.map((partenaire) =>
+        mapPartenairePublicReviews(partenaire, (req as any).isAdmin)
+      )
     );
   } catch (err) {
     Logger.error(`Impossible de récupérer les partenaires`, err);
@@ -43,11 +41,9 @@ partenaireDeLaCharteRoutes.get("/paginated", isAdmin, async (req, res) => {
 
     res.json({
       ...paginatedPartenairesDeLaCharte,
-      data: (req as any).isAdmin
-        ? paginatedPartenairesDeLaCharte.data
-        : paginatedPartenairesDeLaCharte.data.map((partenaire) =>
-            mapPartenairePublicReviews(partenaire)
-          ),
+      data: paginatedPartenairesDeLaCharte.data.map((partenaire) =>
+        mapPartenairePublicReviews(partenaire, (req as any).isAdmin)
+      ),
     });
   } catch (err) {
     Logger.error(`Impossible de récupérer les partenaires`, err);
@@ -99,9 +95,7 @@ partenaireDeLaCharteRoutes.get("/:id", isAdmin, async (req, res) => {
       await PartenaireDeLaCharteService.findOneOrFail(req.params.id);
 
     res.json(
-      (req as any).isAdmin
-        ? partenaireDeLaCharte
-        : mapPartenairePublicReviews(partenaireDeLaCharte)
+      mapPartenairePublicReviews(partenaireDeLaCharte, (req as any).isAdmin)
     );
   } catch (err) {
     Logger.error(`Impossible de récupérer le partenaire`, err);
