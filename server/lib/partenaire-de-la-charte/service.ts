@@ -96,8 +96,8 @@ export async function findManyPaginated(
     .createQueryBuilder("partenaireDeLaCharte")
     .leftJoinAndSelect("partenaireDeLaCharte.reviews", "reviews")
     .where(where)
-    .limit(limit)
-    .offset(offset);
+    .take(limit)
+    .skip(offset);
 
   if (codeDepartement) {
     queryPG.andWhere(
