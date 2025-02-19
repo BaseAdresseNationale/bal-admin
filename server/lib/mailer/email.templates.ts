@@ -37,7 +37,7 @@ const Emails = {
       html: getMailToParticipantTemplate({
         subject: `Vous êtes inscrit à l'évènement ${title}`,
         title: sanitizeHtml(title),
-        date: sanitizeHtml(new Date(date).toLocaleDateString()),
+        date: sanitizeHtml(new Date(date).toLocaleDateString("fr-FR")),
         startHour: sanitizeHtml(startHour),
         endHour: sanitizeHtml(endHour),
         href: sanitizeHtml(href),
