@@ -206,7 +206,9 @@ export async function updateOne(
     ? new Date()
     : new Date(payload.signatureDate);
 
-  await partenaireDeLaCharteRepository.update({ id }, payload);
+  const instance = await findOneOrFail(id);
+  Object.assign(instance, payload);
+  await partenaireDeLaCharteRepository.save(instance);
 
   return findOneOrFail(id);
 }
