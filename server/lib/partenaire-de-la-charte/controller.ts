@@ -1,54 +1,50 @@
 import express from "express";
 import cors from "cors";
-import { shuffle } from "../../utils/random";
 import routeGuard from "../../route-guard";
 import * as PartenaireDeLaCharteService from "./service";
-import { PartenaireDeLaCharteServiceEnum } from "./entity";
+import * as ReviewsService from "./reviews/service";
 import { Logger } from "../../utils/logger.utils";
+import { isAdmin } from "../../is-admin";
+import { mapPartenairePublicReviews } from "./reviews/mapper";
 
 const partenaireDeLaCharteRoutes = express.Router();
 
 partenaireDeLaCharteRoutes.use(express.json());
 partenaireDeLaCharteRoutes.use(cors());
 
-partenaireDeLaCharteRoutes.get("/", async (req, res) => {
+partenaireDeLaCharteRoutes.get("/", isAdmin, async (req, res) => {
   try {
     const partenairesDeLaCharte = await PartenaireDeLaCharteService.findMany(
       req.query
     );
-    res.json(partenairesDeLaCharte);
+
+    res.json(
+      partenairesDeLaCharte.map((partenaire) =>
+        mapPartenairePublicReviews(partenaire, (req as any).isAdmin)
+      )
+    );
   } catch (err) {
     Logger.error(`Impossible de récupérer les partenaires`, err);
     res.status(500).json({ error: err.message });
   }
 });
 
-partenaireDeLaCharteRoutes.get("/paginated", async (req, res) => {
+partenaireDeLaCharteRoutes.get("/paginated", isAdmin, async (req, res) => {
   try {
     const { page, limit, ...query } = req.query;
-    const partenairesDeLaCharte =
+    const paginatedPartenairesDeLaCharte =
       await PartenaireDeLaCharteService.findManyPaginated(
         query,
         parseInt(page as string),
         parseInt(limit as string)
       );
-    res.json(partenairesDeLaCharte);
-  } catch (err) {
-    Logger.error(`Impossible de récupérer les partenaires`, err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
-partenaireDeLaCharteRoutes.get("/random", async (req, res) => {
-  try {
-    const { limit } = req.query;
-    const partenairesDeLaCharte = await PartenaireDeLaCharteService.findMany();
-    let randomizedPartners = shuffle(partenairesDeLaCharte);
-    if (limit) {
-      randomizedPartners = randomizedPartners.slice(0, limit);
-    }
-
-    res.json(randomizedPartners);
+    res.json({
+      ...paginatedPartenairesDeLaCharte,
+      data: paginatedPartenairesDeLaCharte.data.map((partenaire) =>
+        mapPartenairePublicReviews(partenaire, (req as any).isAdmin)
+      ),
+    });
   } catch (err) {
     Logger.error(`Impossible de récupérer les partenaires`, err);
     res.status(500).json({ error: err.message });
@@ -57,7 +53,11 @@ partenaireDeLaCharteRoutes.get("/random", async (req, res) => {
 
 partenaireDeLaCharteRoutes.get("/services", async (req, res) => {
   try {
-    res.json(Object.values(PartenaireDeLaCharteServiceEnum));
+    const result = await PartenaireDeLaCharteService.findServicesWithCount(
+      req.query
+    );
+
+    res.json(result);
   } catch (err) {
     Logger.error(`Impossible de récupérer les services de partenaires`, err);
     res.status(500).json({ error: err.message });
@@ -89,11 +89,14 @@ partenaireDeLaCharteRoutes.post("/candidate", async (req, res) => {
   }
 });
 
-partenaireDeLaCharteRoutes.get("/:id", async (req, res) => {
+partenaireDeLaCharteRoutes.get("/:id", isAdmin, async (req, res) => {
   try {
     const partenaireDeLaCharte =
       await PartenaireDeLaCharteService.findOneOrFail(req.params.id);
-    res.json(partenaireDeLaCharte);
+
+    res.json(
+      mapPartenairePublicReviews(partenaireDeLaCharte, (req as any).isAdmin)
+    );
   } catch (err) {
     Logger.error(`Impossible de récupérer le partenaire`, err);
     res.status(500).json({ error: err.message });
@@ -121,6 +124,20 @@ partenaireDeLaCharteRoutes.delete("/:id", routeGuard, async (req, res) => {
     res.json(response);
   } catch (err) {
     Logger.error(`Impossible de supprimer le partenaire`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+partenaireDeLaCharteRoutes.post("/:id/reviews", async (req, res) => {
+  try {
+    const review = await ReviewsService.addReview(req.params.id, req.body);
+
+    res.json(review);
+  } catch (err) {
+    Logger.error(
+      `Une erreur est survenue lors de l'enregistrement de l'avis`,
+      err
+    );
     res.status(500).json({ error: err.message });
   }
 });
