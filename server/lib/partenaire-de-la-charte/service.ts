@@ -61,6 +61,12 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder("partenaireDeLaCharte")
     .leftJoinAndSelect("partenaireDeLaCharte.reviews", "reviews")
+    .addSelect(
+      "COUNT(case when reviews.is_email_verified = true and reviews.is_published = false then 1 else null end)",
+      "pending_reviews_count"
+    )
+    .groupBy("partenaireDeLaCharte.id, reviews.id")
+    .orderBy("pending_reviews_count", "DESC")
     .where(where);
 
   if (codeDepartement) {

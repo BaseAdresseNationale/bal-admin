@@ -24,16 +24,16 @@ export async function getPartenaireDeLaCharte(id: string, headers?: any) {
   return partenaireDeLaCharte as PartenaireDeLaCharte;
 }
 
-export async function getPartenairesDeLaCharte(): Promise<
-  PartenaireDeLaCharte[]
-> {
+export async function getPartenairesDeLaCharte(
+  headers?: any
+): Promise<PartenaireDeLaCharte[]> {
   const url = new URL(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/`
   );
   url.searchParams.append("withCandidates", "true");
   url.searchParams.append("withoutPictures", "true");
 
-  const response = await fetch(url);
+  const response = await fetch(url, { headers });
   const partenairesDeLaCharte = await processResponse(response);
 
   return partenairesDeLaCharte as PartenaireDeLaCharte[];

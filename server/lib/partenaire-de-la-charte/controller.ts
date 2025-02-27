@@ -128,7 +128,7 @@ partenaireDeLaCharteRoutes.delete("/:id", routeGuard, async (req, res) => {
   }
 });
 
-partenaireDeLaCharteRoutes.post("/:id/review", async (req, res) => {
+partenaireDeLaCharteRoutes.post("/:id/reviews", async (req, res) => {
   try {
     const review = await ReviewsService.addReview(req.params.id, req.body);
 
