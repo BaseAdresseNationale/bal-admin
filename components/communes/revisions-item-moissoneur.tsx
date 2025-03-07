@@ -5,11 +5,13 @@ import UpdateStatusBadge from "@/components/update-status-badge";
 import { RevisionPublication } from "@/components/revision-publication";
 import MongoId from "@/components/mongo-id";
 import Tooltip from "@/components/tooltip";
+import { formatDate } from "@/lib/util/date";
 
 export const RevisionItemMoissoneur = ({
   id,
   sourceId,
   validation,
+  createdAt,
   updateStatus,
   updateRejectionReason,
   publication,
@@ -28,6 +30,9 @@ export const RevisionItemMoissoneur = ({
           {sourceId}
         </Link>
       </Tooltip>
+    </td>
+    <td className="fr-col fr-my-1v">
+      {createdAt ? formatDate(createdAt) : "inconnu"}
     </td>
     <td className="fr-col fr-my-1v">{validation.nbRows}</td>
     <td className="fr-col fr-my-1v">{validation.nbRowsWithErrors}</td>

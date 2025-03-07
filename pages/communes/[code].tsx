@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
+import { sortBy } from "lodash";
+
 import type { RevisionMoissoneurType } from "../../types/moissoneur";
 import type { Revision as RevisionApiDepot } from "../../types/api-depot.types";
 import type { BaseLocaleType } from "../../types/mes-adresses";
@@ -101,13 +103,14 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
         ...pageApiDepot,
         count: initialRevisionsApiDepot.length,
       }));
-
     };
     const fetchDataMoissonneur = async () => {
       const initialRevisionsMoissonneur: RevisionMoissoneurType[] =
         await getRevisionsByCommune(code);
 
-      setInitialRevisionsMoissonneur(initialRevisionsMoissonneur.reverse());
+      setInitialRevisionsMoissonneur(
+        sortBy(initialRevisionsMoissonneur, "createdAt").reverse()
+      );
       setPageMoissonneur((pageMoissonneur) => ({
         ...pageMoissonneur,
         count: initialRevisionsMoissonneur.length,
@@ -189,6 +192,7 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
         headers={[
           "Id",
           "Source",
+          "Date",
           "Nb lignes",
           "Nb lignes erreurs",
           "Status",
