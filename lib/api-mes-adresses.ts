@@ -1,3 +1,4 @@
+import { Habilitation } from "types/api-depot.types";
 import type { BaseLocaleType } from "../types/mes-adresses";
 import type { PageType } from "../types/page";
 
@@ -87,7 +88,10 @@ export async function getStatCreations({
   return processReponse(res);
 }
 
-export async function createHabilitation(balId: string, token: string) {
+export async function createHabilitation(
+  balId: string,
+  token: string
+): Promise<Habilitation> {
   const res = await fetch(
     `${NEXT_PUBLIC_API_MES_ADRESSES}/bases-locales/${balId}/habilitation`,
     {

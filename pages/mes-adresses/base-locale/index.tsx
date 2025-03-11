@@ -62,7 +62,7 @@ const BaseLocale = () => {
       baseLocale.id,
       baseLocale.token
     );
-    await validateHabilitation(habilitation._id);
+    await validateHabilitation(habilitation.id);
     await calcStatus(baseLocale);
     deleteEventModale.close();
   };
