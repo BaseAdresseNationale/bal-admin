@@ -1,5 +1,4 @@
 import { validateOrReject } from "class-validator";
-
 import { sendTemplateMail } from "../mailer/service";
 import { PartenaireDeLaCharteDTO, PartenaireDeLaCharteQuery } from "./dto";
 import { AppDataSource } from "../../utils/typeorm-client";
@@ -60,12 +59,19 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
   const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
-    .createQueryBuilder()
+    .createQueryBuilder("partenaireDeLaCharte")
+    .leftJoinAndSelect("partenaireDeLaCharte.reviews", "reviews")
+    .addSelect(
+      "COUNT(case when reviews.is_email_verified = true and reviews.is_published = false then 1 else null end)",
+      "pending_reviews_count"
+    )
+    .groupBy("partenaireDeLaCharte.id, reviews.id")
+    .orderBy("pending_reviews_count", "DESC")
     .where(where);
 
   if (codeDepartement) {
     queryPG.andWhere(
-      `code_departement @> :arraySearch OR is_perimeter_france IS true`,
+      `(code_departement @> :arraySearch OR is_perimeter_france IS true)`,
       { arraySearch: [codeDepartement] }
     );
   }
@@ -89,18 +95,19 @@ export async function findManyPaginated(
 ) {
   const offset = (page - 1) * limit;
 
-  const { codeDepartement, withoutPictures } = query;
+  const { codeDepartement, withoutPictures, shuffleResults } = query;
   const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
-    .createQueryBuilder()
+    .createQueryBuilder("partenaireDeLaCharte")
+    .leftJoinAndSelect("partenaireDeLaCharte.reviews", "reviews")
     .where(where)
-    .limit(limit)
-    .offset(offset);
+    .take(limit)
+    .skip(offset);
 
   if (codeDepartement) {
     queryPG.andWhere(
-      `code_departement @> :arraySearch OR is_perimeter_france IS true`,
+      `(code_departement @> :arraySearch OR is_perimeter_france IS true)`,
       { arraySearch: [codeDepartement] }
     );
   }
@@ -122,8 +129,14 @@ export async function findManyPaginated(
     }
   );
 
+  let data = records;
+
+  if (shuffleResults) {
+    data = records.sort(() => Math.random() - 0.5);
+  }
+
   if (withoutPictures) {
-    return records.map((record) => {
+    data = records.map((record) => {
       const { picture, ...rest } = record;
       return rest;
     });
@@ -134,7 +147,7 @@ export async function findManyPaginated(
     totalCommunes,
     totalOrganismes,
     totalEntreprises,
-    data: records,
+    data,
   };
 }
 
@@ -199,9 +212,26 @@ export async function updateOne(
     ? new Date()
     : new Date(payload.signatureDate);
 
-  await partenaireDeLaCharteRepository.update({ id }, payload);
+  const instance = await findOneOrFail(id);
+  Object.assign(instance, payload);
+  await partenaireDeLaCharteRepository.save(instance);
 
   return findOneOrFail(id);
+}
+
+export async function findServicesWithCount(
+  query: PartenaireDeLaCharteQuery = {}
+) {
+  const records = await findMany(query);
+
+  const services = records.reduce((acc, record) => {
+    record.services.forEach((service) => {
+      acc[service] = acc[service] ? acc[service] + 1 : 1;
+    });
+    return acc;
+  }, {});
+
+  return services;
 }
 
 export async function deleteOne(id: string): Promise<boolean> {
