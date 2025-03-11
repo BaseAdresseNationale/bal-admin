@@ -55,6 +55,7 @@ export async function addReview(
 export async function updateReview(reviewId: string, payload: any) {
   const review = await findOneOrFail(reviewId);
   review.isPublished = payload.isPublished;
+  review.reply = payload.reply;
   return reviewRepository.save(review);
 }
 

@@ -5,7 +5,7 @@ export class PartenaireReview1738941552098 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "reviews" ("id" character varying(24) NOT NULL, "partenaire_id" character varying(24) NOT NULL, "community" text NOT NULL, "email" text NOT NULL, "verification_token" text NOT NULL, "is_email_verified" bool NOT NULL DEFAULT FALSE, "is_anonymous" bool NOT NULL DEFAULT FALSE, "rating" int NOT NULL, "comment" text, "is_published" bool NOT NULL DEFAULT FALSE, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_1cda06c31eec1c95b3365a9134f" PRIMARY KEY ("id"))`
+      `CREATE TABLE "reviews" ("id" character varying(24) NOT NULL, "partenaire_id" character varying(24) NOT NULL, "community" text NOT NULL, "email" text NOT NULL, "verification_token" text NOT NULL, "is_email_verified" bool NOT NULL DEFAULT FALSE, "is_anonymous" bool NOT NULL DEFAULT FALSE, "rating" int NOT NULL, "comment" text NOT NULL, "reply" text, "is_published" bool NOT NULL DEFAULT FALSE, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_1cda06c31eec1c95b3365a9134f" PRIMARY KEY ("id"))`
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_reviews_partenaire_id" ON "reviews" ("partenaire_id") `
