@@ -16,6 +16,8 @@ import {
 import { PartenaireDeLaCharte } from "../../server/lib/partenaire-de-la-charte/entity";
 import ReviewsTable from "@/components/partenaires-de-la-charte/reviews/reviews-table";
 import { Review } from "server/lib/partenaire-de-la-charte/reviews/entity";
+import Input from "@codegouvfr/react-dsfr/Input";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
 type PartenaireDeLaChartePageProps = {
   partenaireDeLaCharte: PartenaireDeLaCharte;
@@ -51,6 +53,10 @@ const PartenaireDeLaChartePage = ({
     reviewModale.close();
   };
 
+  const handleEditReview = (key: string) => (e) => {
+    setSelectedReview((prev) => ({ ...prev, [key]: e.target.value }));
+  };
+
   const onUpdateReview = async () => {
     if (!selectedReview) {
       return;
@@ -58,23 +64,20 @@ const PartenaireDeLaChartePage = ({
 
     try {
       await updateReview(selectedReview.id, {
-        isPublished: !selectedReview.isPublished,
+        isPublished: selectedReview.isPublished,
+        reply: selectedReview.reply,
       });
-      const successMessage = selectedReview.isPublished
-        ? "Avis dé-publié"
-        : "Avis publié";
       const updatedPartenaireDeLaCharte = await getPartenaireDeLaCharte(
         partenaireDeLaCharte.id
       );
       setPartenaireDeLaCharte(updatedPartenaireDeLaCharte);
-      toast(successMessage, { type: "success" });
+      toast("Les modifications ont bien été enregistrées", { type: "success" });
       handleCloseReview();
     } catch (error: unknown) {
       console.error(error);
-      const errorMessage = selectedReview.isPublished
-        ? "Erreur lors de la dé-publication de l’avis"
-        : "Erreur lors de la publication de l’avis";
-      toast(errorMessage, { type: "error" });
+      toast("Une erreur est survenue lors de l'enregistrement", {
+        type: "error",
+      });
     }
   };
 
@@ -215,10 +218,32 @@ const PartenaireDeLaChartePage = ({
                 ? `Commentaire : ${selectedReview.comment}`
                 : ""}
             </p>
+            <Input
+              label="Réponse du prestataire"
+              textArea
+              nativeTextAreaProps={{
+                value: selectedReview.reply,
+                onChange: handleEditReview("reply"),
+              }}
+            />
+            <Checkbox
+              options={[
+                {
+                  label: "Publier cet avis",
+                  nativeInputProps: {
+                    checked: selectedReview.isPublished,
+                    onChange: () => {
+                      setSelectedReview((prev) => ({
+                        ...prev,
+                        isPublished: !prev.isPublished,
+                      }));
+                    },
+                  },
+                },
+              ]}
+            />
             <div>
-              <Button onClick={onUpdateReview}>
-                {selectedReview.isPublished ? "Dé-publier" : "Publier"}
-              </Button>
+              <Button onClick={onUpdateReview}>Enregistrer</Button>
               <Button
                 priority="secondary"
                 onClick={onDeleteReview}

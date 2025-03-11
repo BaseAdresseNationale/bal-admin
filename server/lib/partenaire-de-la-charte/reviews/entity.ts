@@ -41,8 +41,11 @@ export class Review {
   @Column("int", { nullable: false })
   rating: number;
 
-  @Column("text", { nullable: true })
+  @Column("text", { nullable: false })
   comment: string;
+
+  @Column("text", { nullable: true })
+  reply?: string;
 
   @Column("bool", {
     nullable: false,
