@@ -171,7 +171,7 @@ const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
         {getCommune(code).nom} ({code})
       </h1>
       {emails.map((email) => (
-        <h4 key={email}>{email}</h4>
+        <p key={email}>{email}</p>
       ))}
 
       <EditableList
