@@ -8,7 +8,7 @@ import type { BaseLocaleType } from "../../types/mes-adresses";
 import { getCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
-import { getAllRevisionByCommune } from "@/lib/api-depot";
+import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
 import {
   searchBasesLocales,
   removeBaseLocale,
@@ -29,9 +29,10 @@ const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
 
 type CommuneSourcePageProps = {
   code: string;
+  emails: string[];
 };
 
-const CommuneSource = ({ code }: CommuneSourcePageProps) => {
+const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<
     RevisionApiDepot[]
@@ -169,6 +170,9 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
       <h1>
         {getCommune(code).nom} ({code})
       </h1>
+      {emails.map((email) => (
+        <h4 key={email}>{email}</h4>
+      ))}
 
       <EditableList
         headers={[
@@ -226,7 +230,8 @@ const CommuneSource = ({ code }: CommuneSourcePageProps) => {
 
 export async function getServerSideProps({ params }) {
   const { code } = params;
-  return { props: { code } };
+  const emails = await getEmailsCommune(code);
+  return { props: { code, emails } };
 }
 
 export default CommuneSource;

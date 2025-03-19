@@ -7,6 +7,9 @@ import {
 
 const NEXT_PUBLIC_BAL_ADMIN_URL =
   process.env.NEXT_PUBLIC_BAL_ADMIN_URL || "http://localhost:3000";
+const NEXT_PUBLIC_API_DEPOT_URL =
+  process.env.NEXT_PUBLIC_API_DEPOT_URL ||
+  "https://plateforme-bal.adresse.data.gouv.fr/api-depot";
 const PROXY_API_DEPOT_URL = NEXT_PUBLIC_BAL_ADMIN_URL + "/api/proxy-api-depot";
 const PROXY_API_DEPOT_DEMO_URL =
   NEXT_PUBLIC_BAL_ADMIN_URL + "/api/proxy-api-depot-demo";
@@ -193,6 +196,18 @@ export async function validateHabilitation(
     `${getProxyURL(isDemo)}/habilitations/${habilitationId}/validate`,
     {
       method: "PUT",
+      headers: { "content-type": "application/json" },
+    }
+  );
+
+  return processResponse(response);
+}
+
+export async function getEmailsCommune(codeCommune: string) {
+  const response = await fetch(
+    `${NEXT_PUBLIC_API_DEPOT_URL}/communes/${codeCommune}/emails`,
+    {
+      method: "GET",
       headers: { "content-type": "application/json" },
     }
   );
