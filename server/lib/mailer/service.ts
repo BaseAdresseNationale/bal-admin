@@ -143,3 +143,30 @@ export async function sendParticipationEvenement(
 
   return true;
 }
+
+export async function sendReviewReceived(partenaireId: string) {
+  const template = templates.reviewReceived({ partenaireId });
+
+  const response = await transport.sendMail(template);
+
+  if (!response) {
+    throw new Error("Une erreur est survenue lors de l'envoi de l'email");
+  }
+
+  return true;
+}
+
+export async function sendEmailVerification(
+  email: string,
+  verificationLink: string
+) {
+  const template = templates.emailVerification(verificationLink, email);
+
+  const response = await transport.sendMail(template);
+
+  if (!response) {
+    throw new Error("Une erreur est survenue lors de l'envoi de l'email");
+  }
+
+  return true;
+}

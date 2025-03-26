@@ -14,6 +14,7 @@ import ProxyMoissonneurBal from "./proxy/moissonneur-bal.proxy";
 import ProxyMesAdressesApi from "./proxy/mes-adresses-api.proxy";
 // CONTROLLER
 import PartenaireDeLaCharteController from "./lib/partenaire-de-la-charte/controller";
+import ReviewsController from "./lib/partenaire-de-la-charte/reviews/controller";
 import EventController from "./lib/events/controller";
 import BalWidgetController from "./lib/bal-widget/controller";
 import { Logger } from "./utils/logger.utils";
@@ -57,6 +58,7 @@ async function main() {
 
   // Some Partenaire de la charte routes are public, others are protected by routeGuard
   server.use("/api/partenaires-de-la-charte", PartenaireDeLaCharteController);
+  server.use("/api/reviews", ReviewsController);
   server.use("/api/events", EventController);
   server.use("/api/bal-widget", BalWidgetController);
 
