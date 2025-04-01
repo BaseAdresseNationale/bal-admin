@@ -17,12 +17,14 @@ interface RevisionItemProps {
   revision: RevisionMoissoneurType;
   onForcePublishRevision;
   isForcePublishRevisionLoading;
+  openValidationReport;
 }
 
 const RevisionItem = ({
   revision,
   onForcePublishRevision,
   isForcePublishRevisionLoading,
+  openValidationReport,
 }: RevisionItemProps) => {
   const commune = getCommune(revision.codeCommune);
 
@@ -60,10 +62,6 @@ const RevisionItem = ({
       <td className="fr-col fr-my-1v">
         {revision.createdAt ? formatDate(revision.createdAt) : "inconnu"}
       </td>
-
-      <td className="fr-col fr-my-1v">
-        {revision.validation.nbRows} / {revision.validation.nbRowsWithErrors}
-      </td>
       <td className="fr-col fr-my-1v">
         <UpdateStatusBadge
           updateStatus={revision.updateStatus}
@@ -72,6 +70,23 @@ const RevisionItem = ({
       </td>
       <td className="fr-col fr-my-1v">
         <RevisionPublication {...revision.publication} />
+      </td>
+      <td className="fr-col fr-my-1v">
+        {revision.validation && "rowsCount" in revision.validation && (
+          <Button
+            type="button"
+            onClick={() => openValidationReport(revision.validation)}
+          >
+            Ouvrir
+          </Button>
+        )}
+        {revision.validation && "nbRows" in revision.validation && (
+          <p>
+            {revision.validation.nbRowsWithErrors} errors
+            <br />
+            {revision.validation.nbRows} lines
+          </p>
+        )}
       </td>
       <td className="fr-col fr-my-1v">
         {revision.fileId && (

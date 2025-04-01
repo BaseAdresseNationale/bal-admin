@@ -1,4 +1,4 @@
-import { Perimeter } from "./api-depot.types";
+import { Perimeter, Validation } from "./api-depot.types";
 import { PartenaireDeLaCharte } from "../server/lib/partenaire-de-la-charte/entity";
 
 export type PageHarvests = {
@@ -85,7 +85,7 @@ export type RevisionMoissoneurType = {
   codeCommune?: string;
   updateStatus?: UpdateStatusEnum;
   updateRejectionReason?: string | undefined;
-  validation?: ValidationMoissonneurType;
+  validation?: ValidationMoissonneurType | Validation;
   publication?: PublicationMoissoneurType;
   createdAt?: Date;
 };

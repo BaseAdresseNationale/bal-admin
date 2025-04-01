@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
@@ -26,6 +28,7 @@ import {
   OrganizationMoissoneurType,
 } from "types/moissoneur";
 import Link from "next/link";
+import { Validation } from "types/api-depot.types";
 
 const limit = 10;
 
@@ -36,6 +39,30 @@ interface MoissoneurSourceProps {
   organization: OrganizationMoissoneurType;
 }
 
+const ValidationReportModal = createModal({
+  id: "validation-report-modal",
+  isOpenedByDefault: false,
+});
+
+const DynamicValidationReportWithNoSSR = dynamic<{
+  validationReport: Validation;
+}>(() => import("./revision-validation-report.tsx"), {
+  ssr: false,
+  loading: () => (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        justifyContent: "center",
+        height: "400px",
+        alignItems: "center",
+      }}
+    >
+      <div>Chargement…</div>
+    </div>
+  ),
+});
+
 const MoissoneurSource = ({
   initialSource,
   initialHarvests,
@@ -45,6 +72,8 @@ const MoissoneurSource = ({
   const [source, setSource] = useState<SourceMoissoneurType>(initialSource);
   const [harvests, setHarvests] =
     useState<HarvestMoissonneurType[]>(initialHarvests);
+  const [validationReport, setShowValidationReport] =
+    useState<Validation | null>(null);
   const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [revisionsIsLoading, setRevisionsIsLoading] = useState<boolean>(false);
@@ -70,6 +99,11 @@ const MoissoneurSource = ({
 
     fetchData();
   }, [source.id]);
+
+  const handleShowValidationReport = (report: Revision["validation"]) => {
+    setShowValidationReport(report);
+    ValidationReportModal.open();
+  };
 
   const updateHarvest = useCallback(
     async (page) => {
@@ -301,9 +335,9 @@ const MoissoneurSource = ({
                   <th scope="col">Id</th>
                   <th scope="col">Commune</th>
                   <th scope="col">Date</th>
-                  <th scope="col">Nombre de ligne / erreur</th>
                   <th scope="col">Status</th>
                   <th scope="col">Publication</th>
+                  <th scope="col">Validation</th>
                   <th scope="col">Fichier</th>
                   <th scope="col">Actions</th>
                 </tr>
@@ -320,6 +354,7 @@ const MoissoneurSource = ({
                     isForcePublishRevisionLoading={
                       forcePublishRevisionStatus === "loading"
                     }
+                    openValidationReport={handleShowValidationReport}
                   />
                 ))}
               </tbody>
@@ -327,6 +362,13 @@ const MoissoneurSource = ({
           </div>
         </Loader>
       </div>
+      <ValidationReportModal.Component title="Rapport de validation">
+        {validationReport && (
+          <DynamicValidationReportWithNoSSR
+            validationReport={validationReport}
+          />
+        )}
+      </ValidationReportModal.Component>
     </>
   );
 };
