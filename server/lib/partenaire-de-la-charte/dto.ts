@@ -19,6 +19,7 @@ export interface PartenaireDeLaCharteQuery {
   codeDepartement?: string;
   search?: string;
   withoutPictures?: boolean;
+  shuffleResults?: boolean;
   services?:
     | PartenaireDeLaCharteServiceEnum
     | PartenaireDeLaCharteServiceEnum[];
@@ -34,7 +35,7 @@ export class PartenaireDeLaCharteDTO {
 
   @IsOptional()
   @IsBase64()
-  picture: string;
+  picture?: string;
 
   @IsString()
   contactLastName: string;
