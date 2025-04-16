@@ -97,9 +97,12 @@ const PartenairesDeLaChartePage = ({
   </div>
 );
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query, ...context }) {
+  const cookies = context.req.headers.cookie;
   const { tab } = query;
-  const allPartenairesDeLaCharte = await getPartenairesDeLaCharte();
+  const allPartenairesDeLaCharte = await getPartenairesDeLaCharte({
+    cookie: cookies,
+  });
   const partenaires = allPartenairesDeLaCharte.filter((partenaireDeLaCharte) =>
     Boolean(partenaireDeLaCharte.signatureDate)
   );
