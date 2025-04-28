@@ -20,6 +20,7 @@ import { EditableList } from "@/components/editable-list";
 import { RevisionItemApiDepot } from "@/components/communes/revisions-item-api-depot";
 import { RevisionItemMoissoneur } from "@/components/communes/revisions-item-moissoneur";
 import { BalsItem } from "@/components/communes/bals-item";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 
 const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
   for (const bal of bals) {
@@ -168,7 +169,10 @@ const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
       />
 
       <h1>
-        {getCommune(code).nom} ({code})
+        {getCommune(code)?.nom || (
+          <Badge severity="warning">Commune Ancienne</Badge>
+        )}
+        ({code})
       </h1>
       {emails.map((email) => (
         <p key={email}>{email}</p>
