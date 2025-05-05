@@ -387,10 +387,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.54.0.tgz#4fab9a2ff7860082c304f750e94acd644cf984cf"
   integrity sha512-ut5V+D+fOoWPgGGNj83GGjnntO39xDy6DWxO0wb7Jp3DcMX0TfIqdzHF85VTQkerdyGmuuMD9AKAo5KiNlf/AQ==
 
-"@etalab/decoupage-administratif@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-4.0.0.tgz#b5d048efc43a688312a42f6daa2bef93c0d2c63b"
-  integrity sha512-TMGZT4rFaQdkovoAZF5iMNJnxc2To8GXiC4x/N8Z5j6I0j29AeInE2Js86Wy9W2ZnjGFbKkSpmnsbLYwWYAFsw==
+"@etalab/decoupage-administratif@^5.0.0":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-5.0.1.tgz#dbcf6fe1d8a7c937003d76ac8130520b12db4b33"
+  integrity sha512-cWkb6mz9OfxeMikNisqn1G0kJxtC4+rzOq4J5iKfpsKirVgjbp1GAnfEOAIFMC5+cdsGi1MtFO0vkl45jKGkwg==
 
 "@humanwhocodes/config-array@^0.11.13":
   version "0.11.13"

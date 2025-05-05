@@ -143,8 +143,11 @@ async function getStatPublications(req, res) {
 }
 
 async function getAllRevisionsByCommune(req, res) {
+  const queryParams = new URLSearchParams(req.query).toString();
   const response = await req.client.get(
-    `communes/${req.params.codeCommune}/revisions?status=all`
+    `communes/${req.params.codeCommune}/revisions?${
+      queryParams ? `&${queryParams}` : ""
+    }`
   );
   forward(response, res);
 }

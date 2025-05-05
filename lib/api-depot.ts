@@ -182,7 +182,9 @@ export async function getAllRevisionByCommune(
   isDemo: boolean = false
 ): Promise<Revision[]> {
   const response = await fetch(
-    `${getProxyURL(isDemo)}/communes/${codeCommune}/revisions`
+    `${getProxyURL(
+      isDemo
+    )}/communes/${codeCommune}/revisions?status=all&ancienneCommuneAllowed=true`
   );
 
   return processResponse(response);

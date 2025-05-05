@@ -4,7 +4,6 @@ import allCommunes from "@etalab/decoupage-administratif/data/communes.json";
 import SearchInput from "@/components/search-input";
 import { useFuse } from "@/hooks/use-fuse";
 import styled from "styled-components";
-import Button from "@codegouvfr/react-dsfr/Button";
 
 const allOptions = (allCommunes as CommuneType[]).filter((c) =>
   ["commune-actuelle", "arrondissement-municipal"].includes(c.type)

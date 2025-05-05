@@ -26,7 +26,7 @@
     "@codegouvfr/react-dsfr": "^1.14.7",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@etalab/decoupage-administratif": "^4.0.0",
+    "@etalab/decoupage-administratif": "^5.0.0",
     "@mui/material": "^5.13.7",
     "bson": "^6.9.0",
     "chart.js": "^4.2.1",
