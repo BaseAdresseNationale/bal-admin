@@ -5,7 +5,7 @@ import { sortBy } from "lodash";
 import type { RevisionMoissoneurType } from "../../types/moissoneur";
 import type { Revision as RevisionApiDepot } from "../../types/api-depot.types";
 import type { BaseLocaleType } from "../../types/mes-adresses";
-import { getCommune } from "@/lib/cog";
+import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
 import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
@@ -21,6 +21,7 @@ import { RevisionItemApiDepot } from "@/components/communes/revisions-item-api-d
 import { RevisionItemMoissoneur } from "@/components/communes/revisions-item-moissoneur";
 import { BalsItem } from "@/components/communes/bals-item";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 
 const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
   for (const bal of bals) {
@@ -159,6 +160,20 @@ const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
     },
   };
 
+  if (!isCommune(code)) {
+    return (
+      <div className="fr-container">
+        <Alert
+          className="fr-mt-4v"
+          title="Une erreur est survenue"
+          description={`Le Code Commune ${code} n'est pas valide`}
+          severity="error"
+          small
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="fr-container fr-my-4w">
       <ModalAlert
@@ -172,7 +187,7 @@ const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
         {getCommune(code)?.nom || (
           <Badge severity="warning">Commune Ancienne</Badge>
         )}
-        ({code})
+        {' '}({code})
       </h1>
       {emails.map((email) => (
         <p key={email}>{email}</p>

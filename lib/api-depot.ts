@@ -184,7 +184,7 @@ export async function getAllRevisionByCommune(
   const response = await fetch(
     `${getProxyURL(
       isDemo
-    )}/communes/${codeCommune}/revisions?status=all&allCommunes=true`
+    )}/communes/${codeCommune}/revisions?status=all&ancienneCommuneAllowed=true`
   );
 
   return processResponse(response);
