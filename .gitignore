@@ -110,3 +110,5 @@ dist
 
 # Migration files
 server/migrations/data/
+
+.cursorrules
