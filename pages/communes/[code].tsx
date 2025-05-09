@@ -22,6 +22,9 @@ import { RevisionItemMoissoneur } from "@/components/communes/revisions-item-moi
 import { BalsItem } from "@/components/communes/bals-item";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import { SignalementStatusEnum } from "types/signalement.types";
+import { getSignalementCount } from "@/lib/api-signalement";
+import { CommuneInfosHeader } from "@/components/communes/commune-infos-header";
 
 const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
   for (const bal of bals) {
@@ -32,9 +35,19 @@ const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
 type CommuneSourcePageProps = {
   code: string;
   emails: string[];
+  signalementCount: {
+    pending: number;
+    processed: number;
+    ignored: number;
+    expired: number;
+  };
 };
 
-const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
+const CommuneSource = ({
+  code,
+  emails,
+  signalementCount,
+}: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<
     RevisionApiDepot[]
@@ -182,17 +195,13 @@ const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
         onAction={onDeleteBal}
         title="Voulez vous vraiment supprimer cette bal ?"
       />
-
       <h1>
         {getCommune(code)?.nom || (
           <Badge severity="warning">Commune Ancienne</Badge>
-        )}
-        {' '}({code})
+        )}{" "}
+        ({code})
       </h1>
-      {emails.map((email) => (
-        <p key={email}>{email}</p>
-      ))}
-
+      <CommuneInfosHeader emails={emails} signalementCount={signalementCount} />
       <EditableList
         headers={[
           "Id",
@@ -210,7 +219,6 @@ const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
         page={{ ...pageMesAdresses, onPageChange: onPageMesAdressesChange }}
         actions={actionsBals}
       />
-
       <EditableList
         headers={[
           "Id",
@@ -226,7 +234,6 @@ const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
         renderItem={RevisionItemMoissoneur}
         page={{ ...pageMoissonneur, onPageChange: onPageMoissonneurChange }}
       />
-
       <EditableList
         headers={[
           "Id",
@@ -250,7 +257,35 @@ const CommuneSource = ({ code, emails }: CommuneSourcePageProps) => {
 export async function getServerSideProps({ params }) {
   const { code } = params;
   const emails = await getEmailsCommune(code);
-  return { props: { code, emails } };
+  const pendingSignalementCount = await getSignalementCount(
+    code,
+    SignalementStatusEnum.PENDING
+  );
+  const processedSignalementCount = await getSignalementCount(
+    code,
+    SignalementStatusEnum.PROCESSED
+  );
+  const ignoredSignalementCount = await getSignalementCount(
+    code,
+    SignalementStatusEnum.IGNORED
+  );
+  const expiredSignalementCount = await getSignalementCount(
+    code,
+    SignalementStatusEnum.EXPIRED
+  );
+
+  return {
+    props: {
+      code,
+      emails,
+      signalementCount: {
+        pending: pendingSignalementCount,
+        processed: processedSignalementCount,
+        ignored: ignoredSignalementCount,
+        expired: expiredSignalementCount,
+      },
+    },
+  };
 }
 
 export default CommuneSource;
