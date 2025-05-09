@@ -102,7 +102,7 @@ const EventsPage = ({ incommingEvents, pastEvents }: EventsPageProps) => {
               ),
               content: (
                 <EditableList
-                  headers={["Type", "Nom", "Date", "Horaires", ""]}
+                  headers={["Type", "Nom", "Date", "Horaires", "", ""]}
                   caption="Liste des évènements"
                   data={pastEvents}
                   filter={{
