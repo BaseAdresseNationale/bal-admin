@@ -18,6 +18,7 @@ const StyledWrapper = styled.div`
 
 interface CommuneInfosHeaderProps {
   emails: string[];
+  telephones: string[];
   signalementCount: {
     pending: number;
     processed: number;
@@ -28,15 +29,21 @@ interface CommuneInfosHeaderProps {
 
 export function CommuneInfosHeader({
   emails,
+  telephones,
   signalementCount,
 }: CommuneInfosHeaderProps) {
   return (
     <StyledWrapper>
       <div>
-        <h5>Emails de la commune</h5>
-        {emails.map((email) => (
-          <p key={email}>{email}</p>
-        ))}
+        <h5>Contact mairie</h5>
+        <div>
+          <b>Email(s) : </b>
+          {emails.join(", ")}
+        </div>
+        <div>
+          <b>Numéro(s) de téléphone : </b>
+          {telephones.join(", ")}
+        </div>
       </div>
       <SignalementTable signalementCount={signalementCount} />
     </StyledWrapper>
