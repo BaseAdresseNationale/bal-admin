@@ -25,6 +25,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import { SignalementStatusEnum } from "types/signalement.types";
 import { getSignalementCount } from "@/lib/api-signalement";
 import { CommuneInfosHeader } from "@/components/communes/commune-infos-header";
+import { getMarieTelephones } from "server/utils/api-annuaire";
 
 const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
   for (const bal of bals) {
@@ -35,6 +36,7 @@ const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
 type CommuneSourcePageProps = {
   code: string;
   emails: string[];
+  telephones: string[];
   signalementCount: {
     pending: number;
     processed: number;
@@ -46,6 +48,7 @@ type CommuneSourcePageProps = {
 const CommuneSource = ({
   code,
   emails,
+  telephones,
   signalementCount,
 }: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
@@ -201,7 +204,11 @@ const CommuneSource = ({
         )}{" "}
         ({code})
       </h1>
-      <CommuneInfosHeader emails={emails} signalementCount={signalementCount} />
+      <CommuneInfosHeader
+        emails={emails}
+        telephones={telephones}
+        signalementCount={signalementCount}
+      />
       <EditableList
         headers={[
           "Id",
@@ -257,6 +264,7 @@ const CommuneSource = ({
 export async function getServerSideProps({ params }) {
   const { code } = params;
   const emails = await getEmailsCommune(code);
+  const telephones = await getMarieTelephones(code);
   const pendingSignalementCount = await getSignalementCount(
     code,
     SignalementStatusEnum.PENDING
@@ -278,6 +286,7 @@ export async function getServerSideProps({ params }) {
     props: {
       code,
       emails,
+      telephones,
       signalementCount: {
         pending: pendingSignalementCount,
         processed: processedSignalementCount,
