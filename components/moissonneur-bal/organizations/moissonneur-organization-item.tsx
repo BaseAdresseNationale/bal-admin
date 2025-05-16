@@ -5,7 +5,6 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { formatDate } from "@/lib/util/date";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { OrganizationBalAdminType } from "types/moissoneur";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
 const MoissoneurOrganizationItem = ({
   id,

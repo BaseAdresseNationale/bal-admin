@@ -21,3 +21,19 @@ export const getSignalementCount = async (
 
   return data.total;
 };
+
+export const getIsCommuneDisabled = async (code: string): Promise<boolean> => {
+  const url = new URL(
+    `${process.env.NEXT_PUBLIC_API_SIGNALEMENT_URL}/settings/communes-disabled/${code}`
+  );
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Error fetching disabled communes: ${response.statusText}`);
+  }
+
+  const isDisabled = await response.json();
+
+  return isDisabled;
+};
