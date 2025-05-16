@@ -74,6 +74,7 @@ Elles peuvent être définies classiquement ou en créant un fichier `.env` sur 
 | `API_DEPOT_TOKEN`                 | TOKEN admin de l'api de depot                                        |
 | `API_DEPOT_DEMO_TOKEN`            | TOKEN admin de l'api de depot demo                                   |
 | `API_MES_ADDRESSES_TOKEN`         | TOKEN admin de mes-adresses-api                                      |
+| `API_SIGNALEMENT_TOKEN`           | TOKEN admin de l'api-signalement                                     |
 | `HCAPTCHA_SECRET_KEY`             | Clef secrete du captcha                                              |
 | ---                               | ---                                                                  |
 | `SMTP_HOST`                       | Nom d'hôte du serveur SMTP                                           |
