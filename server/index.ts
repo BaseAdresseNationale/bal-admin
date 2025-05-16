@@ -12,6 +12,7 @@ import { cronEvents } from "./lib/events/cron";
 import ProxyApiDepot from "./proxy/api-depot.proxy";
 import ProxyMoissonneurBal from "./proxy/moissonneur-bal.proxy";
 import ProxyMesAdressesApi from "./proxy/mes-adresses-api.proxy";
+import ProxyApiSignalement from "./proxy/api-signalement.proxy";
 // CONTROLLER
 import PartenaireDeLaCharteController from "./lib/partenaire-de-la-charte/controller";
 import ReviewsController from "./lib/partenaire-de-la-charte/reviews/controller";
@@ -55,6 +56,7 @@ async function main() {
   );
   server.use("/api/proxy-api-moissonneur-bal", routeGuard, ProxyMoissonneurBal);
   server.use("/api/proxy-mes-adresses-api", routeGuard, ProxyMesAdressesApi);
+  server.use("/api/proxy-api-signalement", routeGuard, ProxyApiSignalement);
 
   // Some Partenaire de la charte routes are public, others are protected by routeGuard
   server.use("/api/partenaires-de-la-charte", PartenaireDeLaCharteController);

@@ -25,12 +25,16 @@ interface CommuneInfosHeaderProps {
     ignored: number;
     expired: number;
   };
+  isCommuneSignalementDisabled: boolean;
+  codeCommune: string;
 }
 
 export function CommuneInfosHeader({
   emails,
   telephones,
   signalementCount,
+  isCommuneSignalementDisabled,
+  codeCommune,
 }: CommuneInfosHeaderProps) {
   return (
     <StyledWrapper>
@@ -45,7 +49,11 @@ export function CommuneInfosHeader({
           {telephones.join(", ")}
         </div>
       </div>
-      <SignalementTable signalementCount={signalementCount} />
+      <SignalementTable
+        signalementCount={signalementCount}
+        isCommuneSignalementDisabled={isCommuneSignalementDisabled}
+        codeCommune={codeCommune}
+      />
     </StyledWrapper>
   );
 }
