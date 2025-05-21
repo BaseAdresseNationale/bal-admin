@@ -44,7 +44,7 @@ export const RevisionItemMoissoneur = ({
       />
     </td>
     <td className="fr-col fr-my-1v">
-      <RevisionPublication {...publication} />
+      <RevisionPublication publicationMoissoneur={publication} />
     </td>
   </tr>
 );

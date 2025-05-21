@@ -7,7 +7,7 @@ import { Revision } from "types/api-depot.types";
 
 export interface RevisionPublicationProps {
   publicationMoissoneur: PublicationMoissoneurType;
-  revisionApiDepot: Revision;
+  revisionApiDepot?: Revision;
 }
 
 export const RevisionPublication = ({
