@@ -12,15 +12,18 @@ import {
   RevisionStatusMoissoneurEnum,
 } from "types/moissoneur";
 import { formatDate } from "@/lib/util/date";
+import { Revision } from "types/api-depot.types";
 
 interface RevisionItemProps {
   revision: RevisionMoissoneurType;
+  revisionApiDepot: Revision;
   onForcePublishRevision;
   isForcePublishRevisionLoading;
 }
 
 const RevisionItem = ({
   revision,
+  revisionApiDepot,
   onForcePublishRevision,
   isForcePublishRevisionLoading,
 }: RevisionItemProps) => {
@@ -71,7 +74,10 @@ const RevisionItem = ({
         />
       </td>
       <td className="fr-col fr-my-1v">
-        <RevisionPublication {...revision.publication} />
+        <RevisionPublication
+          publicationMoissoneur={revision.publication}
+          revisionApiDepot={revisionApiDepot}
+        />
       </td>
       <td className="fr-col fr-my-1v">
         {revision.fileId && (

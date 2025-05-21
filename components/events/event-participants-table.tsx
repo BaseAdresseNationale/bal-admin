@@ -35,6 +35,8 @@ const EventParticipantTable = ({
     <div className="fr-table">
       <table>
         <caption>Liste des participants</caption>
+        <p>{participants.length} participant(s)</p>
+        <br />
         <Button
           priority="primary"
           onClick={downloadParticipantCsv}
