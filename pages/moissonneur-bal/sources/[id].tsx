@@ -4,6 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Pagination from "react-js-pagination";
+import { keyBy } from "lodash";
 
 import {
   getSource,
@@ -26,6 +27,8 @@ import {
   OrganizationMoissoneurType,
 } from "types/moissoneur";
 import Link from "next/link";
+import { Revision } from "types/api-depot.types";
+import { getCurrentRevisions } from "@/lib/api-depot";
 
 const limit = 10;
 
@@ -49,6 +52,9 @@ const MoissoneurSource = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [revisionsIsLoading, setRevisionsIsLoading] = useState<boolean>(false);
   const [revisions, setRevisions] = useState<RevisionMoissoneurType[]>([]);
+  const [indexRevisions, setIndexRevisions] = useState<
+    Record<string, Revision>
+  >({});
   const [forcePublishRevisionStatus, setForcePublishRevisionStatus] = useState<
     string | null
   >(null);
@@ -58,6 +64,10 @@ const MoissoneurSource = ({
     setRevisionsIsLoading(true);
     const revisions: RevisionMoissoneurType[] =
       await getSourceLastUpdatedRevisions(sourceId);
+    const revisionsApiDepot = await getCurrentRevisions(
+      revisions.map((revision) => revision.codeCommune)
+    );
+    setIndexRevisions(keyBy(revisionsApiDepot, "codeCommune"));
     setRevisionsIsLoading(false);
     return revisions;
   }
@@ -314,6 +324,7 @@ const MoissoneurSource = ({
                   <RevisionItem
                     key={revision.id}
                     revision={revision}
+                    revisionApiDepot={indexRevisions[revision.codeCommune]}
                     onForcePublishRevision={() =>
                       onForcePublishRevision(revision.id)
                     }

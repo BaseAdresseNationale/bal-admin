@@ -177,6 +177,19 @@ export async function getStatPublications(
   }
 }
 
+export async function getCurrentRevisions(
+  codesCommunes: string[]
+): Promise<Revision[]> {
+  const url = new URL(`${NEXT_PUBLIC_API_DEPOT_URL}/current-revisions`);
+  for (const codeCommune of codesCommunes) {
+    url.searchParams.append("codesCommunes", codeCommune);
+  }
+
+  const response = await fetch(url);
+
+  return processResponse(response);
+}
+
 export async function getAllRevisionByCommune(
   codeCommune: string,
   isDemo: boolean = false
