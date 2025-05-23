@@ -16,9 +16,18 @@ function forward(gotResponse, res) {
   res.status(gotResponse.statusCode).send(gotResponse.body);
 }
 
-async function updateCommunesDisabled(req, res) {
+async function updateCommuneSettings(req, res) {
+  const response = await client.post(
+    `settings/commune-settings/${req.params.codeCommune}`,
+    { json: req.body }
+  );
+  forward(response, res);
+}
+
+async function updateEnabledList(req, res) {
   const response = await client.put(
-    `settings/communes-disabled/${req.params.codeCommune}`
+    `settings/enabled-list/${req.params.listKey}`,
+    { json: req.body }
   );
   forward(response, res);
 }
@@ -28,6 +37,7 @@ const app = express.Router();
 app.use(express.json());
 app.use(cors());
 
-app.put("/settings/communes-disabled/:codeCommune", w(updateCommunesDisabled));
+app.post("/settings/commune-settings/:codeCommune", w(updateCommuneSettings));
+app.put("/settings/enabled-list/:listKey", w(updateEnabledList));
 
 export default app;
