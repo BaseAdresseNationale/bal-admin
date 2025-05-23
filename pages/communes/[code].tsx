@@ -22,10 +22,15 @@ import { RevisionItemMoissoneur } from "@/components/communes/revisions-item-moi
 import { BalsItem } from "@/components/communes/bals-item";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Alert from "@codegouvfr/react-dsfr/Alert";
-import { SignalementStatusEnum } from "types/signalement.types";
 import {
-  getIsCommuneDisabled,
+  SignalementCommuneSettings,
+  SignalementSource,
+  SignalementStatusEnum,
+} from "types/signalement.types";
+import {
+  getSignalementCommuneSettings,
   getSignalementCount,
+  getSignalementSources,
 } from "@/lib/api-signalement";
 import { CommuneInfosHeader } from "@/components/communes/commune-infos-header";
 import { getMarieTelephones } from "server/utils/api-annuaire";
@@ -46,7 +51,8 @@ type CommuneSourcePageProps = {
     ignored: number;
     expired: number;
   };
-  isCommuneSignalementDisabled: boolean;
+  signalementCommuneSettings?: SignalementCommuneSettings;
+  signalementSources: SignalementSource[];
 };
 
 const CommuneSource = ({
@@ -54,7 +60,8 @@ const CommuneSource = ({
   emails,
   telephones,
   signalementCount,
-  isCommuneSignalementDisabled,
+  signalementCommuneSettings,
+  signalementSources,
 }: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<
@@ -213,7 +220,8 @@ const CommuneSource = ({
         emails={emails}
         telephones={telephones}
         signalementCount={signalementCount}
-        isCommuneSignalementDisabled={isCommuneSignalementDisabled}
+        signalementCommuneSettings={signalementCommuneSettings}
+        signalementSources={signalementSources}
         codeCommune={code}
       />
       <EditableList
@@ -272,7 +280,8 @@ export async function getServerSideProps({ params }) {
   const { code } = params;
   const emails = await getEmailsCommune(code);
   const telephones = await getMarieTelephones(code);
-  const isCommuneSignalementDisabled = await getIsCommuneDisabled(code);
+  const signalementSources = await getSignalementSources();
+  const signalementCommuneSettings = await getSignalementCommuneSettings(code);
   const pendingSignalementCount = await getSignalementCount(
     code,
     SignalementStatusEnum.PENDING
@@ -301,7 +310,8 @@ export async function getServerSideProps({ params }) {
         ignored: ignoredSignalementCount,
         expired: expiredSignalementCount,
       },
-      isCommuneSignalementDisabled,
+      signalementCommuneSettings,
+      signalementSources,
     },
   };
 }

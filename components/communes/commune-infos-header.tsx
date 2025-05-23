@@ -1,3 +1,7 @@
+import {
+  SignalementCommuneSettings,
+  SignalementSource,
+} from "types/signalement.types";
 import { SignalementTable } from "./signalement-table";
 import styled from "styled-components";
 
@@ -25,16 +29,18 @@ interface CommuneInfosHeaderProps {
     ignored: number;
     expired: number;
   };
-  isCommuneSignalementDisabled: boolean;
+  signalementCommuneSettings?: SignalementCommuneSettings;
   codeCommune: string;
+  signalementSources: SignalementSource[];
 }
 
 export function CommuneInfosHeader({
   emails,
   telephones,
   signalementCount,
-  isCommuneSignalementDisabled,
+  signalementCommuneSettings,
   codeCommune,
+  signalementSources,
 }: CommuneInfosHeaderProps) {
   return (
     <StyledWrapper>
@@ -51,8 +57,9 @@ export function CommuneInfosHeader({
       </div>
       <SignalementTable
         signalementCount={signalementCount}
-        isCommuneSignalementDisabled={isCommuneSignalementDisabled}
+        signalementCommuneSettings={signalementCommuneSettings}
         codeCommune={codeCommune}
+        signalementSources={signalementSources}
       />
     </StyledWrapper>
   );

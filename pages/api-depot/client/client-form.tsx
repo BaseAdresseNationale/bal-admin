@@ -25,6 +25,8 @@ import TextInput from "@/components/text-input";
 import MandataireForm from "@/components/api-depot/client/client-form/mandataire-form";
 import ChefDeFileSelect from "@/components/api-depot/client/client-form/chef-de-file-select";
 import ChefDeFileForm from "@/components/api-depot/client/client-form/chef-de-file-form";
+import { ToggleSignalementEnabledList } from "@/components/toggle-signalement-enabled-list";
+import { SignalementEnabledListKeys } from "types/signalement.types";
 
 const authorizationStrategyOptions = [
   {
@@ -192,107 +194,118 @@ const ClientForm = () => {
   };
 
   return (
-    <Loader isLoading={isLoading}>
-      {formData && (
-        <div className="fr-container fr-my-4w">
-          <form onSubmit={handleSumit}>
-            <TextInput
-              label="Nom"
-              value={formData.nom}
-              hint="Nom du client. Exemple : Business Geografic"
-              onChange={(e) => {
-                handleEdit("nom")(e.target.value);
-              }}
-            />
+    <>
+      <Loader isLoading={isLoading}>
+        {formData && (
+          <div className="fr-container fr-my-4w">
+            <form onSubmit={handleSumit}>
+              <TextInput
+                label="Nom"
+                value={formData.nom}
+                hint="Nom du client. Exemple : Business Geografic"
+                onChange={(e) => {
+                  handleEdit("nom")(e.target.value);
+                }}
+              />
 
-            <ToggleSwitch
-              label="Activé"
-              helperText="Authorise le client à utiliser l’API"
-              checked={formData.isActive}
-              onChange={handleToggle("isActive")}
-            />
+              <ToggleSwitch
+                label="Activé"
+                helperText="Authorise le client à utiliser l’API"
+                checked={formData.isActive}
+                onChange={handleToggle("isActive")}
+              />
 
-            <ToggleSwitch
-              label="Mode relax"
-              helperText="Le mode relax assoupli les vérifications du Validateur BAL"
-              checked={formData.isRelaxMode}
-              onChange={handleToggle("isRelaxMode")}
-            />
+              <ToggleSwitch
+                label="Mode relax"
+                helperText="Le mode relax assoupli les vérifications du Validateur BAL"
+                checked={formData.isRelaxMode}
+                onChange={handleToggle("isRelaxMode")}
+              />
 
-            <SelectInput
-              label="Stratégie d’authorisation"
-              hint="Méthode qui authorise le client à publier des BAL"
-              value={authorizationStrategy}
-              options={authorizationStrategyOptions}
-              handleChange={(value) =>
-                setAuthorizationStrategy(value as AuthorizationStrategyEnum)
-              }
-            />
+              <SelectInput
+                label="Stratégie d’authorisation"
+                hint="Méthode qui authorise le client à publier des BAL"
+                value={authorizationStrategy}
+                options={authorizationStrategyOptions}
+                handleChange={(value) =>
+                  setAuthorizationStrategy(value as AuthorizationStrategyEnum)
+                }
+              />
 
-            <MandataireForm
-              selectedMandataire={formData.mandataireId}
-              mandataires={mandatairesOptions}
-              onSelect={handleEdit("mandataireId")}
-              onCreate={handleEdit("mandataire")}
-            />
+              <MandataireForm
+                selectedMandataire={formData.mandataireId}
+                mandataires={mandatairesOptions}
+                onSelect={handleEdit("mandataireId")}
+                onCreate={handleEdit("mandataire")}
+              />
 
-            {authorizationStrategy ===
-              AuthorizationStrategyEnum.CHEF_DE_FILE && (
-              <>
-                {isformChefDeFileOpen ? (
-                  <ChefDeFileForm
-                    initialChefDeFile={initialChefDeFileForm}
-                    onSelect={handleEdit("chefDeFileId")}
-                    isDemo={isDemo}
-                    close={() => closeFormChefDeFile()}
-                  />
-                ) : (
-                  <>
-                    <ChefDeFileSelect
-                      selectedChefDeFile={formData.chefDeFileId}
-                      chefsDeFile={chefsDeFileOptions}
+              {authorizationStrategy ===
+                AuthorizationStrategyEnum.CHEF_DE_FILE && (
+                <>
+                  {isformChefDeFileOpen ? (
+                    <ChefDeFileForm
+                      initialChefDeFile={initialChefDeFileForm}
                       onSelect={handleEdit("chefDeFileId")}
+                      isDemo={isDemo}
+                      close={() => closeFormChefDeFile()}
                     />
-                    <div className="fr-my-4w">
-                      <div className="fr-grid-row">
-                        <Button onClick={(e) => openFormChefDeFile()}>
-                          Créer
-                        </Button>
-                        <Button
-                          priority="secondary"
-                          onClick={(e) =>
-                            openFormChefDeFile(formData.chefDeFileId)
-                          }
-                        >
-                          Modifier
-                        </Button>
+                  ) : (
+                    <>
+                      <ChefDeFileSelect
+                        selectedChefDeFile={formData.chefDeFileId}
+                        chefsDeFile={chefsDeFileOptions}
+                        onSelect={handleEdit("chefDeFileId")}
+                      />
+                      <div className="fr-my-4w">
+                        <div className="fr-grid-row">
+                          <Button onClick={(e) => openFormChefDeFile()}>
+                            Créer
+                          </Button>
+                          <Button
+                            priority="secondary"
+                            onClick={(e) =>
+                              openFormChefDeFile(formData.chefDeFileId)
+                            }
+                          >
+                            Modifier
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
-              </>
+                    </>
+                  )}
+                </>
+              )}
+
+              <Button
+                type="submit"
+                iconId="fr-icon-save-line"
+                disabled={!isFormValid}
+              >
+                Enregistrer
+              </Button>
+            </form>
+
+            {submitError && (
+              <Alert
+                className="fr-mt-2w"
+                severity="error"
+                title="Impossible d’enregistrer"
+                description={submitError}
+              />
             )}
 
-            <Button
-              type="submit"
-              iconId="fr-icon-save-line"
-              disabled={!isFormValid}
-            >
-              Enregistrer
-            </Button>
-          </form>
-
-          {submitError && (
-            <Alert
-              className="fr-mt-2w"
-              severity="error"
-              title="Impossible d’enregistrer"
-              description={submitError}
-            />
-          )}
-        </div>
-      )}
-    </Loader>
+            {!isDemo && (
+              <div style={{ marginTop: "2rem" }}>
+                <ToggleSignalementEnabledList
+                  listKey={SignalementEnabledListKeys.API_DEPOT_CLIENTS_ENABLED}
+                  id={clientId}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </Loader>
+    </>
   );
 };
 

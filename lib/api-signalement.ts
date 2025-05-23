@@ -1,4 +1,9 @@
-import { SignalementStatusEnum } from "types/signalement.types";
+import {
+  SignalementCommuneSettings,
+  SignalementEnabledListKeys,
+  SignalementSource,
+  SignalementStatusEnum,
+} from "types/signalement.types";
 
 export const getSignalementCount = async (
   code: string,
@@ -22,18 +27,57 @@ export const getSignalementCount = async (
   return data.total;
 };
 
-export const getIsCommuneDisabled = async (code: string): Promise<boolean> => {
+export const getSignalementSources = async (): Promise<SignalementSource[]> => {
+  const url = new URL(`${process.env.NEXT_PUBLIC_API_SIGNALEMENT_URL}/sources`);
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(
+      `Error fetching signalement sources : ${response.statusText}`
+    );
+  }
+
+  const sources = await response.json();
+
+  return sources;
+};
+
+export const getIsInSignalementEnabledList = async (
+  listKey: SignalementEnabledListKeys,
+  id: string
+): Promise<boolean> => {
   const url = new URL(
-    `${process.env.NEXT_PUBLIC_API_SIGNALEMENT_URL}/settings/communes-disabled/${code}`
+    `${process.env.NEXT_PUBLIC_API_SIGNALEMENT_URL}/settings/enabled-list/${listKey}/${id}`
   );
 
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Error fetching disabled communes: ${response.statusText}`);
+    throw new Error(
+      `Error fetching signalement is in enabled list: ${response.statusText}`
+    );
   }
 
-  const isDisabled = await response.json();
+  const isEnabled = await response.json();
 
-  return isDisabled;
+  return isEnabled;
+};
+
+export const getSignalementCommuneSettings = async (
+  code: string
+): Promise<SignalementCommuneSettings> => {
+  const url = new URL(
+    `${process.env.NEXT_PUBLIC_API_SIGNALEMENT_URL}/settings/commune-settings/${code}`
+  );
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Error fetching commune settings : ${response.statusText}`);
+  }
+
+  const settings = await response.json();
+
+  return settings;
 };
