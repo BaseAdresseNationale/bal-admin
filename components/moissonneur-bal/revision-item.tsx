@@ -34,6 +34,11 @@ const RevisionItem = ({
     Router.push(file.url);
   };
 
+  const revisionIsReplaced =
+    revision.publication?.status === RevisionStatusMoissoneurEnum.PUBLISHED &&
+    revisionApiDepot &&
+    revisionApiDepot.id !== revision.publication?.publishedRevisionId;
+
   const displayForcePublishButton =
     !revision.publication ||
     revision.publication?.status === RevisionStatusMoissoneurEnum.ERROR ||
@@ -42,7 +47,9 @@ const RevisionItem = ({
     revision.publication?.status ===
       RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_SOURCE ||
     revision.publication?.status ===
-      RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_CLIENT;
+      RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_CLIENT ||
+    revisionIsReplaced;
+
   return (
     <tr>
       <td className="fr-col fr-my-1v">
@@ -98,7 +105,9 @@ const RevisionItem = ({
           >
             {isForcePublishRevisionLoading
               ? "Publication..."
-              : "Forcer la publication"}
+              : revisionIsReplaced
+                ? "Republier"
+                : "Forcer la publication"}
           </Button>
         )}
       </td>
