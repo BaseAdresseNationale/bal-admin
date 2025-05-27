@@ -12,15 +12,18 @@ import {
   RevisionStatusMoissoneurEnum,
 } from "types/moissoneur";
 import { formatDate } from "@/lib/util/date";
+import { Revision } from "types/api-depot.types";
 
 interface RevisionItemProps {
   revision: RevisionMoissoneurType;
+  revisionApiDepot: Revision;
   onForcePublishRevision;
   isForcePublishRevisionLoading;
 }
 
 const RevisionItem = ({
   revision,
+  revisionApiDepot,
   onForcePublishRevision,
   isForcePublishRevisionLoading,
 }: RevisionItemProps) => {
@@ -31,6 +34,11 @@ const RevisionItem = ({
     Router.push(file.url);
   };
 
+  const revisionIsReplaced =
+    revision.publication?.status === RevisionStatusMoissoneurEnum.PUBLISHED &&
+    revisionApiDepot &&
+    revisionApiDepot.id !== revision.publication?.publishedRevisionId;
+
   const displayForcePublishButton =
     !revision.publication ||
     revision.publication?.status === RevisionStatusMoissoneurEnum.ERROR ||
@@ -39,7 +47,9 @@ const RevisionItem = ({
     revision.publication?.status ===
       RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_SOURCE ||
     revision.publication?.status ===
-      RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_CLIENT;
+      RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_CLIENT ||
+    revisionIsReplaced;
+
   return (
     <tr>
       <td className="fr-col fr-my-1v">
@@ -71,7 +81,10 @@ const RevisionItem = ({
         />
       </td>
       <td className="fr-col fr-my-1v">
-        <RevisionPublication {...revision.publication} />
+        <RevisionPublication
+          publicationMoissoneur={revision.publication}
+          revisionApiDepot={revisionApiDepot}
+        />
       </td>
       <td className="fr-col fr-my-1v">
         {revision.fileId && (
@@ -92,7 +105,9 @@ const RevisionItem = ({
           >
             {isForcePublishRevisionLoading
               ? "Publication..."
-              : "Forcer la publication"}
+              : revisionIsReplaced
+                ? "Republier"
+                : "Forcer la publication"}
           </Button>
         )}
       </td>
