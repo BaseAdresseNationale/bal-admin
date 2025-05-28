@@ -14,11 +14,12 @@ export const RevisionPublication = ({
   publicationMoissoneur,
   revisionApiDepot,
 }: RevisionPublicationProps) => {
-  const { status, errorMessage, currentSourceId, currentClientId } =
-    publicationMoissoneur;
-  if (status === RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_CLIENT) {
+  if (
+    publicationMoissoneur?.status ===
+    RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_CLIENT
+  ) {
     return (
-      <Tooltip text={currentClientId || "inconnu"}>
+      <Tooltip text={publicationMoissoneur?.currentClientId || "inconnu"}>
         <Badge severity="warning" noIcon>
           Publiée par un autre client
         </Badge>
@@ -26,9 +27,12 @@ export const RevisionPublication = ({
     );
   }
 
-  if (status === RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_SOURCE) {
+  if (
+    publicationMoissoneur?.status ===
+    RevisionStatusMoissoneurEnum.PROVIDED_BY_OTHER_SOURCE
+  ) {
     return (
-      <Tooltip text={currentSourceId || "inconnue"}>
+      <Tooltip text={publicationMoissoneur?.currentSourceId || "inconnue"}>
         <Badge severity="error" noIcon>
           Publiée par une autre source
         </Badge>
@@ -36,7 +40,9 @@ export const RevisionPublication = ({
     );
   }
 
-  if (status === RevisionStatusMoissoneurEnum.PUBLISHED) {
+  if (
+    publicationMoissoneur?.status === RevisionStatusMoissoneurEnum.PUBLISHED
+  ) {
     if (
       revisionApiDepot &&
       revisionApiDepot.id !== publicationMoissoneur.publishedRevisionId
@@ -54,9 +60,9 @@ export const RevisionPublication = ({
     );
   }
 
-  if (status === RevisionStatusMoissoneurEnum.ERROR) {
+  if (publicationMoissoneur?.status === RevisionStatusMoissoneurEnum.ERROR) {
     return (
-      <Tooltip text={errorMessage}>
+      <Tooltip text={publicationMoissoneur?.errorMessage}>
         <Badge severity="error" noIcon>
           Erreur
         </Badge>
