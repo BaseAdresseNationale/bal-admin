@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { SignalementEnabledListKeys } from "types/signalement.types";
-import { getIsInSignalementEnabledList } from "@/lib/api-signalement";
+import {
+  getIsInSignalementEnabledList,
+  putIsInSignalementEnabledList,
+} from "@/lib/api-signalement";
 import { toast } from "react-toastify";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Alert from "@codegouvfr/react-dsfr/Alert";
@@ -33,23 +36,7 @@ export const ToggleSignalementEnabledList = ({
   const handleToggle = async () => {
     setIsUpdating(true);
     try {
-      const response = await fetch(
-        `/api/proxy-api-signalement/settings/enabled-list/${listKey}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id,
-            enabled: !isInEnabledList,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error updating enabled list: ${response.statusText}`);
-      }
+      await putIsInSignalementEnabledList(listKey, id, !isInEnabledList);
 
       const newState = !isInEnabledList;
       setIsInEnabledList(newState);
@@ -95,11 +82,11 @@ export const ToggleSignalementEnabledList = ({
         <Alert
           severity="success"
           title="Dépôt de signalement activé"
-          description={`Le dépôt de signalement est activé pour ${
+          description={`Les communes publiées par ${
             listKey === SignalementEnabledListKeys.API_DEPOT_CLIENTS_ENABLED
               ? "ce client"
               : "cette source"
-          }.`}
+          } peuvent recevoir des signalements.`}
         />
       )}
     </div>

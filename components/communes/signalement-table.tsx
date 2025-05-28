@@ -11,6 +11,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import SelectInput from "@/components/select-input";
 import { MultiSelectInput } from "../multi-select-input";
+import { postSignalementCommuneSettings } from "@/lib/api-signalement";
 
 interface SignalementTableProps {
   signalementCount: {
@@ -68,21 +69,7 @@ export function SignalementTable({
     event.preventDefault();
     setIsUpdating(true);
     try {
-      const response = await fetch(
-        `/api/proxy-api-signalement/settings/commune-settings/${codeCommune}`,
-        {
-          method: "POST",
-          body: JSON.stringify(communeSettings),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error(
-          `Error updating commune settings: ${response.statusText}`
-        );
-      }
+      await postSignalementCommuneSettings(codeCommune, communeSettings);
       toast(
         "Les paramètres de dépôt de signalement ont été mis à jour avec succès",
         { type: "success" }

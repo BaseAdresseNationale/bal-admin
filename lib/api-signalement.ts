@@ -64,6 +64,30 @@ export const getIsInSignalementEnabledList = async (
   return isEnabled;
 };
 
+export const putIsInSignalementEnabledList = async (
+  listKey: SignalementEnabledListKeys,
+  id: string,
+  enabled: boolean
+): Promise<void> => {
+  const response = await fetch(
+    `/api/proxy-api-signalement/settings/enabled-list/${listKey}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+        enabled,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Error updating enabled list: ${response.statusText}`);
+  }
+};
+
 export const getSignalementCommuneSettings = async (
   code: string
 ): Promise<SignalementCommuneSettings> => {
@@ -80,4 +104,23 @@ export const getSignalementCommuneSettings = async (
   const settings = await response.json();
 
   return settings;
+};
+
+export const postSignalementCommuneSettings = async (
+  codeCommune: string,
+  communeSettings: SignalementCommuneSettings
+): Promise<void> => {
+  const response = await fetch(
+    `/api/proxy-api-signalement/settings/commune-settings/${codeCommune}`,
+    {
+      method: "POST",
+      body: JSON.stringify(communeSettings),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error(`Error updating commune settings: ${response.statusText}`);
+  }
 };

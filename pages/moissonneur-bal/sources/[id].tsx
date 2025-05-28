@@ -29,6 +29,8 @@ import {
 import Link from "next/link";
 import { Revision } from "types/api-depot.types";
 import { getCurrentRevisions } from "@/lib/api-depot";
+import { SignalementEnabledListKeys } from "types/signalement.types";
+import { ToggleSignalementEnabledList } from "@/components/toggle-signalement-enabled-list";
 
 const limit = 10;
 
@@ -207,6 +209,12 @@ const MoissoneurSource = ({
 
       <div className="fr-container">
         <p>{source.description}</p>
+      </div>
+      <div className="fr-container" style={{ marginBottom: "2rem" }}>
+        <ToggleSignalementEnabledList
+          listKey={SignalementEnabledListKeys.SOURCES_MOISSONNEUR_ENABLED}
+          id={source.id}
+        />
       </div>
       <div className="fr-container">
         <h2>Organisation</h2>
