@@ -24,10 +24,16 @@ interface SignalementTableProps {
   signalementSources: SignalementSource[];
 }
 
-const modeOptions = Object.values(SignalementSubmissionMode).map((mode) => ({
-  label: mode,
-  value: mode,
-}));
+const modeOptions = [
+  {
+    label: "Exhaustif",
+    value: SignalementSubmissionMode.FULL,
+  },
+  {
+    label: "Simplifié",
+    value: SignalementSubmissionMode.LIGHT,
+  },
+];
 
 export function SignalementTable({
   signalementCount,
@@ -158,7 +164,7 @@ export function SignalementTable({
             />
 
             <MultiSelectInput
-              label="Sources filtrées"
+              label="Sources bloquées"
               options={sourceOptions}
               value={communeSettings.filteredSources}
               onChange={handleEdit("filteredSources")}
