@@ -45,7 +45,7 @@ const APIDepot = () => {
                 passHref
                 href={{
                   pathname: "/api-depot/client/client-form",
-                  query: { demo: selectedTabId === TabIdEnum.API_DEPOT_DEMO },
+                  query: { demo: selectedTabId === TabIdEnum.API_DEPOT_DEMO ? "1" : "0" },
                 }}
               >
                 <Button iconId="fr-icon-add-line">Ajouter un client</Button>
