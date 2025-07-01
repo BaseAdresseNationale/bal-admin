@@ -2,9 +2,9 @@
 
 Back office et permet d'administrer mes-adresses-api, moissoneur et api-depot.
 
-## Documentation
+## 📚 Documentation
 
-https://adresse-data-gouv-fr.gitbook.io/bal/bal-admin
+Une documentation plus complète et des guides d’utilisation sont disponibles dans le [Wiki](https://github.com/BaseAdresseNationale/bal-admin/wiki).
 
 ## Pré-requis
 
