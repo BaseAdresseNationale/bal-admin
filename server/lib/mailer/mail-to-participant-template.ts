@@ -291,13 +291,6 @@ export const getMailToParticipantTemplate = ({
         width: 0;
       }
     </style>
-    <!--[if mso
-      ]><xml>
-        <o:OfficeDocumentSettings>
-          <o:AllowPNG /> <o:PixelsPerInch>96</o:PixelsPerInch>
-        </o:OfficeDocumentSettings>
-      </xml><!
-    [endif]-->
     <style type="text/css">
       a:link {
         color: #0092ff;
@@ -743,7 +736,7 @@ export const getMailToParticipantTemplate = ({
                                         : ""
                                     }
                                     ${
-                                      instructions && instructions !== ''
+                                      instructions && instructions !== ""
                                         ? `<br />
                                       <p
                                         style="

@@ -285,13 +285,6 @@ export const getMailToCommuneTemplate = (
         width: 0;
       }
     </style>
-    <!--[if mso
-      ]><xml>
-        <o:OfficeDocumentSettings>
-          <o:AllowPNG /> <o:PixelsPerInch>96</o:PixelsPerInch>
-        </o:OfficeDocumentSettings>
-      </xml><!
-    [endif]-->
     <style type="text/css">
       a:link {
         color: #0092ff;
