@@ -62,7 +62,7 @@ export const RevisionPublication = ({
 
   if (publicationMoissoneur?.status === RevisionStatusMoissoneurEnum.ERROR) {
     return (
-      <Tooltip text={publicationMoissoneur?.errorMessage}>
+      <Tooltip text={publicationMoissoneur?.errorMessage} width="200px">
         <Badge severity="error" noIcon>
           Erreur
         </Badge>
