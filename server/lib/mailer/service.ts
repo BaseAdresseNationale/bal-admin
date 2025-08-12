@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import templates from "./email.templates";
-import { getCommuneEmail } from "../../utils/api-annuaire";
 import { MailDTO } from "./dto";
 import { validateOrReject } from "class-validator";
 import { Participant } from "../participant/entity";
@@ -35,90 +34,11 @@ function createTransport() {
 
 const transport = createTransport();
 
-async function checkCaptcha(captchaToken) {
-  const response = await fetch(`https://api.hcaptcha.com/siteverify`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: `response=${captchaToken}&secret=${process.env.HCAPTCHA_SECRET_KEY}`,
-  });
-
-  const json = await response.json();
-
-  if (!json.success) {
-    throw new Error("Le captcha est invalide");
-  }
-
-  return json.success;
-}
-
 export async function sendTemplateMail(templateKey) {
   const template = templates[templateKey];
   if (!template) {
     throw new Error(`Le template ${templateKey} n'existe pas`);
   }
-
-  const response = await transport.sendMail(template);
-
-  if (!response) {
-    throw new Error("Une erreur est survenue lors de l'envoi de l'email");
-  }
-
-  return true;
-}
-
-export async function sendFormContactMail(payload: MailDTO) {
-  await validateOrReject(payload);
-  const { captchaToken, ...emailData } = payload;
-
-  await checkCaptcha(captchaToken);
-
-  const contactTemplate = templates.contact(emailData);
-
-  const response = await transport.sendMail(contactTemplate);
-
-  if (!response) {
-    throw new Error("Une erreur est survenue lors de l'envoi de l'email");
-  }
-
-  return true;
-}
-
-export async function sendSignalementToCommune(payload: MailDTO) {
-  await validateOrReject(payload);
-
-  const { captchaToken, ...emailData } = payload;
-
-  await checkCaptcha(captchaToken);
-
-  const communeEmail = await getCommuneEmail(emailData.city);
-
-  const currentRevisionResponse = await fetch(
-    `${apiDepotBaseUrl}/communes/${emailData.city}/current-revision`
-  );
-  const currentRevision = await currentRevisionResponse.json();
-  const publication: any = {
-    client: currentRevision?.client?.nom,
-  };
-  if (currentRevision?.client?.nom === "Mes Adresses") {
-    publication.balId = currentRevision?.context?.extras?.balId;
-  } else if (currentRevision?.client?.nom === "Moissonneur BAL") {
-    const sourceId = currentRevision?.context?.extras?.sourceId;
-    if (sourceId) {
-      const response = await fetch(
-        `https://www.data.gouv.fr/api/1/datasets/${sourceId}`
-      );
-      const dataset = await response.json();
-      publication.organization = dataset?.organization?.name;
-    }
-  }
-
-  const template = templates.signalementToCommune(
-    emailData,
-    communeEmail,
-    publication
-  );
 
   const response = await transport.sendMail(template);
 
