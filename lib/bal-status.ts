@@ -1,4 +1,9 @@
 import { AlertProps } from "@codegouvfr/react-dsfr/Alert";
+import {
+  StatusBaseLocalEnum,
+  StatusSyncEnum,
+  SyncType,
+} from "types/mes-adresses";
 
 export interface StatusInterface {
   label: string;
@@ -8,14 +13,6 @@ export interface StatusInterface {
 }
 
 export const STATUSES: { [id: string]: StatusInterface } = {
-  conflict: {
-    label: "Conflit",
-    title:
-      "Cette Base Adresse Locale n’alimente plus la Base Adresse Nationale",
-    content:
-      "Une autre Base Adresses Locale est aussi synchronisée avec la Base Adresse Nationale. Veuillez entrer en contact les administrateurs de l’autre Base Adresse Locale ou notre support: adresse@data.gouv.fr",
-    intent: "error",
-  },
   paused: {
     label: "Suspendue",
     title:
@@ -43,6 +40,14 @@ export const STATUSES: { [id: string]: StatusInterface } = {
     label: "Publiée",
     intent: "success",
   },
+  replaced: {
+    label: "Remplacée",
+    title:
+      "Cette Base Adresse Locale n’alimente plus la Base Adresse Nationale",
+    content:
+      "Une autre Base Adresses Locale est aussi synchronisée avec la Base Adresse Nationale. Veuillez entrer en contact les administrateurs de l’autre Base Adresse Locale ou notre support: adresse@data.gouv.fr",
+    intent: "error",
+  },
   draft: {
     content: "Cette Base Adresses Locale est en cours de construction",
     label: "Brouillon",
@@ -52,31 +57,17 @@ export const STATUSES: { [id: string]: StatusInterface } = {
       "Base Adresse Locale de démonstration, aucune adresse ne sera transmise à la Base Adresse Nationale",
     label: "Démonstration",
   },
-  "waiting-habilitation": {
-    label: "En attente d'habilitation",
-    content:
-      "De nouvelles modifications ont été détectées mais vous n'êtes pas habilité, les moficiations ne seront pas répercutées dans la Base Adresse Nationale.",
-    intent: "new",
-  },
 };
 
 export function computeStatus(
-  balStatus: string,
-  sync: any,
-  isHabilitationValid: boolean
+  balStatus: StatusBaseLocalEnum,
+  sync: SyncType
 ): StatusInterface {
-  if (balStatus === "replaced" || sync?.status === "conflict") {
-    return STATUSES.conflict;
-  }
-
   if (sync?.isPaused) {
     return STATUSES.paused;
   }
 
-  if (balStatus === "published") {
-    if (sync.status === "outdated" && !isHabilitationValid) {
-      return STATUSES["waiting-habilitation"];
-    }
+  if (balStatus === StatusBaseLocalEnum.PUBLISHED) {
     return STATUSES[sync.status];
   }
 

@@ -10,18 +10,9 @@ export const BalsItem = (
   item: BaseLocaleType,
   actions: Record<string, (item: BaseLocaleType) => void>
 ) => {
-  const {
-    id,
-    nom,
-    status,
-    sync,
-    emails,
-    createdAt,
-    updatedAt,
-    habilitationIsValid,
-  } = item;
+  const { id, nom, status, sync, emails, createdAt, updatedAt } = item;
 
-  const computedStatus = computeStatus(status, sync, habilitationIsValid);
+  const computedStatus = computeStatus(status, sync);
 
   return (
     <tr key={id}>
