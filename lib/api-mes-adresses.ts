@@ -40,11 +40,11 @@ export async function getBaseLocale(
   return processReponse(res);
 }
 
-export async function getBaseLocaleIsHabilitationValid(
+export async function getHabilitation(
   baseLocaleId: string
-): Promise<boolean> {
+): Promise<Habilitation> {
   const res: Response = await fetch(
-    `${NEXT_PUBLIC_API_MES_ADRESSES}/bases-locales/${baseLocaleId}/habilitation/is-valid`
+    `${NEXT_PUBLIC_API_MES_ADRESSES}/bases-locales/${baseLocaleId}/habilitation`
   );
   return processReponse(res);
 }

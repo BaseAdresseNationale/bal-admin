@@ -10,11 +10,12 @@ import type { BaseLocaleType } from "types/mes-adresses";
 import { createHabilitation, getBaseLocale } from "@/lib/api-mes-adresses";
 import { StatusInterface, computeStatus } from "@/lib/bal-status";
 import { formatDate } from "@/lib/util/date";
-import { getBaseLocaleIsHabilitationValid } from "@/lib/api-mes-adresses";
+import { getHabilitation } from "@/lib/api-mes-adresses";
 
 import CopyToClipBoard from "@/components/copy-to-clipboard";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { validateHabilitation } from "@/lib/api-depot";
+import { StatusHabilitationEnum } from "types/api-depot.types";
 
 const deleteEventModale = createModal({
   id: "delete-event-modale",
@@ -35,12 +36,12 @@ const BaseLocale = () => {
   );
 
   async function calcStatus(baseLocale: BaseLocaleType) {
-    const habilitationValid = await getBaseLocaleIsHabilitationValid(
-      baseLocale.id
-    );
+    const habilitation = await getHabilitation(baseLocale.id);
     const status = computeStatus(baseLocale.status, baseLocale.sync);
     setComputedStatus(status);
-    setisHabilitationValid(habilitationValid);
+    setisHabilitationValid(
+      habilitation.status === StatusHabilitationEnum.ACCEPTED
+    );
   }
 
   useEffect(() => {
