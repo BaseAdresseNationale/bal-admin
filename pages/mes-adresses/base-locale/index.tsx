@@ -38,11 +38,7 @@ const BaseLocale = () => {
     const habilitationValid = await getBaseLocaleIsHabilitationValid(
       baseLocale.id
     );
-    const status = computeStatus(
-      baseLocale.status,
-      baseLocale.sync,
-      habilitationValid
-    );
+    const status = computeStatus(baseLocale.status, baseLocale.sync);
     setComputedStatus(status);
     setisHabilitationValid(habilitationValid);
   }

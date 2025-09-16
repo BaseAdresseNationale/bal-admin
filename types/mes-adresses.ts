@@ -11,6 +11,13 @@ export enum StatusSyncEnum {
   CONFLICT = "conflict",
 }
 
+export type SyncType = {
+  status: StatusSyncEnum;
+  isPaused: boolean;
+  currentUpdated: string;
+  lastUploadedRevisionId: string;
+};
+
 export type BaseLocaleType = {
   id: string;
   token?: string;
@@ -21,14 +28,8 @@ export type BaseLocaleType = {
   nbNumerosCertifies?: number;
   isAllCertified?: boolean;
   emails?: string[];
-  sync?: {
-    status: StatusSyncEnum;
-    isPaused: boolean;
-    currentUpdated: string;
-    lastUploadedRevisionId: string;
-  };
+  sync?: SyncType;
   createdAt?: string;
   updatedAt?: string;
   deletedAt?: string;
-  habilitationIsValid?: boolean;
 };

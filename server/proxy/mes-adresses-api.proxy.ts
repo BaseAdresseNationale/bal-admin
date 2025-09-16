@@ -3,13 +3,13 @@ import got from "got";
 import cors from "cors";
 import w from "./w";
 
-const API_MES_ADRESSES_URL =
+const NEXT_PUBLIC_API_MES_ADRESSES =
   process.env.NEXT_PUBLIC_API_MES_ADRESSES ||
   "https://api-bal.adresse.data.gouv.fr/v2";
 const API_MES_ADDRESSES_TOKEN = process.env.API_MES_ADDRESSES_TOKEN || "";
 
 const client = got.extend({
-  prefixUrl: API_MES_ADRESSES_URL,
+  prefixUrl: NEXT_PUBLIC_API_MES_ADRESSES,
   headers: {
     authorization: `Bearer ${API_MES_ADDRESSES_TOKEN}`,
   },

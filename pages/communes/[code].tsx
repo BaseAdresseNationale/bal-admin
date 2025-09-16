@@ -9,11 +9,7 @@ import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
 import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
-import {
-  searchBasesLocales,
-  removeBaseLocale,
-  getBaseLocaleIsHabilitationValid,
-} from "@/lib/api-mes-adresses";
+import { searchBasesLocales, removeBaseLocale } from "@/lib/api-mes-adresses";
 import { getRevisionsByCommune } from "@/lib/api-moissonneur-bal";
 
 import { EditableList } from "@/components/editable-list";
@@ -34,12 +30,6 @@ import {
 } from "@/lib/api-signalement";
 import { CommuneInfosHeader } from "@/components/communes/commune-infos-header";
 import { getMarieTelephones } from "server/utils/api-annuaire";
-
-const getBasesLocalesIsHabilitationValid = async (bals: BaseLocaleType[]) => {
-  for (const bal of bals) {
-    bal.habilitationIsValid = await getBaseLocaleIsHabilitationValid(bal.id);
-  }
-};
 
 type CommuneSourcePageProps = {
   code: string;
@@ -116,7 +106,6 @@ const CommuneSource = ({
       limit: page.limit,
     });
 
-    await getBasesLocalesIsHabilitationValid(res.results);
     setBals(res.results);
     setPageMesAdresses({
       ...page,
