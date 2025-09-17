@@ -63,13 +63,10 @@ export function computeStatus(
   balStatus: StatusBaseLocalEnum,
   sync: SyncType
 ): StatusInterface {
-  if (sync?.isPaused) {
+  if (sync?.isPaused && balStatus !== StatusBaseLocalEnum.REPLACED) {
     return STATUSES.paused;
-  }
-
-  if (balStatus === StatusBaseLocalEnum.PUBLISHED) {
+  } else if (balStatus === StatusBaseLocalEnum.PUBLISHED) {
     return STATUSES[sync.status];
   }
-
   return STATUSES[balStatus];
 }
