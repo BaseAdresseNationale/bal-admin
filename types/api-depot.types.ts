@@ -95,6 +95,7 @@ export type PublicClient = {
   mandataire: string;
   chefDeFile?: string;
   chefDeFileEmail?: string;
+  sourceName?: string;
 };
 
 export type Revision = {

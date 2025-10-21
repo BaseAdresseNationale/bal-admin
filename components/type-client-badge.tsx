@@ -1,4 +1,5 @@
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import Tooltip from "@/components/tooltip";
 
 import Link from "next/link";
 import { useMemo } from "react";
@@ -27,7 +28,6 @@ const TypeClientBadge = ({ client }: TypeClientBadgeProps) => {
   const getBadge = useMemo(() => {
     if (
       client.legacyId === "mes-adresses" ||
-      client.legacyId === "moissonneur-bal" ||
       client.legacyId === "formulaire-publication"
     ) {
       return (
@@ -39,14 +39,24 @@ const TypeClientBadge = ({ client }: TypeClientBadgeProps) => {
           {ClientIdToBadge[client.legacyId].text}
         </Badge>
       );
+    } else if (client.legacyId === "moissonneur-bal") {
+      return (
+        <Tooltip text={client.sourceName || "inconnue"} width="200px">
+          <Badge severity="warning" noIcon style={{ cursor: "pointer" }}>
+            MOISSONNEUR
+          </Badge>
+        </Tooltip>
+      );
     }
 
     return (
-      <Badge severity="new" noIcon style={{ cursor: "pointer" }}>
-        API DEPOT
-      </Badge>
+      <Tooltip text={client.nom || "inconnue"} width="200px">
+        <Badge severity="new" noIcon style={{ cursor: "pointer" }}>
+          API DEPOT
+        </Badge>
+      </Tooltip>
     );
-  }, [client.legacyId]);
+  }, [client.legacyId, client.sourceName, client.nom]);
 
   return (
     <Link
