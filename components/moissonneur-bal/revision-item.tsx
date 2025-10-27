@@ -12,6 +12,7 @@ import {
 } from "types/moissoneur";
 import { formatDate } from "@/lib/util/date";
 import { Revision } from "types/api-depot.types";
+import RevisionValidationModal from "./revision-validation-popup";
 
 interface RevisionItemProps {
   revision: RevisionMoissoneurType;
@@ -68,7 +69,11 @@ const RevisionItem = ({
       </td>
 
       <td className="fr-col fr-my-1v">
-        {revision.validation.nbRows} / {revision.validation.nbRowsWithErrors}
+        <RevisionValidationModal
+          id={revision.id}
+          fileId={revision.fileId}
+          validation={revision.validation}
+        />
       </td>
       <td className="fr-col fr-my-1v">
         <StatusBadgeRevision

@@ -5,7 +5,7 @@ import type { Revision } from "../../types/api-depot.types";
 import { formatDate } from "@/lib/util/date";
 import MongoId from "@/components/mongo-id";
 import TypeClientBadge from "../type-client-badge";
-import PublicationBadge from "./publication-badge";
+import RevisionValidationModal from "./revision-validation-popup";
 
 export const RevisionItemApiDepot = ({
   id,
@@ -39,7 +39,7 @@ export const RevisionItemApiDepot = ({
       </Badge>
     </td>
     <td className="fr-col fr-my-1v">
-      <PublicationBadge id={id} validation={validation} />
+      <RevisionValidationModal id={id} validation={validation} />
     </td>
     <td className="fr-col fr-my-1v">
       {createdAt ? formatDate(createdAt, "PPpp") : "inconnu"}

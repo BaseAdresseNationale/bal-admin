@@ -316,7 +316,7 @@ const MoissoneurSource = ({
                 <tr>
                   <th scope="col">Commune</th>
                   <th scope="col">Date</th>
-                  <th scope="col">Nombre de ligne / erreur</th>
+                  <th scope="col">Rapport</th>
                   <th scope="col">Status</th>
                   <th scope="col">Fichier</th>
                   <th scope="col">Actions</th>

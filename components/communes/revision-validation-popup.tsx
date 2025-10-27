@@ -1,14 +1,17 @@
 import { Validation } from "../../types/api-depot.types";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import RevisionValidationReport from "./reivsion-validation-report";
+import RevisionValidationReport from "./revision-validation-report";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 
-type PublicationBadgeProps = {
+type RevisionValidationModalProps = {
   id: string;
   validation: Validation | null;
 };
 
-const PublicationBadge = ({ id, validation }: PublicationBadgeProps) => {
+const RevisionValidationModal = ({
+  id,
+  validation,
+}: RevisionValidationModalProps) => {
   const modal = createModal({
     id: `validation-report-modal-${id}`,
     isOpenedByDefault: false,
@@ -34,4 +37,4 @@ const PublicationBadge = ({ id, validation }: PublicationBadgeProps) => {
   }
 };
 
-export default PublicationBadge;
+export default RevisionValidationModal;
