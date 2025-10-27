@@ -39,7 +39,7 @@ export const RevisionItemApiDepot = ({
       </Badge>
     </td>
     <td className="fr-col fr-my-1v">
-      <PublicationBadge validation={validation} />
+      <PublicationBadge id={id} validation={validation} />
     </td>
     <td className="fr-col fr-my-1v">
       {createdAt ? formatDate(createdAt, "PPpp") : "inconnu"}

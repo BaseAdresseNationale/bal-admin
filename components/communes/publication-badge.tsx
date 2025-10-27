@@ -1,20 +1,35 @@
-import Tooltip from "@/components/tooltip";
 import { Validation } from "../../types/api-depot.types";
-import { fr } from "@codegouvfr/react-dsfr";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import RevisionValidationReport from "./reivsion-validation-report";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
 type PublicationBadgeProps = {
+  id: string;
   validation: Validation | null;
 };
 
-const PublicationBadge = ({ validation }: PublicationBadgeProps) => {
+const PublicationBadge = ({ id, validation }: PublicationBadgeProps) => {
+  const modal = createModal({
+    id: `validation-report-modal-${id}`,
+    isOpenedByDefault: false,
+  });
+
   if (validation) {
-    if (validation.valid) {
-      return <i className={fr.cx("fr-icon-check-line")} />;
-    }
     return (
-      <Tooltip text={validation?.errors?.join(",") || "Erreur inconnue"}>
-        <i className={fr.cx("fr-icon-alert-line")} />
-      </Tooltip>
+      <>
+        <modal.Component title="Rapport de validation">
+          <RevisionValidationReport id={id} validationReport={validation} />
+        </modal.Component>
+        <Button
+          iconId={
+            validation.valid ? "fr-icon-check-line" : "fr-icon-alert-line"
+          }
+          iconPosition="right"
+          onClick={() => modal.open()}
+        >
+          Ouvrir
+        </Button>
+      </>
     );
   }
 };
