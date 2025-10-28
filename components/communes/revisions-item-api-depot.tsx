@@ -15,7 +15,8 @@ export const RevisionItemApiDepot = ({
   validation,
   createdAt,
   publishedAt = null,
-}: Revision) => (
+  publicationBan,
+}: Revision & { publicationBan: React.ReactNode }) => (
   <tr
     key={id}
     style={
@@ -60,5 +61,6 @@ export const RevisionItemApiDepot = ({
         </Link>
       )}
     </td>
+    <td className="fr-col fr-my-1v">{publicationBan}</td>
   </tr>
 );
