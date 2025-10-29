@@ -14,7 +14,11 @@ import type { BaseLocaleType } from "../../types/mes-adresses";
 import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
-import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
+import {
+  getAllRevisionByCommune,
+  getClients,
+  getEmailsCommune,
+} from "@/lib/api-depot";
 import { searchBasesLocales, removeBaseLocale } from "@/lib/api-mes-adresses";
 import { getRevisionsByCommune } from "@/lib/api-moissonneur-bal";
 
@@ -78,7 +82,6 @@ const CommuneSource = ({
   const [sourcesMoissonneur, setSourcesMoissonneur] = useState<
     SourceMoissoneurType[]
   >([]);
-  console.log(alerts);
   useEffect(() => {
     async function fetchSourcesMoissonneur() {
       const sources = await getSources();
