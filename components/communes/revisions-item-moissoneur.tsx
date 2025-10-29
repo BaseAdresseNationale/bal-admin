@@ -3,6 +3,18 @@ import Link from "next/link";
 import type { RevisionMoissoneurType } from "../../types/moissoneur";
 import { formatDate } from "@/lib/util/date";
 import StatusBadgeRevision from "../status-badge-revision";
+import styled from "styled-components";
+
+const StyledHoverLink = styled.a`
+  &:not(:hover) {
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+  }
+`;
 
 export const RevisionItemMoissoneur = ({
   id,
@@ -21,7 +33,7 @@ export const RevisionItemMoissoneur = ({
         passHref
         href={{ pathname: `/moissonneur-bal/sources/${sourceId}` }}
       >
-        <a className="truncate-link">{sourceName}</a>
+        <StyledHoverLink>{sourceName}</StyledHoverLink>
       </Link>
     </td>
     <td className="fr-col fr-my-1v">
@@ -37,15 +49,5 @@ export const RevisionItemMoissoneur = ({
         publicationMoissoneur={publication}
       />
     </td>
-    <style jsx>{`
-      .truncate-link:not(:hover) {
-        display: inline-block;
-        max-width: 200px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        vertical-align: bottom;
-      }
-    `}</style>
   </tr>
 );

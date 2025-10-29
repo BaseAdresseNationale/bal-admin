@@ -22,8 +22,8 @@ export const RevisionItemApiDepot = ({
     style={
       isCurrent
         ? {
-            backgroundColor: "#ababab",
-            color: "black",
+            backgroundColor: "var(--background-flat-grey)",
+            color: "var(--text-inverted-grey)",
           }
         : undefined
     }
