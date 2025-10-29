@@ -41,6 +41,9 @@ import {
 import { CommuneInfosHeader } from "@/components/communes/commune-infos-header";
 import { getMarieTelephones } from "server/utils/api-annuaire";
 import { getSources } from "@/lib/api-moissonneur-bal";
+import { getCommuneAlerts } from "@/lib/api-ban";
+import { Alert as AlertBAN } from "types/alerts.types";
+import { PublicationBan } from "@/components/communes/publication-ban";
 
 type CommuneSourcePageProps = {
   code: string;
@@ -56,6 +59,7 @@ type CommuneSourcePageProps = {
   signalementSources: SignalementSource[];
   sourcesMoissonneur: SourceMoissoneurType[];
   clientApiDepot: Client[];
+  alerts: AlertBAN[];
 };
 
 const CommuneSource = ({
@@ -65,6 +69,7 @@ const CommuneSource = ({
   signalementCount,
   signalementCommuneSettings,
   signalementSources,
+  alerts,
 }: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<
@@ -77,7 +82,6 @@ const CommuneSource = ({
   const [sourcesMoissonneur, setSourcesMoissonneur] = useState<
     SourceMoissoneurType[]
   >([]);
-
   useEffect(() => {
     async function fetchSourcesMoissonneur() {
       const sources = await getSources();
@@ -174,9 +178,13 @@ const CommuneSource = ({
     const start = (pageApiDepot.current - 1) * pageApiDepot.limit;
     const end = pageApiDepot.current * pageApiDepot.limit;
     return initialRevisionsApiDepot.slice(start, end).map((r) => {
+      const res = {
+        ...r,
+        publicationBan: <PublicationBan revision={r} alerts={alerts} />,
+      };
       if (r.client.legacyId === "moissonneur-bal") {
         return {
-          ...r,
+          ...res,
           client: {
             ...r.client,
             sourceName:
@@ -186,9 +194,9 @@ const CommuneSource = ({
           },
         };
       }
-      return r;
+      return res;
     });
-  }, [pageApiDepot, initialRevisionsApiDepot, sourcesMoissonneur]);
+  }, [pageApiDepot, initialRevisionsApiDepot, sourcesMoissonneur, alerts]);
 
   const revisionsMoissoneur = useMemo(() => {
     const start = (pageMoissonneur.current - 1) * pageMoissonneur.limit;
@@ -289,6 +297,7 @@ const CommuneSource = ({
           "Date création",
           "Date publication",
           "Fichier BAL",
+          "Publication BAN",
         ]}
         caption="Révisions Api Depot"
         data={revisionsApiDepot}
@@ -322,6 +331,13 @@ export async function getServerSideProps({ params }) {
     SignalementStatusEnum.EXPIRED
   );
 
+  const alerts = [];
+
+  try {
+    const res = await getCommuneAlerts(code);
+    alerts.push(...res);
+  } catch {}
+
   return {
     props: {
       code,
@@ -335,6 +351,7 @@ export async function getServerSideProps({ params }) {
       },
       signalementCommuneSettings,
       signalementSources,
+      alerts,
     },
   };
 }
