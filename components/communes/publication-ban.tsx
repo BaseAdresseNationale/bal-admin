@@ -265,50 +265,46 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
           className="fr-modal fr-modal--opened custom-modal"
           style={{
             position: "fixed",
-            left: "20px",
+            left: "50%",
             top: "50%",
-            transform: "translateY(-50%)",
+            transform: "translateY(-50%) translateX(-50%)",
             maxWidth: "600px",
             width: "auto",
             zIndex: 1000,
             background: "transparent",
           }}
         >
-          <div className="fr-container fr-container--fluid fr-container-md">
-            <div className="fr-grid-row fr-grid-row--center">
-              <div className="fr-col-12">
-                <div className="fr-modal__body">
-                  <div className="fr-modal__header">
-                    <button
-                      className="fr-btn--close fr-btn"
-                      title="Fermer"
-                      onClick={() => setShowModal(false)}
-                    >
-                      Fermer
-                    </button>
-                  </div>
-                  <div className="fr-modal__content">
-                    <div
-                      className={`fr-alert fr-alert--${getAlertType(status)}`}
-                      style={{
-                        maxHeight: "500px",
-                        overflowY: "auto",
-                        overflowX: "hidden",
-                      }}
-                    >
-                      <div
-                        className="fr-alert__title"
-                        style={{
-                          fontSize: "1rem",
-                          fontWeight: "bold",
-                          whiteSpace: "pre-line",
-                        }}
-                      >
-                        {displayMessage || rawMessage}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <div
+            className="fr-modal__content"
+            style={{
+              background: "var(--background-default-grey-hover)",
+              padding: "0",
+            }}
+          >
+            <div
+              className={`fr-alert fr-alert--${getAlertType(status)}`}
+              style={{
+                maxHeight: "500px",
+                overflowY: "auto",
+                overflowX: "hidden",
+              }}
+            >
+              <button
+                className="fr-btn--close fr-btn"
+                title="Fermer"
+                onClick={() => setShowModal(false)}
+              >
+                Fermer
+              </button>
+              <div
+                className="fr-alert__title"
+                style={{
+                  fontSize: "1rem",
+                  fontWeight: "bold",
+                  whiteSpace: "pre-line",
+                }}
+              >
+                {displayMessage || rawMessage}
               </div>
             </div>
           </div>
