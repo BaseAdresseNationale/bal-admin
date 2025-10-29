@@ -2,13 +2,23 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import { sortBy } from "lodash";
 
-import type { RevisionMoissoneurType } from "../../types/moissoneur";
-import type { Revision as RevisionApiDepot } from "../../types/api-depot.types";
+import type {
+  RevisionMoissoneurType,
+  SourceMoissoneurType,
+} from "../../types/moissoneur";
+import type {
+  Client,
+  Revision as RevisionApiDepot,
+} from "../../types/api-depot.types";
 import type { BaseLocaleType } from "../../types/mes-adresses";
 import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
-import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
+import {
+  getAllRevisionByCommune,
+  getClients,
+  getEmailsCommune,
+} from "@/lib/api-depot";
 import { searchBasesLocales, removeBaseLocale } from "@/lib/api-mes-adresses";
 import { getRevisionsByCommune } from "@/lib/api-moissonneur-bal";
 
@@ -30,6 +40,7 @@ import {
 } from "@/lib/api-signalement";
 import { CommuneInfosHeader } from "@/components/communes/commune-infos-header";
 import { getMarieTelephones } from "server/utils/api-annuaire";
+import { getSources } from "@/lib/api-moissonneur-bal";
 
 type CommuneSourcePageProps = {
   code: string;
@@ -43,6 +54,8 @@ type CommuneSourcePageProps = {
   };
   signalementCommuneSettings?: SignalementCommuneSettings;
   signalementSources: SignalementSource[];
+  sourcesMoissonneur: SourceMoissoneurType[];
+  clientApiDepot: Client[];
 };
 
 const CommuneSource = ({
@@ -60,6 +73,18 @@ const CommuneSource = ({
   const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] =
     useState<RevisionMoissoneurType[]>([]);
   const [balToDeleted, setBalToDeleted] = useState<BaseLocaleType>(null);
+
+  const [sourcesMoissonneur, setSourcesMoissonneur] = useState<
+    SourceMoissoneurType[]
+  >([]);
+
+  useEffect(() => {
+    async function fetchSourcesMoissonneur() {
+      const sources = await getSources();
+      setSourcesMoissonneur(sources);
+    }
+    fetchSourcesMoissonneur().catch(console.error);
+  }, []);
 
   const [pageApiDepot, setPageApiDepot] = useState({
     limit: 10,
@@ -148,14 +173,32 @@ const CommuneSource = ({
   const revisionsApiDepot = useMemo(() => {
     const start = (pageApiDepot.current - 1) * pageApiDepot.limit;
     const end = pageApiDepot.current * pageApiDepot.limit;
-    return initialRevisionsApiDepot.slice(start, end);
-  }, [pageApiDepot, initialRevisionsApiDepot]);
+    return initialRevisionsApiDepot.slice(start, end).map((r) => {
+      if (r.client.legacyId === "moissonneur-bal") {
+        return {
+          ...r,
+          client: {
+            ...r.client,
+            sourceName:
+              sourcesMoissonneur.find(
+                (s) => s.id === r.context?.extras?.sourceId
+              )?.title || "inconnu",
+          },
+        };
+      }
+      return r;
+    });
+  }, [pageApiDepot, initialRevisionsApiDepot, sourcesMoissonneur]);
 
   const revisionsMoissoneur = useMemo(() => {
     const start = (pageMoissonneur.current - 1) * pageMoissonneur.limit;
     const end = pageMoissonneur.current * pageMoissonneur.limit;
-    return initialRevisionsMoissonneur.slice(start, end);
-  }, [pageMoissonneur, initialRevisionsMoissonneur]);
+    return initialRevisionsMoissonneur.slice(start, end).map((r) => ({
+      ...r,
+      sourceName:
+        sourcesMoissonneur.find((s) => s.id === r.sourceId)?.title || "inconnu",
+    }));
+  }, [pageMoissonneur, initialRevisionsMoissonneur, sourcesMoissonneur]);
 
   const onDeleteBal = useCallback(async () => {
     try {
@@ -231,15 +274,7 @@ const CommuneSource = ({
         actions={actionsBals}
       />
       <EditableList
-        headers={[
-          "Id",
-          "Source",
-          "Date",
-          "Nb lignes",
-          "Nb lignes erreurs",
-          "Status",
-          "Publication",
-        ]}
+        headers={["Source", "Date", "Nb lignes / erreurs", "Status"]}
         caption="Révisions Moissoneur"
         data={revisionsMoissoneur}
         renderItem={RevisionItemMoissoneur}
@@ -250,7 +285,6 @@ const CommuneSource = ({
           "Id",
           "Client",
           "Status",
-          "Current",
           "Validation",
           "Date création",
           "Date publication",

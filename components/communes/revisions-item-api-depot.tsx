@@ -4,8 +4,8 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import type { Revision } from "../../types/api-depot.types";
 import { formatDate } from "@/lib/util/date";
 import MongoId from "@/components/mongo-id";
-import Tooltip from "@/components/tooltip";
 import TypeClientBadge from "../type-client-badge";
+import RevisionValidationModal from "./revision-validation-popup";
 
 export const RevisionItemApiDepot = ({
   id,
@@ -16,7 +16,17 @@ export const RevisionItemApiDepot = ({
   createdAt,
   publishedAt = null,
 }: Revision) => (
-  <tr key={id}>
+  <tr
+    key={id}
+    style={
+      isCurrent
+        ? {
+            backgroundColor: "#ababab",
+            color: "black",
+          }
+        : undefined
+    }
+  >
     <td className="fr-col fr-my-1v">
       <MongoId id={id} />
     </td>
@@ -29,28 +39,13 @@ export const RevisionItemApiDepot = ({
       </Badge>
     </td>
     <td className="fr-col fr-my-1v">
-      <input
-        type="checkbox"
-        id="checkbox"
-        name="checkbox"
-        checked={isCurrent}
-        disabled
-      />
+      <RevisionValidationModal id={id} validation={validation} />
     </td>
     <td className="fr-col fr-my-1v">
-      {validation?.valid ? (
-        <input type="checkbox" id="checkbox" name="checkbox" checked disabled />
-      ) : (
-        <Tooltip text={validation?.errors?.join(",") || "Erreur inconnue"}>
-          <input type="checkbox" id="checkbox" name="checkbox" disabled />
-        </Tooltip>
-      )}
+      {createdAt ? formatDate(createdAt, "PPpp") : "inconnu"}
     </td>
     <td className="fr-col fr-my-1v">
-      {createdAt ? formatDate(createdAt) : "inconnu"}
-    </td>
-    <td className="fr-col fr-my-1v">
-      {publishedAt ? formatDate(publishedAt) : "inconnu"}
+      {publishedAt ? formatDate(publishedAt, "PPpp") : "inconnu"}
     </td>
     <td className="fr-col fr-my-1v">
       {status == "published" && (
@@ -66,4 +61,4 @@ export const RevisionItemApiDepot = ({
       )}
     </td>
   </tr>
-)
+);

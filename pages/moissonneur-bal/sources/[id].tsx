@@ -247,11 +247,9 @@ const MoissoneurSource = ({
           <table>
             <thead>
               <tr>
-                <th scope="col">Id</th>
                 <th scope="col">Début du moissonnage</th>
                 <th scope="col">Fin du moissonnage</th>
-                <th scope="col">État du moissonnage</th>
-                <th scope="col">État de la mise à jour</th>
+                <th scope="col">status</th>
                 <th scope="col">Fichier moissonné</th>
               </tr>
             </thead>
@@ -316,12 +314,10 @@ const MoissoneurSource = ({
             <table>
               <thead>
                 <tr>
-                  <th scope="col">Id</th>
                   <th scope="col">Commune</th>
                   <th scope="col">Date</th>
-                  <th scope="col">Nombre de ligne / erreur</th>
+                  <th scope="col">Rapport</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Publication</th>
                   <th scope="col">Fichier</th>
                   <th scope="col">Actions</th>
                 </tr>

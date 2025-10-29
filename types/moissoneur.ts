@@ -79,6 +79,7 @@ export type ValidationMoissonneurType = {
 export type RevisionMoissoneurType = {
   id: string;
   sourceId?: string;
+  sourceName?: string;
   harvestId?: string;
   fileId?: string;
   dataHash?: string;

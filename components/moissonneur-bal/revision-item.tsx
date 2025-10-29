@@ -2,10 +2,9 @@ import Router from "next/router";
 import Button from "@codegouvfr/react-dsfr/Button";
 
 import MongoId from "@/components/mongo-id";
-import UpdateStatusBadge from "@/components/update-status-badge";
 import { getFile } from "@/lib/api-moissonneur-bal";
 import { getCommune } from "@/lib/cog";
-import { RevisionPublication } from "@/components/revision-publication";
+import StatusBadgeRevision from "@/components/status-badge-revision";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import {
   RevisionMoissoneurType,
@@ -13,6 +12,7 @@ import {
 } from "types/moissoneur";
 import { formatDate } from "@/lib/util/date";
 import { Revision } from "types/api-depot.types";
+import RevisionValidationModal from "./revision-validation-popup";
 
 interface RevisionItemProps {
   revision: RevisionMoissoneurType;
@@ -53,9 +53,6 @@ const RevisionItem = ({
   return (
     <tr>
       <td className="fr-col fr-my-1v">
-        <MongoId id={revision.id} />
-      </td>
-      <td className="fr-col fr-my-1v">
         <a>
           {commune ? (
             commune.nom
@@ -72,16 +69,16 @@ const RevisionItem = ({
       </td>
 
       <td className="fr-col fr-my-1v">
-        {revision.validation.nbRows} / {revision.validation.nbRowsWithErrors}
-      </td>
-      <td className="fr-col fr-my-1v">
-        <UpdateStatusBadge
-          updateStatus={revision.updateStatus}
-          updateRejectionReason={revision.updateRejectionReason}
+        <RevisionValidationModal
+          id={revision.id}
+          fileId={revision.fileId}
+          validation={revision.validation}
         />
       </td>
       <td className="fr-col fr-my-1v">
-        <RevisionPublication
+        <StatusBadgeRevision
+          updateStatus={revision.updateStatus}
+          updateRejectionReason={revision.updateRejectionReason}
           publicationMoissoneur={revision.publication}
           revisionApiDepot={revisionApiDepot}
         />
