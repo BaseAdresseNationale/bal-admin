@@ -17,7 +17,7 @@ const RevisionValidationModal = ({
     isOpenedByDefault: false,
   });
 
-  if (validation) {
+  if (validation && validation.valid !== undefined) {
     return (
       <>
         <modal.Component title="Rapport de validation">

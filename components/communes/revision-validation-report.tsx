@@ -39,39 +39,46 @@ export default function RevisionValidationReport({
           Lien vers le validateur BAL
         </Link>
       </div>
-      <Alert
-        severity="error"
-        title={`Erreur(s) bloquante(s) : ${validationReport.errors.length}`}
-        description={
-          <ul>
-            {validationReport.errors.map((error, index) => (
-              <li key={index}>{getLabel(error)}</li>
-            ))}
-          </ul>
-        }
-      />
-      <Alert
-        severity="warning"
-        title={`Avertissement(s) : ${validationReport.warnings.length}`}
-        description={
-          <ul>
-            {validationReport.warnings.map((warning, index) => (
-              <li key={index}>{getLabel(warning)}</li>
-            ))}
-          </ul>
-        }
-      />
-      <Alert
-        severity="info"
-        title={`Information(s) : ${validationReport.infos.length}`}
-        description={
-          <ul>
-            {validationReport.infos.map((info, index) => (
-              <li key={index}>{getLabel(info)}</li>
-            ))}
-          </ul>
-        }
-      />
+      {validationReport.errors && (
+        <Alert
+          severity="error"
+          title={`Erreur(s) bloquante(s) : ${validationReport.errors.length}`}
+          description={
+            <ul>
+              {validationReport.errors.map((error, index) => (
+                <li key={index}>{getLabel(error)}</li>
+              ))}
+            </ul>
+          }
+        />
+      )}
+      {validationReport.warnings && (
+        <Alert
+          severity="warning"
+          title={`Avertissement(s) : ${validationReport.warnings.length}`}
+          description={
+            <ul>
+              {validationReport.warnings.map((warning, index) => (
+                <li key={index}>{getLabel(warning)}</li>
+              ))}
+            </ul>
+          }
+        />
+      )}
+
+      {validationReport.infos && (
+        <Alert
+          severity="info"
+          title={`Information(s) : ${validationReport.infos.length}`}
+          description={
+            <ul>
+              {validationReport.infos.map((info, index) => (
+                <li key={index}>{getLabel(info)}</li>
+              ))}
+            </ul>
+          }
+        />
+      )}
     </div>
   );
 }
