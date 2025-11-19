@@ -16,16 +16,22 @@ export const RevisionItemApiDepot = ({
   createdAt,
   publishedAt = null,
   publicationBan,
-}: Revision & { publicationBan: React.ReactNode }) => (
+  selected,
+}: Revision & { publicationBan: React.ReactNode; selected: boolean }) => (
   <tr
     key={id}
     style={
-      isCurrent
+      selected
         ? {
-            backgroundColor: "var(--background-flat-grey)",
-            color: "var(--text-inverted-grey)",
+            backgroundColor: "var(--background-open-red-marianne)",
+            color: "var(--background-action-high-red-marianne)",
           }
-        : undefined
+        : isCurrent
+          ? {
+              backgroundColor: "var(--background-flat-grey)",
+              color: "var(--text-inverted-grey)",
+            }
+          : undefined
     }
   >
     <td className="fr-col fr-my-1v">
