@@ -72,6 +72,7 @@ const CommuneSource = ({
   alerts,
 }: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
+  const [balSelected, setBalSelected] = useState<string>(null);
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<
     RevisionApiDepot[]
   >([]);
@@ -180,6 +181,7 @@ const CommuneSource = ({
     return initialRevisionsApiDepot.slice(start, end).map((r) => {
       const res = {
         ...r,
+        selected: balSelected === r.context?.extras?.balId,
         publicationBan: <PublicationBan revision={r} alerts={alerts} />,
       };
       if (r.client.legacyId === "moissonneur-bal") {
@@ -196,8 +198,15 @@ const CommuneSource = ({
       }
       return res;
     });
-  }, [pageApiDepot, initialRevisionsApiDepot, sourcesMoissonneur, alerts]);
+  }, [
+    pageApiDepot,
+    initialRevisionsApiDepot,
+    sourcesMoissonneur,
+    alerts,
+    balSelected,
+  ]);
 
+  console.log(revisionsApiDepot);
   const revisionsMoissoneur = useMemo(() => {
     const start = (pageMoissonneur.current - 1) * pageMoissonneur.limit;
     const end = pageMoissonneur.current * pageMoissonneur.limit;
@@ -225,6 +234,13 @@ const CommuneSource = ({
   const actionsBals = {
     delete(item: BaseLocaleType) {
       setBalToDeleted(item);
+    },
+    select(item: BaseLocaleType) {
+      if (balSelected === item.id) {
+        setBalSelected(null);
+      } else {
+        setBalSelected(item.id);
+      }
     },
   };
 
@@ -272,14 +288,15 @@ const CommuneSource = ({
           "Date création",
           "Date mise à jour",
           "Emails",
-          "Consulter",
-          "Supprimer",
+          "Nombre numéros / certifiés",
+          "Actions",
         ]}
         caption="Bals mes adresses"
         data={bals}
         renderItem={BalsItem}
         page={{ ...pageMesAdresses, onPageChange: onPageMesAdressesChange }}
         actions={actionsBals}
+        selectedItem={balSelected}
       />
       <EditableList
         headers={["Source", "Date", "Nb lignes / erreurs", "Status"]}

@@ -8,9 +8,20 @@ import { formatDate } from "@/lib/util/date";
 
 export const BalsItem = (
   item: BaseLocaleType,
-  actions: Record<string, (item: BaseLocaleType) => void>
+  actions: Record<string, (item: BaseLocaleType) => void>,
+  selectedItem?: string
 ) => {
-  const { id, nom, status, sync, emails, createdAt, updatedAt } = item;
+  const {
+    id,
+    nom,
+    status,
+    sync,
+    emails,
+    createdAt,
+    updatedAt,
+    nbNumeros,
+    nbNumerosCertifies,
+  } = item;
 
   const computedStatus = computeStatus(status, sync);
 
@@ -33,26 +44,41 @@ export const BalsItem = (
         {emails ? emails.join("\n") : "inconnu"}
       </td>
       <td className="fr-col fr-my-1v">
+        {nbNumeros} / {nbNumerosCertifies}
+      </td>
+      <td className="fr-col fr-my-1v fr-container fr-grid-row">
+        <Button
+          title="Sélectionner"
+          className="fr-col-4 fr-m-1v"
+          iconId={
+            selectedItem === id ? "fr-icon-cursor-fill" : "fr-icon-cursor-line"
+          }
+          onClick={() => {
+            actions.select(item);
+          }}
+        />
+        <Button
+          title="Supprimer"
+          className="fr-col-4 fr-m-1v"
+          iconId="fr-icon-delete-bin-fill"
+          onClick={() => {
+            actions.delete(item);
+          }}
+        />
         <Link
+          className="fr-col-4 fr-m-1v"
           passHref
           href={{
             pathname: "/mes-adresses/base-locale",
             query: { baseLocaleId: id },
           }}
         >
-          <Button iconId="fr-icon-arrow-right-line" iconPosition="right">
-            Consulter
-          </Button>
+          <Button
+            title="Consulter"
+            iconId="fr-icon-arrow-right-line"
+            priority="secondary"
+          />
         </Link>
-      </td>
-      <td>
-        <Button
-          onClick={() => {
-            actions.delete(item);
-          }}
-        >
-          Supprimer
-        </Button>
       </td>
     </tr>
   );
