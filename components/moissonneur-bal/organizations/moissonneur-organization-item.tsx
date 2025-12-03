@@ -10,6 +10,7 @@ const MoissoneurOrganizationItem = ({
   id,
   name,
   page,
+  email,
   perimeters,
   updatedAt,
   deletedAt,
@@ -52,6 +53,7 @@ const MoissoneurOrganizationItem = ({
         <Badge severity="warning">Non partenaire</Badge>
       )}
     </td>
+    <td className="fr-col fr-my-1v">{email}</td>
     <td className="fr-col fr-my-1v">
       {updatedAt ? formatDate(updatedAt) : "inconnu"}
     </td>

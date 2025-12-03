@@ -63,13 +63,14 @@ const MoissoneurOrganizations = ({
       </div>
       <div className="fr-table">
         <table>
-          <caption>Liste des sources moissonnées</caption>
+          <caption>Liste des organisations moissonnées</caption>
           <thead>
             <tr>
               <th scope="col">Nom</th>
               <th scope="col">Page</th>
               <th scope="col">Actif</th>
               <th scope="col">Partenaire</th>
+              <th scope="col">Email</th>
               <th scope="col">Date de mise à jour</th>
               <th scope="col" />
             </tr>
