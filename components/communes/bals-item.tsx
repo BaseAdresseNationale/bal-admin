@@ -46,39 +46,43 @@ export const BalsItem = (
       <td className="fr-col fr-my-1v">
         {nbNumeros} / {nbNumerosCertifies}
       </td>
-      <td className="fr-col fr-my-1v fr-container fr-grid-row">
-        <Button
-          title="Sélectionner"
-          className="fr-col-4 fr-m-1v"
-          iconId={
-            selectedItem === id ? "fr-icon-cursor-fill" : "fr-icon-cursor-line"
-          }
-          onClick={() => {
-            actions.select(item);
-          }}
-        />
-        <Button
-          title="Supprimer"
-          className="fr-col-4 fr-m-1v"
-          iconId="fr-icon-delete-bin-fill"
-          onClick={() => {
-            actions.delete(item);
-          }}
-        />
-        <Link
-          className="fr-col-4 fr-m-1v"
-          passHref
-          href={{
-            pathname: "/mes-adresses/base-locale",
-            query: { baseLocaleId: id },
-          }}
-        >
+      <td className="fr-col fr-my-1v">
+        <div style={{ width: "150px" }}>
           <Button
-            title="Consulter"
-            iconId="fr-icon-arrow-right-line"
-            priority="secondary"
+            title="Sélectionner"
+            className="fr-col-4 fr-m-1v"
+            iconId={
+              selectedItem === id
+                ? "fr-icon-cursor-fill"
+                : "fr-icon-cursor-line"
+            }
+            onClick={() => {
+              actions.select(item);
+            }}
           />
-        </Link>
+          <Button
+            title="Supprimer"
+            className="fr-col-4 fr-m-1v"
+            iconId="fr-icon-delete-bin-fill"
+            onClick={() => {
+              actions.delete(item);
+            }}
+          />
+          <Link
+            className="fr-col-4 fr-m-1v"
+            passHref
+            href={{
+              pathname: "/mes-adresses/base-locale",
+              query: { baseLocaleId: id },
+            }}
+          >
+            <Button
+              title="Consulter"
+              iconId="fr-icon-arrow-right-line"
+              priority="secondary"
+            />
+          </Link>
+        </div>
       </td>
     </tr>
   );
