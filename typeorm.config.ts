@@ -5,6 +5,7 @@ import { Event } from "./server/lib/events/entity";
 import { BalWidget } from "./server/lib/bal-widget/entity";
 import { Participant } from "./server/lib/participant/entity";
 import { Review } from "./server/lib/partenaire-de-la-charte/reviews/entity";
+import { Stats } from "./server/lib/stats/entity";
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -12,7 +13,14 @@ export const AppDataSource = new DataSource({
   url: process.env.POSTGRES_URL,
   synchronize: false,
   logging: true,
-  entities: [PartenaireDeLaCharte, Event, BalWidget, Participant, Review],
+  entities: [
+    PartenaireDeLaCharte,
+    Event,
+    BalWidget,
+    Participant,
+    Review,
+    Stats,
+  ],
   migrationsRun: false,
   migrations: ["./migrations/*.ts"],
 });

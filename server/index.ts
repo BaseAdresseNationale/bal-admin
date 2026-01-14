@@ -8,6 +8,7 @@ dotenv.config();
 import { AppDataSource } from "./utils/typeorm-client";
 import routeGuard from "./route-guard";
 import { cronEvents } from "./lib/events/cron";
+import { cronStats } from "./lib/stats/cron";
 // PROXY
 import ProxyApiDepot from "./proxy/api-depot.proxy";
 import ProxyMoissonneurBal from "./proxy/moissonneur-bal.proxy";
@@ -18,6 +19,7 @@ import PartenaireDeLaCharteController from "./lib/partenaire-de-la-charte/contro
 import ReviewsController from "./lib/partenaire-de-la-charte/reviews/controller";
 import EventController from "./lib/events/controller";
 import BalWidgetController from "./lib/bal-widget/controller";
+import StatsController from "./lib/stats/controller";
 import { Logger } from "./utils/logger.utils";
 
 function setDemoClient(req, res, next) {
@@ -63,6 +65,7 @@ async function main() {
   server.use("/api/reviews", ReviewsController);
   server.use("/api/events", EventController);
   server.use("/api/bal-widget", BalWidgetController);
+  server.use("/api/stats", StatsController);
 
   server.use(async (req, res) => {
     // Authentification is handled by the next app using next-auth module
@@ -71,6 +74,7 @@ async function main() {
 
   // Start cron events
   cronEvents();
+  cronStats();
 
   server.listen(port, () => {
     Logger.info(`Start listening on port ${port}`);
