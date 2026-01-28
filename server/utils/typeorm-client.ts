@@ -5,11 +5,19 @@ import { BalWidget } from "../lib/bal-widget/entity";
 import { Event } from "../lib/events/entity";
 import { Participant } from "../lib/participant/entity";
 import { Review } from "../lib/partenaire-de-la-charte/reviews/entity";
+import { Stats } from "../lib/stats/entity";
 dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: "postgres",
   url: process.env.POSTGRES_URL,
   schema: "public",
-  entities: [PartenaireDeLaCharte, BalWidget, Event, Participant, Review],
+  entities: [
+    PartenaireDeLaCharte,
+    BalWidget,
+    Event,
+    Participant,
+    Review,
+    Stats,
+  ],
 });
