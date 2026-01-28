@@ -14,6 +14,7 @@ const StyledWrapper = styled.div`
     border-radius: 8px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     text-align: center;
+    width: 250px;
   }
 `;
 
@@ -34,22 +35,22 @@ const StatsBanSynchroComponent = ({
     {
       name: "nbCommunesStillWithBanErrors",
       value: nbCommunesStillWithBanErrors,
-      description: "Nombre de BAL toujours en erreur",
+      description: "Nombre de BAL en erreur",
     },
     {
       name: "nbCommunesWithBanErrors",
       value: nbCommunesWithBanErrors,
-      description: "Nombre de BAL en erreur",
+      description: "Nombre de BAL en erreur depuis toujours",
     },
     {
       name: "nbRevisionsWithBanErrors",
       value: nbRevisionsWithBanErrors,
-      description: "Nombre de révisions en erreur",
+      description: "Nombre de révisions en erreur depuis toujours",
     },
     {
       name: "nbRevisionsWithWarnings",
       value: nbRevisionsWithWarnings,
-      description: "Nombre de révisions avec warnings",
+      description: "Nombre de révisions avec warnings depuis toujours",
     },
   ];
 

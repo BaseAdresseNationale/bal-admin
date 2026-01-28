@@ -168,14 +168,6 @@ const Dashboard = () => {
           />
         </div>
         <div className="chart-wrapper">
-          <FirstPublicationEvolutionChart
-            firstPublicationEvolutionResponse={
-              chartsData.firstPublicationEvolutionResponse
-            }
-            interval={timeLapses[timeLapseIndex].interval}
-          />
-        </div>
-        <div className="chart-wrapper">
           <PublicationPerDepartmentChart
             publicationsResponse={chartsData.publicationsResponse}
           />
