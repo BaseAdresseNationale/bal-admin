@@ -206,7 +206,6 @@ const CommuneSource = ({
     balSelected,
   ]);
 
-  console.log(revisionsApiDepot);
   const revisionsMoissoneur = useMemo(() => {
     const start = (pageMoissonneur.current - 1) * pageMoissonneur.limit;
     const end = pageMoissonneur.current * pageMoissonneur.limit;
