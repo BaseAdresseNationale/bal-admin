@@ -2,15 +2,10 @@ import { PartenaireDeLaCharte } from "../entity";
 
 export const mapPartenairePublicReviews = (
   partenaire: PartenaireDeLaCharte,
-  isAdmin: boolean
+  isAdmin: boolean,
 ): PartenaireDeLaCharte => {
   return isAdmin
-    ? {
-        ...partenaire,
-        reviews: (partenaire.reviews || []).filter(
-          (review) => review.isEmailVerified
-        ),
-      }
+    ? partenaire
     : {
         ...partenaire,
         reviews: (partenaire.reviews || [])

@@ -13,12 +13,12 @@ reviewsRoutes.get("/:id/:token", async (req, res) => {
   try {
     await ReviewsService.verifyEmail(req.params.id, req.params.token);
     res.send(
-      "Merci, votre email a bien été vérifié. Si votre avis est validé, il sera publié prochainement."
+      "Merci, votre email a bien été vérifié. Si votre avis est validé, il sera publié prochainement.",
     );
   } catch (err) {
     Logger.error(
       `Une erreur est survenue lors de la vérification de l'email`,
-      err
+      err,
     );
     res
       .status(500)
@@ -26,11 +26,26 @@ reviewsRoutes.get("/:id/:token", async (req, res) => {
   }
 });
 
+reviewsRoutes.get(
+  "/:id/resend-verification-email",
+  routeGuard,
+  async (req, res) => {
+    try {
+      await ReviewsService.resendVerificationEmail(req.params.id);
+
+      res.json(true);
+    } catch (err) {
+      Logger.error(`Impossible de renvoyer l'email de vérification`, err);
+      res.status(500).json({ error: err.message });
+    }
+  },
+);
+
 reviewsRoutes.put("/:id", routeGuard, async (req, res) => {
   try {
     const updatedReview = await ReviewsService.updateReview(
       req.params.id,
-      req.body
+      req.body,
     );
 
     res.json(updatedReview);
