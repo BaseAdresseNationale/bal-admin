@@ -21,6 +21,7 @@ const ReviewsTable = ({
             <th scope="col">Commune/Collectivité</th>
             <th scope="col">Note</th>
             <th scope="col">Statut</th>
+            <th scope="col">Email vérifié</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>

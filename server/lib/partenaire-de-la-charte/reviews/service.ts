@@ -22,7 +22,7 @@ export async function findOneOrFail(id: string) {
 
 export async function addReview(
   partenaireId: string,
-  payload: any
+  payload: any,
 ): Promise<Review> {
   await PartenaireDeLaCharteService.findOneOrFail(partenaireId);
 
@@ -40,16 +40,37 @@ export async function addReview(
   try {
     await sendEmailVerification(
       review.email,
-      `${process.env.NEXT_PUBLIC_BAL_ADMIN_URL}/api/reviews/${newRecord.id}/${newRecord.verificationToken}`
+      `${process.env.NEXT_PUBLIC_BAL_ADMIN_URL}/api/reviews/${newRecord.id}/${newRecord.verificationToken}`,
     );
   } catch (error) {
     Logger.error(
       `Une erreur est survenue lors de l'envoie de la notification de review`,
-      error
+      error,
     );
   }
 
   return newRecord;
+}
+
+export async function resendVerificationEmail(reviewId: string) {
+  const review = await findOneOrFail(reviewId);
+
+  if (review.isEmailVerified) {
+    throw new Error("Email déjà vérifié");
+  }
+
+  try {
+    await sendEmailVerification(
+      review.email,
+      `${process.env.NEXT_PUBLIC_BAL_ADMIN_URL}/api/reviews/${review.id}/${review.verificationToken}`,
+    );
+  } catch (error) {
+    Logger.error(
+      `Une erreur est survenue lors de l'envoie de la notification de review`,
+      error,
+    );
+    throw new Error("Impossible de renvoyer l'email de vérification");
+  }
 }
 
 export async function updateReview(reviewId: string, payload: any) {
@@ -76,7 +97,7 @@ export async function verifyEmail(reviewId: string, token: string) {
     } catch (error) {
       Logger.error(
         `Une erreur est survenue lors de l'envoie de la notification de review`,
-        error
+        error,
       );
     }
   } else {

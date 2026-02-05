@@ -57,6 +57,26 @@ const PartenaireDeLaChartePage = ({
     setSelectedReview((prev) => ({ ...prev, [key]: e.target.value }));
   };
 
+  const resendVerificationEmail = async () => {
+    if (!selectedReview) {
+      return;
+    }
+
+    try {
+      await fetch(
+        `/api/partenaires-de-la-charte/reviews/${selectedReview.id}/resend-verification-email`,
+      );
+      toast("L'email de vérification a été renvoyé avec succès", {
+        type: "success",
+      });
+    } catch (error) {
+      console.error(error);
+      toast("Une erreur est survenue", {
+        type: "error",
+      });
+    }
+  };
+
   const onUpdateReview = async () => {
     if (!selectedReview) {
       return;
@@ -68,7 +88,7 @@ const PartenaireDeLaChartePage = ({
         reply: selectedReview.reply,
       });
       const updatedPartenaireDeLaCharte = await getPartenaireDeLaCharte(
-        partenaireDeLaCharte.id
+        partenaireDeLaCharte.id,
       );
       setPartenaireDeLaCharte(updatedPartenaireDeLaCharte);
       toast("Les modifications ont bien été enregistrées", { type: "success" });
@@ -89,7 +109,7 @@ const PartenaireDeLaChartePage = ({
     try {
       await deleteReview(selectedReview.id);
       const updatedPartenaireDeLaCharte = await getPartenaireDeLaCharte(
-        partenaireDeLaCharte.id
+        partenaireDeLaCharte.id,
       );
       setPartenaireDeLaCharte(updatedPartenaireDeLaCharte);
       toast("Avis supprimé", { type: "success" });
@@ -105,7 +125,7 @@ const PartenaireDeLaChartePage = ({
       await updatePartenaireDeLaCharte(
         partenaireDeLaCharte.id,
         formData,
-        isCandidate
+        isCandidate,
       );
       const successMessage = isCandidate
         ? "Candidature enregistrée"
@@ -227,6 +247,7 @@ const PartenaireDeLaChartePage = ({
               }}
             />
             <Checkbox
+              disabled={!selectedReview.isEmailVerified}
               options={[
                 {
                   label: "Publier cet avis",
@@ -243,7 +264,14 @@ const PartenaireDeLaChartePage = ({
               ]}
             />
             <div>
-              <Button onClick={onUpdateReview}>Enregistrer</Button>
+              {!selectedReview.isEmailVerified ? (
+                <Button onClick={resendVerificationEmail}>
+                  Renvoyer l&apos;email de vérification
+                </Button>
+              ) : (
+                <Button onClick={onUpdateReview}>Enregistrer</Button>
+              )}
+
               <Button
                 priority="secondary"
                 onClick={onDeleteReview}
