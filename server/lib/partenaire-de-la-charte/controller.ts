@@ -15,16 +15,28 @@ partenaireDeLaCharteRoutes.use(cors());
 partenaireDeLaCharteRoutes.get("/", isAdmin, async (req, res) => {
   try {
     const partenairesDeLaCharte = await PartenaireDeLaCharteService.findMany(
-      req.query
+      req.query,
     );
 
     res.json(
       partenairesDeLaCharte.map((partenaire) =>
-        mapPartenairePublicReviews(partenaire, (req as any).isAdmin)
-      )
+        mapPartenairePublicReviews(partenaire, (req as any).isAdmin),
+      ),
     );
   } catch (err) {
     Logger.error(`Impossible de récupérer les partenaires`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+partenaireDeLaCharteRoutes.get("/commune/:codeCommune", async (req, res) => {
+  try {
+    const response = await PartenaireDeLaCharteService.findByCommune(
+      req.params.codeCommune,
+    );
+    res.json(response);
+  } catch (err) {
+    Logger.error(`Impossible de récupérer le partenaire`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -36,13 +48,13 @@ partenaireDeLaCharteRoutes.get("/paginated", isAdmin, async (req, res) => {
       await PartenaireDeLaCharteService.findManyPaginated(
         query,
         parseInt(page as string),
-        parseInt(limit as string)
+        parseInt(limit as string),
       );
 
     res.json({
       ...paginatedPartenairesDeLaCharte,
       data: paginatedPartenairesDeLaCharte.data.map((partenaire) =>
-        mapPartenairePublicReviews(partenaire, (req as any).isAdmin)
+        mapPartenairePublicReviews(partenaire, (req as any).isAdmin),
       ),
     });
   } catch (err) {
@@ -54,7 +66,7 @@ partenaireDeLaCharteRoutes.get("/paginated", isAdmin, async (req, res) => {
 partenaireDeLaCharteRoutes.get("/services", async (req, res) => {
   try {
     const result = await PartenaireDeLaCharteService.findServicesWithCount(
-      req.query
+      req.query,
     );
 
     res.json(result);
@@ -67,7 +79,7 @@ partenaireDeLaCharteRoutes.get("/services", async (req, res) => {
 partenaireDeLaCharteRoutes.post("/", routeGuard, async (req, res) => {
   try {
     const partenaireDeLaCharte = await PartenaireDeLaCharteService.createOne(
-      req.body
+      req.body,
     );
     res.json(partenaireDeLaCharte);
   } catch (err) {
@@ -80,7 +92,7 @@ partenaireDeLaCharteRoutes.post("/candidate", async (req, res) => {
   try {
     const partenaireDeLaCharte = await PartenaireDeLaCharteService.createOne(
       req.body,
-      { isCandidate: true }
+      { isCandidate: true },
     );
     res.json(partenaireDeLaCharte);
   } catch (err) {
@@ -95,7 +107,7 @@ partenaireDeLaCharteRoutes.get("/:id", isAdmin, async (req, res) => {
       await PartenaireDeLaCharteService.findOneOrFail(req.params.id);
 
     res.json(
-      mapPartenairePublicReviews(partenaireDeLaCharte, (req as any).isAdmin)
+      mapPartenairePublicReviews(partenaireDeLaCharte, (req as any).isAdmin),
     );
   } catch (err) {
     Logger.error(`Impossible de récupérer le partenaire`, err);
@@ -109,7 +121,7 @@ partenaireDeLaCharteRoutes.put("/:id", routeGuard, async (req, res) => {
     const partenaireDeLaCharte = await PartenaireDeLaCharteService.updateOne(
       req.params.id,
       req.body,
-      { acceptCandidacy }
+      { acceptCandidacy },
     );
     res.json(partenaireDeLaCharte);
   } catch (err) {
@@ -136,7 +148,7 @@ partenaireDeLaCharteRoutes.post("/:id/reviews", async (req, res) => {
   } catch (err) {
     Logger.error(
       `Une erreur est survenue lors de l'enregistrement de l'avis`,
-      err
+      err,
     );
     res.status(500).json({ error: err.message });
   }

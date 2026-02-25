@@ -6,9 +6,51 @@ import { PartenaireDeLaCharte, PartenaireDeLaCharteTypeEnum } from "./entity";
 import { ArrayContains, FindOptionsWhere, IsNull, Not, ILike } from "typeorm";
 import { ObjectId } from "bson";
 import { Logger } from "../../utils/logger.utils";
+import { Revision } from "types/api-depot.types";
+import { SourceMoissoneurType } from "types/moissoneur";
+
+const API_DEPOT_URL =
+  process.env.NEXT_PUBLIC_API_DEPOT_URL ||
+  "https://plateforme-bal.adresse.data.gouv.fr/api-depot";
+
+const API_MOISSONEUR_BAL =
+  process.env.NEXT_PUBLIC_API_MOISSONEUR_BAL ||
+  "https://plateforme-bal.adresse.data.gouv.fr/api-depot";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
+
+async function fetchSourceOrgnizationMoissoneur(
+  sourceId: string,
+): Promise<SourceMoissoneurType[]> {
+  try {
+    const result = await fetch(`${API_MOISSONEUR_BAL}/sources/${sourceId}`);
+    return await result.json();
+  } catch (error) {
+    console.error(
+      `Error fetching orgnization errors for commune ${sourceId}:`,
+      error,
+    );
+    return [];
+  }
+}
+
+async function fetchRevisionsApiDepot(
+  codeCommune: string,
+): Promise<Revision[]> {
+  try {
+    const result = await fetch(
+      `${API_DEPOT_URL}/communes/${codeCommune}/revisions`,
+    );
+    return await result.json();
+  } catch (error) {
+    console.error(
+      `Error fetching revisions errors for commune ${codeCommune}:`,
+      error,
+    );
+    return [];
+  }
+}
 
 function createWherePG({
   search,
@@ -54,6 +96,61 @@ function createWherePG({
   return where;
 }
 
+export async function findByCommune(codeCommune: string) {
+  const revisions = await fetchRevisionsApiDepot(codeCommune);
+  const clientsIds = Array.from(
+    new Set(
+      revisions
+        .filter(
+          ({ client }) =>
+            ![
+              "guichet-adresse",
+              "mes-adresses",
+              "formulaire-publication",
+              "moissonneur-bal",
+            ].includes(client.legacyId),
+        )
+        .map(({ client }) => client.id),
+    ),
+  );
+  const sourcesIds = Array.from(
+    new Set(
+      revisions
+        .filter(({ client }) => client.legacyId === "moissonneur-bal")
+        .map(({ context }) => context.extras.sourceId),
+    ),
+  );
+
+  const sources = (
+    await Promise.all(
+      sourcesIds.map((sourceId) => fetchSourceOrgnizationMoissoneur(sourceId)),
+    )
+  ).flat();
+
+  const orgnizationsIds = sources
+    .filter(({ deletedAt }) => deletedAt === null)
+    .map(({ organizationId }) => organizationId);
+
+  let partenaires: PartenaireDeLaCharte[] = [];
+  if (orgnizationsIds.length > 0 || clientsIds.length > 0) {
+    const query = partenaireDeLaCharteRepository.createQueryBuilder(
+      "partenaireDeLaCharte",
+    );
+    if (clientsIds.length > 0) {
+      query.orWhere("api_depot_client_id @> :clientsIds", {
+        clientsIds,
+      });
+    }
+    if (orgnizationsIds.length > 0) {
+      query.orWhere("datagouv_organization_id @> :orgnizationsIds", {
+        orgnizationsIds,
+      });
+    }
+    partenaires = await query.getMany();
+  }
+  return partenaires;
+}
+
 export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
   const { codeDepartement, withoutPictures } = query;
   const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
@@ -63,7 +160,7 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
     .leftJoinAndSelect("partenaireDeLaCharte.reviews", "reviews")
     .addSelect(
       "COUNT(case when reviews.is_email_verified = true and reviews.is_published = false then 1 else null end)",
-      "pending_reviews_count"
+      "pending_reviews_count",
     )
     .groupBy("partenaireDeLaCharte.id, reviews.id")
     .orderBy("pending_reviews_count", "DESC")
@@ -72,7 +169,7 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
   if (codeDepartement) {
     queryPG.andWhere(
       `(code_departement @> :arraySearch OR is_perimeter_france IS true)`,
-      { arraySearch: [codeDepartement] }
+      { arraySearch: [codeDepartement] },
     );
   }
 
@@ -91,7 +188,7 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
 export async function findManyPaginated(
   query: PartenaireDeLaCharteQuery = {},
   page = 1,
-  limit = 10
+  limit = 10,
 ) {
   const offset = (page - 1) * limit;
 
@@ -108,7 +205,7 @@ export async function findManyPaginated(
   if (codeDepartement) {
     queryPG.andWhere(
       `(code_departement @> :arraySearch OR is_perimeter_france IS true)`,
-      { arraySearch: [codeDepartement] }
+      { arraySearch: [codeDepartement] },
     );
   }
 
@@ -126,7 +223,7 @@ export async function findManyPaginated(
   const totalEntreprises: number = await partenaireDeLaCharteRepository.countBy(
     {
       type: PartenaireDeLaCharteTypeEnum.ENTREPRISE,
-    }
+    },
   );
 
   let data = records;
@@ -163,7 +260,7 @@ export async function findOneOrFail(id: string) {
 
 export async function createOne(
   payload: PartenaireDeLaCharteDTO,
-  options: any = {}
+  options: any = {},
 ): Promise<PartenaireDeLaCharte> {
   const { isCandidate, noValidation } = options;
   if (!noValidation) {
@@ -188,7 +285,7 @@ export async function createOne(
     } catch (error) {
       Logger.error(
         `Une erreur est survenue lors de l'envoie de mail de candidature`,
-        error
+        error,
       );
     }
   }
@@ -199,7 +296,7 @@ export async function createOne(
 export async function updateOne(
   id: string,
   payload: PartenaireDeLaCharteDTO,
-  { acceptCandidacy = false }
+  { acceptCandidacy = false },
 ): Promise<PartenaireDeLaCharte> {
   await validateOrReject(payload);
   if (
@@ -220,7 +317,7 @@ export async function updateOne(
 }
 
 export async function findServicesWithCount(
-  query: PartenaireDeLaCharteQuery = {}
+  query: PartenaireDeLaCharteQuery = {},
 ) {
   const records = await findMany(query);
 
