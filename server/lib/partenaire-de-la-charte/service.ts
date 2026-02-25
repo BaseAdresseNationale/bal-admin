@@ -6,8 +6,8 @@ import { PartenaireDeLaCharte, PartenaireDeLaCharteTypeEnum } from "./entity";
 import { ArrayContains, FindOptionsWhere, IsNull, Not, ILike } from "typeorm";
 import { ObjectId } from "bson";
 import { Logger } from "../../utils/logger.utils";
-import { Revision } from "types/api-depot.types";
-import { SourceMoissoneurType } from "types/moissoneur";
+import { Revision } from "../../../types/api-depot.types";
+import { SourceMoissoneurType } from "../../../types/moissoneur";
 
 const API_DEPOT_URL =
   process.env.NEXT_PUBLIC_API_DEPOT_URL ||
