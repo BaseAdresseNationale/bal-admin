@@ -15,7 +15,7 @@ const API_DEPOT_URL =
 
 const API_MOISSONEUR_BAL =
   process.env.NEXT_PUBLIC_API_MOISSONEUR_BAL ||
-  "https://plateforme-bal.adresse.data.gouv.fr/api-depot";
+  "https://plateforme-bal.adresse.data.gouv.fr/moissonneur";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
