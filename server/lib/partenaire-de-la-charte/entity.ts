@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Review } from "./reviews/entity";
+import { Client } from "./clients/entity";
 
 export enum PartenaireDeLaCharteServiceEnum {
   FORMATION = "formation",
@@ -41,6 +42,9 @@ export class PartenaireDeLaCharte {
   name: string;
 
   @Column("text", { nullable: true })
+  siret: string;
+
+  @Column("text", { nullable: true })
   picture?: string;
 
   @Column("text", { nullable: false, name: "contact_last_name" })
@@ -59,15 +63,6 @@ export class PartenaireDeLaCharte {
   })
   type: PartenaireDeLaCharteTypeEnum;
 
-  @Column("text", { nullable: true, name: "charte_url" })
-  charteURL: string;
-
-  @Column("text", { nullable: true })
-  link: string;
-
-  @Column("text", { nullable: true, array: true, name: "code_departement" })
-  codeDepartement: string[];
-
   @Column("enum", {
     enum: PartenaireDeLaCharteServiceEnum,
     nullable: false,
@@ -75,15 +70,29 @@ export class PartenaireDeLaCharte {
   })
   services: PartenaireDeLaCharteServiceEnum[];
 
-  @Column("text", {
-    nullable: true,
-    array: true,
-    name: "datagouv_organization_id",
-  })
-  dataGouvOrganizationId: string[];
+  @Column("text", { nullable: true, name: "web_site_url" })
+  webSiteURL: string;
 
-  @Column("text", { nullable: true, array: true, name: "api_depot_client_id" })
-  apiDepotClientId: string[];
+  @Column("text", { nullable: true, array: true, name: "cover_departement" })
+  coverDepartement: string[];
+
+  // CHARTE
+
+  @Column("text", { nullable: true, name: "charte_url" })
+  charteURL: string;
+
+  @Column("timestamp", { nullable: true, name: "charte_signature_date" })
+  charteSignatureDate: Date;
+
+  // CLIENTS
+
+  @OneToMany(() => Client, (client) => client.partenaire, {
+    eager: true,
+    cascade: true,
+  })
+  clients?: Client[];
+
+  // DATE
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
@@ -94,22 +103,13 @@ export class PartenaireDeLaCharte {
   @DeleteDateColumn({ name: "deleted_at" })
   deletedAt: Date;
 
-  @Column("timestamp", { nullable: true, name: "signature_date" })
-  signatureDate: Date;
-
   // COMMUNE
 
-  @Column("text", { nullable: true, name: "code_region" })
-  codeRegion: string;
+  @Column("text", { nullable: true, name: "commune_code_insee" })
+  communeCodeInsee: string;
 
-  @Column("text", { nullable: true, name: "code_commune" })
-  codeCommune: string;
-
-  @Column("text", { nullable: true, name: "testimony_url" })
-  testimonyURL: string;
-
-  @Column("text", { nullable: true, name: "bal_url" })
-  balURL: string;
+  @Column("text", { nullable: true, name: "commune_bal_url" })
+  communeBalURL: string;
 
   // ORGANISME
 
@@ -120,17 +120,14 @@ export class PartenaireDeLaCharte {
   })
   organismeType: PartenaireDeLaCharteOrganismeTypeEnum;
 
-  @Column("text", { nullable: true })
-  infos: string;
-
-  @Column("text", { nullable: true })
-  perimeter: string;
+  @Column("text", { nullable: true, name: "organisme_info" })
+  organismeInfo: string;
 
   // ENTREPRISE
 
-  @Column("boolean", { nullable: true, name: "is_perimeter_france" })
-  isPerimeterFrance: boolean;
+  @Column("boolean", { nullable: true, name: "entreprise_is_perimeter_france" })
+  entrepriseIsPerimeterFrance: boolean;
 
   @OneToMany(() => Review, (review) => review.partenaire, { eager: true })
-  reviews?: Relation<Partial<Review>>[];
+  entrepriseReviews?: Relation<Partial<Review>>[];
 }

@@ -20,7 +20,7 @@ export class Review {
   @Column("varchar", { length: 24, name: "partenaire_id", nullable: false })
   partenaireId: string;
 
-  @ManyToOne(() => PartenaireDeLaCharte, (e) => e.reviews, {
+  @ManyToOne(() => PartenaireDeLaCharte, (e) => e.entrepriseReviews, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "partenaire_id" })
