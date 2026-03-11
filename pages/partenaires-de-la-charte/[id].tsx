@@ -39,7 +39,7 @@ const PartenaireDeLaChartePage = ({
   const [partenaireDeLaCharte, setPartenaireDeLaCharte] =
     useState<PartenaireDeLaCharte>(initialPartenaireDeLaCharte);
   const [selectedReview, setSelectedReview] = useState<Review>();
-  const isCandidate = !partenaireDeLaCharte.signatureDate;
+  const isCandidate = !partenaireDeLaCharte.charteSignatureDate;
 
   const router = useRouter();
 
@@ -207,7 +207,7 @@ const PartenaireDeLaChartePage = ({
           </Button>
         </div>
       </deletePartenaireModale.Component>
-      {partenaireDeLaCharte.reviews.length > 0 && (
+      {partenaireDeLaCharte.entrepriseReviews.length > 0 && (
         <ReviewsTable
           partenaireDeLaCharte={partenaireDeLaCharte}
           onShowReview={handleShowReview}

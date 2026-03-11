@@ -8,7 +8,7 @@ export const mapPartenairePublicReviews = (
     ? partenaire
     : {
         ...partenaire,
-        reviews: (partenaire.reviews || [])
+        entrepriseReviews: (partenaire.entrepriseReviews || [])
           .filter((review) => review.isPublished)
           .map((review) => {
             const {

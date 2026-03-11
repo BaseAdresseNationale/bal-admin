@@ -90,7 +90,7 @@ export class PartenaireDeLaCharte {
     eager: true,
     cascade: true,
   })
-  clients?: Client[];
+  clients?: Relation<Client>[];
 
   // DATE
 

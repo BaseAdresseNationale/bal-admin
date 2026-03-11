@@ -1,6 +1,8 @@
 import { DataSource } from "typeorm";
 import * as dotenv from "dotenv";
 import { PartenaireDeLaCharte } from "../lib/partenaire-de-la-charte/entity";
+import { Client } from "../lib/partenaire-de-la-charte/clients/entity";
+import { Perimeter } from "../lib/partenaire-de-la-charte/clients/pertimeters/entity";
 import { BalWidget } from "../lib/bal-widget/entity";
 import { Event } from "../lib/events/entity";
 import { Participant } from "../lib/participant/entity";
@@ -13,11 +15,13 @@ export const AppDataSource = new DataSource({
   url: process.env.POSTGRES_URL,
   schema: "public",
   entities: [
+    Review,
+    Perimeter,
+    Client,
     PartenaireDeLaCharte,
     BalWidget,
     Event,
     Participant,
-    Review,
     Stats,
   ],
 });

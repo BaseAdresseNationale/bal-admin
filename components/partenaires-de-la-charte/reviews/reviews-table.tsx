@@ -27,7 +27,7 @@ const ReviewsTable = ({
         </thead>
 
         <tbody>
-          {partenaireDeLaCharte.reviews.map((review) => (
+          {partenaireDeLaCharte.entrepriseReviews.map((review) => (
             <ReviewItem
               key={review.id}
               review={review}

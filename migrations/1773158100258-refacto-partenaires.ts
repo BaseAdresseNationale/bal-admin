@@ -8,6 +8,7 @@ type MoissonneurPerimeter = {
 };
 type MoissonneurOrganization = {
   id: string;
+  name: string;
   perimeters: MoissonneurPerimeter[];
 };
 
@@ -42,82 +43,85 @@ async function migrateApiDepotClients(
 ): Promise<void> {
   const apiDepotClients = await fetchApiDepotClients();
   const chefsDeFile = await fetchChefsDeFile();
-  const apiDepotClientById = new Map(apiDepotClients.map((c) => [c.id, c]));
 
+  // Build a map of clientId → partenaireId for quick lookup
+  const clientIdToPartenaireId = new Map<string, string>();
   for (const partenaire of partenaires) {
-    for (const apiDepotClientId of partenaire.api_depot_client_id ?? []) {
-      const apiDepotClient = apiDepotClientById.get(apiDepotClientId);
-      if (!apiDepotClient) {
-        continue;
-      }
+    for (const clientId of partenaire.api_depot_client_id ?? []) {
+      clientIdToPartenaireId.set(clientId, partenaire.id);
+    }
+  }
 
-      const newClientId = new ObjectId().toHexString();
+  for (const apiDepotClient of apiDepotClients) {
+    const newClientId = new ObjectId().toHexString();
+    const partenaireId = clientIdToPartenaireId.get(apiDepotClient.id) ?? null;
+
+    await queryRunner.query(
+      `INSERT INTO clients (id, name, client_id, partenaire_id, type) VALUES ($1, $2, $3, $4, 'api-depot')`,
+      [newClientId, apiDepotClient.nom, apiDepotClient.id, partenaireId],
+    );
+
+    const chefDeFile = apiDepotClient.chefDeFileId
+      ? chefsDeFile.get(apiDepotClient.chefDeFileId)
+      : undefined;
+
+    for (const perimeter of chefDeFile?.perimeters ?? []) {
       await queryRunner.query(
-        `INSERT INTO clients (id, client_id, partenaire_id, type) VALUES ($1, $2, $3, 'api-depot')`,
-        [newClientId, apiDepotClient.id, partenaire.id],
+        `INSERT INTO perimeters (id, client_id, type, code) VALUES ($1, $2, $3, $4)`,
+        [
+          new ObjectId().toHexString(),
+          newClientId,
+          perimeter.type,
+          perimeter.code,
+        ],
       );
-
-      const chefDeFile = apiDepotClient.chefDeFileId
-        ? chefsDeFile.get(apiDepotClient.chefDeFileId)
-        : undefined;
-
-      for (const perimeter of chefDeFile?.perimeters ?? []) {
-        await queryRunner.query(
-          `INSERT INTO perimeters (id, client_id, type, code) VALUES ($1, $2, $3, $4)`,
-          [
-            new ObjectId().toHexString(),
-            newClientId,
-            perimeter.type,
-            perimeter.code,
-          ],
-        );
-      }
     }
   }
 }
 
-async function fetchMoissonneurOrganizations(): Promise<
-  Map<string, MoissonneurOrganization>
-> {
+async function fetchMoissonneurOrganizations(): Promise<MoissonneurOrganization[]> {
   const response = await fetch(`${MOISSONNEUR_BAL_URL}/organizations`);
   if (!response.ok) {
     throw new Error(
       `Failed to fetch moissonneur organizations: ${response.status}`,
     );
   }
-  const organizations: MoissonneurOrganization[] = await response.json();
-  return new Map(organizations.map((org) => [org.id, org]));
+  return response.json();
 }
 
 async function migrateMoissonneurClients(
   queryRunner: QueryRunner,
   partenaires: { id: string; datagouv_organization_id: string[] | null }[],
 ): Promise<void> {
-  const organizationById = await fetchMoissonneurOrganizations();
+  const organizations = await fetchMoissonneurOrganizations();
+
+  // Build a map of orgId → partenaireId for quick lookup
+  const orgIdToPartenaireId = new Map<string, string>();
   for (const partenaire of partenaires) {
     for (const orgId of partenaire.datagouv_organization_id ?? []) {
-      const organization = organizationById.get(orgId);
-      if (!organization) {
-        continue;
-      }
+      orgIdToPartenaireId.set(orgId, partenaire.id);
+    }
+  }
 
-      const newClientId = new ObjectId().toHexString();
+  for (const organization of organizations) {
+    const newClientId = new ObjectId().toHexString();
+    const partenaireId = orgIdToPartenaireId.get(organization.id) ?? null;
+
+    await queryRunner.query(
+      `INSERT INTO clients (id, name, client_id, partenaire_id, type) VALUES ($1, $2, $3, $4, 'moissonneur-bal')`,
+      [newClientId, organization.name, organization.id, partenaireId],
+    );
+
+    for (const perimeter of organization.perimeters ?? []) {
       await queryRunner.query(
-        `INSERT INTO clients (id, client_id, partenaire_id, type) VALUES ($1, $2, $3, 'moissonneur-bal')`,
-        [newClientId, organization.id, partenaire.id],
+        `INSERT INTO perimeters (id, client_id, type, code) VALUES ($1, $2, $3, $4)`,
+        [
+          new ObjectId().toHexString(),
+          newClientId,
+          perimeter.type,
+          perimeter.code,
+        ],
       );
-
-      for (const perimeter of organization.perimeters ?? []) {
-        await queryRunner.query(
-          `INSERT INTO perimeters (id, client_id, type, code) VALUES ($1, $2, $3, $4)`,
-          [
-            new ObjectId().toHexString(),
-            newClientId,
-            perimeter.type,
-            perimeter.code,
-          ],
-        );
-      }
     }
   }
 }
@@ -141,7 +145,7 @@ export class RefactoPartenaires1773158100258 implements MigrationInterface {
       `CREATE TYPE "public"."clients_type_enum" AS ENUM('api-depot', 'moissonneur-bal')`,
     );
     await queryRunner.query(
-      `CREATE TABLE "clients" ("id" character varying(24) NOT NULL, "client_id" character varying(24) NOT NULL, "partenaire_id" character varying(24) NOT NULL, "type" "public"."clients_type_enum" NOT NULL DEFAULT 'api-depot', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_f1ab7cf3a5714dbc6bb4e1c28a4" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "clients" ("id" character varying(24) NOT NULL, "name" text NOT NULL, "client_id" character varying(24) NOT NULL, "partenaire_id" character varying(24), "type" "public"."clients_type_enum" NOT NULL DEFAULT 'api-depot', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_f1ab7cf3a5714dbc6bb4e1c28a4" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_clients_client_id" ON "clients" ("client_id") `,

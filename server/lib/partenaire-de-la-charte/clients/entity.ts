@@ -8,8 +8,9 @@ import {
   OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
+  Relation,
 } from "typeorm";
-import type { Relation } from "typeorm";
+import type { Relation as RelationType } from "typeorm";
 import { PartenaireDeLaCharte } from "../entity";
 import { Perimeter } from "./pertimeters/entity";
 
@@ -23,6 +24,9 @@ export class Client {
   @PrimaryColumn("varchar", { length: 24 })
   id?: string;
 
+  @Column("text", { nullable: false })
+  name: string;
+
   @Index("IDX_clients_client_id")
   @Column("varchar", { length: 24, name: "client_id", nullable: false })
   clientId: string;
@@ -33,9 +37,10 @@ export class Client {
 
   @ManyToOne(() => PartenaireDeLaCharte, (e) => e.clients, {
     onDelete: "CASCADE",
+    orphanedRowAction: "delete",
   })
   @JoinColumn({ name: "partenaire_id" })
-  partenaire: Relation<PartenaireDeLaCharte>;
+  partenaire: RelationType<PartenaireDeLaCharte>;
 
   @Column("enum", {
     enum: ClientTypeEnum,
@@ -48,7 +53,7 @@ export class Client {
     eager: true,
     cascade: true,
   })
-  perimeters?: Perimeter[];
+  perimeters?: Relation<Perimeter>[];
 
   @CreateDateColumn({ name: "created_at" })
   createdAt?: Date;

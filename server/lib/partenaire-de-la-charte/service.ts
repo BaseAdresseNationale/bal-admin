@@ -24,7 +24,7 @@ function createWherePG({
   };
 
   if (!withCandidates) {
-    where.signatureDate = Not(IsNull());
+    where.charteSignatureDate = Not(IsNull());
   }
 
   if (services) {
@@ -35,21 +35,21 @@ function createWherePG({
     }
   }
 
-  if (dataGouvOrganizationId) {
-    if (typeof dataGouvOrganizationId === "string") {
-      where.dataGouvOrganizationId = ArrayContains([dataGouvOrganizationId]);
-    } else if (Array.isArray(dataGouvOrganizationId)) {
-      where.dataGouvOrganizationId = ArrayContains(dataGouvOrganizationId);
-    }
-  }
+  // if (dataGouvOrganizationId) {
+  //   if (typeof dataGouvOrganizationId === "string") {
+  //     where.dataGouvOrganizationId = ArrayContains([dataGouvOrganizationId]);
+  //   } else if (Array.isArray(dataGouvOrganizationId)) {
+  //     where.dataGouvOrganizationId = ArrayContains(dataGouvOrganizationId);
+  //   }
+  // }
 
-  if (apiDepotClientId) {
-    if (typeof apiDepotClientId === "string") {
-      where.apiDepotClientId = ArrayContains([apiDepotClientId]);
-    } else if (Array.isArray(apiDepotClientId)) {
-      where.apiDepotClientId = ArrayContains(apiDepotClientId);
-    }
-  }
+  // if (apiDepotClientId) {
+  //   if (typeof apiDepotClientId === "string") {
+  //     where.apiDepotClientId = ArrayContains([apiDepotClientId]);
+  //   } else if (Array.isArray(apiDepotClientId)) {
+  //     where.apiDepotClientId = ArrayContains(apiDepotClientId);
+  //   }
+  // }
 
   return where;
 }
@@ -60,19 +60,21 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
 
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder("partenaireDeLaCharte")
-    .leftJoinAndSelect("partenaireDeLaCharte.reviews", "reviews")
+    .leftJoinAndSelect("partenaireDeLaCharte.entrepriseReviews", "reviews")
+    .leftJoinAndSelect("partenaireDeLaCharte.clients", "clients")
+    .leftJoinAndSelect("clients.perimeters", "perimeters")
     .addSelect(
       "COUNT(case when reviews.is_email_verified = true and reviews.is_published = false then 1 else null end)",
-      "pending_reviews_count"
+      "pending_reviews_count",
     )
-    .groupBy("partenaireDeLaCharte.id, reviews.id")
+    .groupBy("partenaireDeLaCharte.id, reviews.id, clients.id, perimeters.id")
     .orderBy("pending_reviews_count", "DESC")
     .where(where);
 
   if (codeDepartement) {
     queryPG.andWhere(
-      `(code_departement @> :arraySearch OR is_perimeter_france IS true)`,
-      { arraySearch: [codeDepartement] }
+      `(cover_departement @> :arraySearch OR entreprise_is_perimeter_france IS true)`,
+      { arraySearch: [codeDepartement] },
     );
   }
 
@@ -91,7 +93,7 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
 export async function findManyPaginated(
   query: PartenaireDeLaCharteQuery = {},
   page = 1,
-  limit = 10
+  limit = 10,
 ) {
   const offset = (page - 1) * limit;
 
@@ -100,7 +102,7 @@ export async function findManyPaginated(
 
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder("partenaireDeLaCharte")
-    .leftJoinAndSelect("partenaireDeLaCharte.reviews", "reviews")
+    .leftJoinAndSelect("partenaireDeLaCharte.entrepriseReviews", "reviews")
     .where(where)
     .take(limit)
     .skip(offset);
@@ -108,7 +110,7 @@ export async function findManyPaginated(
   if (codeDepartement) {
     queryPG.andWhere(
       `(code_departement @> :arraySearch OR is_perimeter_france IS true)`,
-      { arraySearch: [codeDepartement] }
+      { arraySearch: [codeDepartement] },
     );
   }
 
@@ -126,7 +128,7 @@ export async function findManyPaginated(
   const totalEntreprises: number = await partenaireDeLaCharteRepository.countBy(
     {
       type: PartenaireDeLaCharteTypeEnum.ENTREPRISE,
-    }
+    },
   );
 
   let data = records;
@@ -163,7 +165,7 @@ export async function findOneOrFail(id: string) {
 
 export async function createOne(
   payload: PartenaireDeLaCharteDTO,
-  options: any = {}
+  options: any = {},
 ): Promise<PartenaireDeLaCharte> {
   const { isCandidate, noValidation } = options;
   if (!noValidation) {
@@ -176,7 +178,7 @@ export async function createOne(
   entityToSave.id = new ObjectId().toHexString();
 
   if (!isCandidate) {
-    entityToSave.signatureDate = new Date();
+    entityToSave.charteSignatureDate = new Date();
   }
 
   const newRecord: PartenaireDeLaCharte =
@@ -188,7 +190,7 @@ export async function createOne(
     } catch (error) {
       Logger.error(
         `Une erreur est survenue lors de l'envoie de mail de candidature`,
-        error
+        error,
       );
     }
   }
@@ -199,18 +201,18 @@ export async function createOne(
 export async function updateOne(
   id: string,
   payload: PartenaireDeLaCharteDTO,
-  { acceptCandidacy = false }
+  { acceptCandidacy = false },
 ): Promise<PartenaireDeLaCharte> {
   await validateOrReject(payload);
   if (
     !acceptCandidacy &&
-    Number.isNaN(Date.parse(payload.signatureDate as string))
+    Number.isNaN(Date.parse(payload.charteSignatureDate as string))
   ) {
     throw Error("Invalid payload");
   }
-  payload.signatureDate = acceptCandidacy
+  payload.charteSignatureDate = acceptCandidacy
     ? new Date()
-    : new Date(payload.signatureDate);
+    : new Date(payload.charteSignatureDate);
 
   const instance = await findOneOrFail(id);
   Object.assign(instance, payload);
@@ -220,7 +222,7 @@ export async function updateOne(
 }
 
 export async function findServicesWithCount(
-  query: PartenaireDeLaCharteQuery = {}
+  query: PartenaireDeLaCharteQuery = {},
 ) {
   const records = await findMany(query);
 

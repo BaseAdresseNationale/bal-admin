@@ -8,12 +8,14 @@ import {
   IsEnum,
   IsUrl,
   IsDate,
+  IsArray,
 } from "class-validator";
 import {
   PartenaireDeLaCharteTypeEnum,
   PartenaireDeLaCharteServiceEnum,
   PartenaireDeLaCharteOrganismeTypeEnum,
 } from "./entity";
+import { Client } from "./clients/entity";
 
 export interface PartenaireDeLaCharteQuery {
   codeDepartement?: string;
@@ -55,11 +57,11 @@ export class PartenaireDeLaCharteDTO {
 
   @IsOptional()
   @IsUrl()
-  link: string;
+  webSiteURL: string;
 
   @IsOptional()
   @IsString()
-  codeDepartement: string[];
+  coverDepartement: string[];
 
   @IsOptional()
   @IsEnum(PartenaireDeLaCharteServiceEnum, { each: true })
@@ -67,39 +69,22 @@ export class PartenaireDeLaCharteDTO {
 
   @IsOptional()
   @IsDate()
-  signatureDate?: Date | string;
+  charteSignatureDate?: Date | string;
 
   @IsOptional()
-  @IsMongoId({ each: true })
-  dataGouvOrganizationId: string[];
-
-  @IsOptional()
-  @IsMongoId({ each: true })
-  apiDepotClientId: string[];
+  @IsArray()
+  clients?: Client[];
 
   // COMMUNE
 
   @ValidateIf((o) => o.type === PartenaireDeLaCharteTypeEnum.COMMUNE)
   @IsString()
-  codeRegion: string;
-
-  @ValidateIf((o) => o.type === PartenaireDeLaCharteTypeEnum.COMMUNE)
-  @IsString()
-  codeCommune: string;
-
-  @ValidateIf(
-    (o) =>
-      o.type === PartenaireDeLaCharteTypeEnum.COMMUNE ||
-      o.type === PartenaireDeLaCharteTypeEnum.ORGANISME
-  )
-  @IsOptional()
-  @IsUrl()
-  testimonyURL: string;
+  communeCodeInsee: string;
 
   @ValidateIf((o) => o.type === PartenaireDeLaCharteTypeEnum.COMMUNE)
   @IsOptional()
   @IsUrl()
-  balURL: string;
+  communeBalURL: string;
 
   // ORGANISME
   @ValidateIf((o) => o.type === PartenaireDeLaCharteTypeEnum.ORGANISME)
@@ -109,24 +94,15 @@ export class PartenaireDeLaCharteDTO {
   @ValidateIf(
     (o) =>
       o.type === PartenaireDeLaCharteTypeEnum.ORGANISME ||
-      o.type === PartenaireDeLaCharteTypeEnum.ENTREPRISE
+      o.type === PartenaireDeLaCharteTypeEnum.ENTREPRISE,
   )
   @IsString()
   @IsOptional()
-  infos: string;
-
-  @ValidateIf(
-    (o) =>
-      o.type === PartenaireDeLaCharteTypeEnum.ORGANISME ||
-      o.type === PartenaireDeLaCharteTypeEnum.ENTREPRISE
-  )
-  @IsString()
-  @IsOptional()
-  perimeter: string;
+  organismeInfo: string;
 
   // ENTRPRISE
   @ValidateIf((o) => o.type === PartenaireDeLaCharteTypeEnum.ENTREPRISE)
   @IsString()
   @IsOptional()
-  isPerimeterFrance: boolean;
+  entrepriseIsPerimeterFrance: boolean;
 }

@@ -7,6 +7,7 @@ import {
   ManyToOne,
   PrimaryColumn,
 } from "typeorm";
+import type { Relation as RelationType } from "typeorm";
 import { ObjectId } from "bson";
 import { Client } from "../entity";
 
@@ -44,5 +45,5 @@ export class Perimeter {
     orphanedRowAction: "delete",
   })
   @JoinColumn({ name: "client_id" })
-  client?: Client;
+  client?: RelationType<Client>;
 }

@@ -10,10 +10,11 @@ import type { CommuneType } from "../commune-input";
 import { CommuneInput } from "../commune-input";
 import SelectInput from "@/components/select-input";
 import { capitalize } from "@/lib/util/string";
-import { getClients } from "@/lib/api-depot";
-import { Client } from "types/api-depot.types";
-import { OrganizationMoissoneurType } from "types/moissoneur";
-import { getOrganizations } from "@/lib/api-moissonneur-bal";
+import { getClients } from "@/lib/api-bal-admin";
+import {
+  Client as PartenaireClientDB,
+  ClientTypeEnum,
+} from "../../server/lib/partenaire-de-la-charte/clients/entity";
 import { PartenaireDeLaCharteDTO } from "../../server/lib/partenaire-de-la-charte/dto";
 import {
   PartenaireDeLaCharte,
@@ -21,6 +22,7 @@ import {
   PartenaireDeLaCharteOrganismeTypeEnum,
   PartenaireDeLaCharteServiceEnum,
 } from "../../server/lib/partenaire-de-la-charte/entity";
+import { ApplicationsSection } from "./applications-section";
 
 type PartenaireFormProps = {
   title: string | React.ReactNode;
@@ -32,15 +34,15 @@ type PartenaireFormProps = {
 };
 
 const typeOptions = Object.values(PartenaireDeLaCharteTypeEnum).map(
-  (value) => ({ value, label: capitalize(value) })
+  (value) => ({ value, label: capitalize(value) }),
 );
 
 const organismeTypeOptions = Object.values(
-  PartenaireDeLaCharteOrganismeTypeEnum
+  PartenaireDeLaCharteOrganismeTypeEnum,
 ).map((value) => ({ value, label: capitalize(value) }));
 
 const servicesOptions = Object.values(PartenaireDeLaCharteServiceEnum).map(
-  (value) => ({ value, label: capitalize(value) })
+  (value) => ({ value, label: capitalize(value) }),
 );
 
 const departementsOptions = departements.map((departement) => ({
@@ -78,24 +80,22 @@ const newPartenaireForm = {
   name: "",
   picture: "",
   services: [],
-  codeDepartement: [],
-  isPerimeterFrance: false,
+  coverDepartement: [],
+  entrepriseIsPerimeterFrance: false,
 
   contactFirstName: "",
   contactLastName: "",
   contactEmail: "",
 
-  link: "",
+  webSiteURL: "",
   charteURL: "",
 
-  codeRegion: null,
-  codeCommune: null,
-  testimonyURL: "",
-  balURL: "",
-  infos: "",
-  perimeter: "",
-  dataGouvOrganizationId: [],
-  apiDepotClientId: [],
+  communeCodeInsee: null,
+  communeBalURL: "",
+
+  organismeInfo: "",
+
+  clients: [],
 };
 
 export const PartenaireForm = ({
@@ -106,8 +106,9 @@ export const PartenaireForm = ({
   controls,
   isCreation,
 }: PartenaireFormProps) => {
+  console.log(data);
   const [formData, setFormData] = useState<PartenaireDeLaCharteDTO>(
-    data || newPartenaireForm
+    data || newPartenaireForm,
   );
   const [optionClients, setOptionClients] = useState<
     { value: string; label: string }[]
@@ -115,23 +116,25 @@ export const PartenaireForm = ({
   const [optionOrganizations, setOptionOrganizations] = useState<
     { value: string; label: string }[]
   >([]);
-  const isCandidate = data && !data.signatureDate;
+  const isCandidate = data && !data.charteSignatureDate;
 
   useEffect(() => {
     async function fetchOptions() {
-      let clients: Client[] = [];
-      let organisations: OrganizationMoissoneurType[] = [];
+      let clients: PartenaireClientDB[] = [];
 
       try {
-        organisations = await getOrganizations();
-        clients = await getClients(false);
+        clients = await getClients();
       } catch {}
 
       setOptionClients(
-        clients.map(({ id, nom }) => ({ value: id, label: nom }))
+        clients
+          .filter(({ type }) => type === ClientTypeEnum.API_DEPOT)
+          .map(({ clientId, name }) => ({ value: clientId, label: name })),
       );
       setOptionOrganizations(
-        organisations.map(({ id, name }) => ({ value: id, label: name }))
+        clients
+          .filter(({ type }) => type === ClientTypeEnum.MOISSONNEUR_BAL)
+          .map(({ clientId, name }) => ({ value: clientId, label: name })),
       );
     }
 
@@ -280,12 +283,12 @@ export const PartenaireForm = ({
             <MultiSelectInput
               label="Couverture géographique"
               placeholder="Sélectionnez un ou plusieurs départements"
-              value={formData.codeDepartement}
+              value={formData.coverDepartement}
               options={departementsOptions}
-              onChange={(codeDepartement) => {
+              onChange={(coverDepartement) => {
                 setFormData((state) => ({
                   ...state,
-                  codeDepartement,
+                  coverDepartement,
                 }));
               }}
             />
@@ -296,8 +299,8 @@ export const PartenaireForm = ({
                   {
                     label: "Périmètre France entière",
                     nativeInputProps: {
-                      checked: formData.isPerimeterFrance,
-                      onChange: handleToggle("isPerimeterFrance"),
+                      checked: formData.entrepriseIsPerimeterFrance,
+                      onChange: handleToggle("entrepriseIsPerimeterFrance"),
                     },
                   },
                 ]}
@@ -312,9 +315,11 @@ export const PartenaireForm = ({
                   required: true,
                   type: "date",
                   value:
-                    formData.signatureDate &&
-                    new Date(formData.signatureDate).toISOString().slice(0, 10),
-                  onChange: handleEdit("signatureDate"),
+                    formData.charteSignatureDate &&
+                    new Date(formData.charteSignatureDate)
+                      .toISOString()
+                      .slice(0, 10),
+                  onChange: handleEdit("charteSignatureDate"),
                 }}
               />
             </div>
@@ -375,8 +380,8 @@ export const PartenaireForm = ({
               label="Lien vers le site"
               nativeInputProps={{
                 type: "url",
-                value: formData.link,
-                onChange: handleEdit("link"),
+                value: formData.webSiteURL,
+                onChange: handleEdit("webSiteURL"),
               }}
             />
           </div>
@@ -384,96 +389,41 @@ export const PartenaireForm = ({
             <>
               <div className="fr-col-6">
                 <Input
-                  label="Lien vers le témoignage"
-                  nativeInputProps={{
-                    value: formData.testimonyURL,
-                    type: "url",
-                    onChange: handleEdit("testimonyURL"),
-                  }}
-                />
-              </div>
-              <div className="fr-col-6">
-                <Input
                   label="Lien vers la BAL"
                   nativeInputProps={{
-                    value: formData.balURL,
+                    value: formData.communeBalURL,
                     type: "url",
-                    onChange: handleEdit("balURL"),
+                    onChange: handleEdit("communeBalURL"),
                   }}
                 />
               </div>
             </>
           )}
-          {formData.type === PartenaireDeLaCharteTypeEnum.ORGANISME && (
+          {formData.type !== PartenaireDeLaCharteTypeEnum.COMMUNE && (
             <div className="fr-col-12">
               <Input
-                label="Lien vers le témoignage"
-                nativeInputProps={{
-                  value: formData.testimonyURL,
-                  type: "url",
-                  onChange: handleEdit("testimonyURL"),
+                label="Autres informations"
+                textArea
+                nativeTextAreaProps={{
+                  value: formData.organismeInfo,
+                  onChange: handleEdit("organismeInfo"),
                 }}
               />
             </div>
           )}
-          {formData.type !== PartenaireDeLaCharteTypeEnum.COMMUNE && (
-            <>
-              <div className="fr-col-6">
-                <Input
-                  label="Périmètre"
-                  textArea
-                  nativeTextAreaProps={{
-                    value: formData.perimeter,
-                    onChange: handleEdit("perimeter"),
-                  }}
-                />
-              </div>
-              <div className="fr-col-6">
-                <Input
-                  label="Autres informations"
-                  textArea
-                  nativeTextAreaProps={{
-                    value: formData.infos,
-                    onChange: handleEdit("infos"),
-                  }}
-                />
-              </div>
-            </>
-          )}
         </div>
       </section>
+
       <section>
-        <h4>Applications</h4>
-        <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-6">
-            <MultiSelectInput
-              label="Data.gouv organization ID (Moissonneur)"
-              value={formData.dataGouvOrganizationId}
-              options={optionOrganizations}
-              placeholder="Sélectionnez une ou plusieurs organisations datagouv"
-              onChange={(dataGouvOrganizationId) => {
-                setFormData((state) => ({
-                  ...state,
-                  dataGouvOrganizationId,
-                }));
-              }}
-            />
-          </div>
-          <div className="fr-col-6">
-            <MultiSelectInput
-              label="Client api depot ID"
-              value={formData.apiDepotClientId}
-              options={optionClients}
-              placeholder="Sélectionnez un ou plusieurs clients de l'api-depot"
-              onChange={(apiDepotClientId) => {
-                setFormData((state) => ({
-                  ...state,
-                  apiDepotClientId,
-                }));
-              }}
-            />
-          </div>
-        </div>
+        <h4>Clients</h4>
+        <ApplicationsSection
+          clients={formData.clients || []}
+          optionClients={optionClients}
+          optionOrganizations={optionOrganizations}
+          onChange={(clients) =>
+            setFormData((state) => ({ ...state, clients }))
+          }
+        />
       </section>
       <div className="form-controls">
         <Button type="submit" iconId="fr-icon-save-line">
