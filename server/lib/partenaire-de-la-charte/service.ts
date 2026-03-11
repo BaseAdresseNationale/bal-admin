@@ -6,6 +6,7 @@ import { PartenaireDeLaCharte, PartenaireDeLaCharteTypeEnum } from "./entity";
 import { ArrayContains, FindOptionsWhere, IsNull, Not, ILike } from "typeorm";
 import { ObjectId } from "bson";
 import { Logger } from "../../utils/logger.utils";
+import { Client } from "./clients/entity";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
@@ -163,6 +164,18 @@ export async function findOneOrFail(id: string) {
   return record;
 }
 
+function fillPerimetersIds(clients: Client[]) {
+  for (const client of clients) {
+    if (client.perimeters) {
+      for (const perimeter of client.perimeters) {
+        if (!perimeter.id) {
+          perimeter.id = new ObjectId().toHexString();
+        }
+      }
+    }
+  }
+}
+
 export async function createOne(
   payload: PartenaireDeLaCharteDTO,
   options: any = {},
@@ -179,6 +192,10 @@ export async function createOne(
 
   if (!isCandidate) {
     entityToSave.charteSignatureDate = new Date();
+  }
+
+  if (payload.clients) {
+    fillPerimetersIds(payload.clients);
   }
 
   const newRecord: PartenaireDeLaCharte =
@@ -215,15 +232,7 @@ export async function updateOne(
     : new Date(payload.charteSignatureDate);
 
   if (payload.clients) {
-    for (const client of payload.clients) {
-      if (client.perimeters) {
-        for (const perimeter of client.perimeters) {
-          if (!perimeter.id) {
-            perimeter.id = new ObjectId().toHexString();
-          }
-        }
-      }
-    }
+    fillPerimetersIds(payload.clients);
   }
 
   const instance = await findOneOrFail(id);
