@@ -1,8 +1,44 @@
+import { ObjectId } from "bson";
 import { AppDataSource } from "../../../utils/typeorm-client";
 import { Client } from "./entity";
+import { ClientDTO } from "./dto";
+import { syncClientsPerimeters } from "./sync.service";
 
 const clientRepository = AppDataSource.getRepository(Client);
 
 export async function findAll(): Promise<Client[]> {
   return clientRepository.find();
+}
+
+export async function createOne(payload: ClientDTO): Promise<Client> {
+  const client = clientRepository.create({
+    ...payload,
+    id: new ObjectId().toHexString(),
+    perimeters: (payload.perimeters ?? []).map((p) => ({
+      ...p,
+      id: p.id ?? new ObjectId().toHexString(),
+    })),
+  });
+  const saved = await clientRepository.save(client);
+  await syncClientsPerimeters([saved]);
+  return saved;
+}
+
+export async function updateOne(clientId: string, payload: ClientDTO): Promise<Client> {
+  const instance = await clientRepository.findOneByOrFail({ clientId });
+  Object.assign(instance, {
+    ...payload,
+    perimeters: (payload.perimeters ?? []).map((p) => ({
+      ...p,
+      id: p.id ?? new ObjectId().toHexString(),
+    })),
+  });
+  const saved = await clientRepository.save(instance);
+  await syncClientsPerimeters([saved]);
+  return saved;
+}
+
+export async function deleteOne(clientId: string): Promise<boolean> {
+  await clientRepository.delete({ clientId });
+  return true;
 }

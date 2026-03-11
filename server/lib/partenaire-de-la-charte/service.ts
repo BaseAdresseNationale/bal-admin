@@ -7,6 +7,7 @@ import { ArrayContains, FindOptionsWhere, IsNull, Not, ILike } from "typeorm";
 import { ObjectId } from "bson";
 import { Logger } from "../../utils/logger.utils";
 import { Client } from "./clients/entity";
+import { syncClientsPerimeters } from "./clients/sync.service";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
@@ -201,6 +202,10 @@ export async function createOne(
   const newRecord: PartenaireDeLaCharte =
     await partenaireDeLaCharteRepository.save(entityToSave);
 
+  if (payload.clients) {
+    await syncClientsPerimeters(payload.clients);
+  }
+
   if (isCandidate) {
     try {
       await sendTemplateMail("candidature-partenaire-de-la-charte");
@@ -238,6 +243,10 @@ export async function updateOne(
   const instance = await findOneOrFail(id);
   Object.assign(instance, payload);
   await partenaireDeLaCharteRepository.save(instance);
+
+  if (payload.clients) {
+    await syncClientsPerimeters(payload.clients);
+  }
 
   return findOneOrFail(id);
 }
