@@ -214,6 +214,18 @@ export async function updateOne(
     ? new Date()
     : new Date(payload.charteSignatureDate);
 
+  if (payload.clients) {
+    for (const client of payload.clients) {
+      if (client.perimeters) {
+        for (const perimeter of client.perimeters) {
+          if (!perimeter.id) {
+            perimeter.id = new ObjectId().toHexString();
+          }
+        }
+      }
+    }
+  }
+
   const instance = await findOneOrFail(id);
   Object.assign(instance, payload);
   await partenaireDeLaCharteRepository.save(instance);

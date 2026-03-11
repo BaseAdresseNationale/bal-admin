@@ -4,10 +4,10 @@ import SelectInput from "@/components/select-input";
 import {
   Client as PartenaireClient,
   ClientTypeEnum,
-} from "../../server/lib/partenaire-de-la-charte/clients/entity";
+} from "../../../server/lib/partenaire-de-la-charte/clients/entity";
 import { ClientItem } from "./client-item";
 
-type ApplicationsSectionProps = {
+type ClientListProps = {
   clients: PartenaireClient[];
   allClients: PartenaireClient[];
   onChange: (clients: PartenaireClient[]) => void;
@@ -18,11 +18,11 @@ const clientTypeOptions = Object.values(ClientTypeEnum).map((value) => ({
   label: value,
 }));
 
-export const ApplicationsSection = ({
+export const ClientList = ({
   clients,
   allClients,
   onChange,
-}: ApplicationsSectionProps) => {
+}: ClientListProps) => {
   const [newClientType, setNewClientType] = useState<ClientTypeEnum>(
     ClientTypeEnum.API_DEPOT,
   );
@@ -30,7 +30,7 @@ export const ApplicationsSection = ({
 
   const availableOptions = allClients
     .filter(({ type }) => type === newClientType)
-    .map(({ clientId, name }) => ({ value: clientId, label: name }));
+    .map(({ clientId, name }) => ({ value: clientId, label: name ?? clientId }));
 
   const getClientLabel = (client: PartenaireClient) =>
     client.name || client.clientId;

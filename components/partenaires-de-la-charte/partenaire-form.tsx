@@ -19,7 +19,7 @@ import {
   PartenaireDeLaCharteOrganismeTypeEnum,
   PartenaireDeLaCharteServiceEnum,
 } from "../../server/lib/partenaire-de-la-charte/entity";
-import { ApplicationsSection } from "./applications-section";
+import { ClientList } from "./clients/client-list";
 
 type PartenaireFormProps = {
   title: string | React.ReactNode;
@@ -395,7 +395,7 @@ export const PartenaireForm = ({
 
       <section>
         <h4>Clients</h4>
-        <ApplicationsSection
+        <ClientList
           clients={formData.clients || []}
           allClients={allClients}
           onChange={(clients) =>
