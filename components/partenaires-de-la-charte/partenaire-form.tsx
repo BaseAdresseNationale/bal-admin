@@ -11,10 +11,7 @@ import { CommuneInput } from "../commune-input";
 import SelectInput from "@/components/select-input";
 import { capitalize } from "@/lib/util/string";
 import { getClients } from "@/lib/api-bal-admin";
-import {
-  Client as PartenaireClientDB,
-  ClientTypeEnum,
-} from "../../server/lib/partenaire-de-la-charte/clients/entity";
+import { Client as PartenaireClientDB } from "../../server/lib/partenaire-de-la-charte/clients/entity";
 import { PartenaireDeLaCharteDTO } from "../../server/lib/partenaire-de-la-charte/dto";
 import {
   PartenaireDeLaCharte,
@@ -110,32 +107,14 @@ export const PartenaireForm = ({
   const [formData, setFormData] = useState<PartenaireDeLaCharteDTO>(
     data || newPartenaireForm,
   );
-  const [optionClients, setOptionClients] = useState<
-    { value: string; label: string }[]
-  >([]);
-  const [optionOrganizations, setOptionOrganizations] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const [allClients, setAllClients] = useState<PartenaireClientDB[]>([]);
   const isCandidate = data && !data.charteSignatureDate;
 
   useEffect(() => {
     async function fetchOptions() {
-      let clients: PartenaireClientDB[] = [];
-
       try {
-        clients = await getClients();
+        setAllClients(await getClients());
       } catch {}
-
-      setOptionClients(
-        clients
-          .filter(({ type }) => type === ClientTypeEnum.API_DEPOT)
-          .map(({ clientId, name }) => ({ value: clientId, label: name })),
-      );
-      setOptionOrganizations(
-        clients
-          .filter(({ type }) => type === ClientTypeEnum.MOISSONNEUR_BAL)
-          .map(({ clientId, name }) => ({ value: clientId, label: name })),
-      );
     }
 
     fetchOptions();
@@ -418,8 +397,7 @@ export const PartenaireForm = ({
         <h4>Clients</h4>
         <ApplicationsSection
           clients={formData.clients || []}
-          optionClients={optionClients}
-          optionOrganizations={optionOrganizations}
+          allClients={allClients}
           onChange={(clients) =>
             setFormData((state) => ({ ...state, clients }))
           }

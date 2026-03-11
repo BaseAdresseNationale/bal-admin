@@ -9,8 +9,7 @@ import { ClientItem } from "./client-item";
 
 type ApplicationsSectionProps = {
   clients: PartenaireClient[];
-  optionClients: { value: string; label: string }[];
-  optionOrganizations: { value: string; label: string }[];
+  allClients: PartenaireClient[];
   onChange: (clients: PartenaireClient[]) => void;
 };
 
@@ -21,8 +20,7 @@ const clientTypeOptions = Object.values(ClientTypeEnum).map((value) => ({
 
 export const ApplicationsSection = ({
   clients,
-  optionClients,
-  optionOrganizations,
+  allClients,
   onChange,
 }: ApplicationsSectionProps) => {
   const [newClientType, setNewClientType] = useState<ClientTypeEnum>(
@@ -30,21 +28,25 @@ export const ApplicationsSection = ({
   );
   const [newClientId, setNewClientId] = useState("");
 
-  const availableOptions =
-    newClientType === ClientTypeEnum.API_DEPOT
-      ? optionClients
-      : optionOrganizations;
+  const availableOptions = allClients
+    .filter(({ type }) => type === newClientType)
+    .map(({ clientId, name }) => ({ value: clientId, label: name }));
 
   const getClientLabel = (client: PartenaireClient) =>
     client.name || client.clientId;
 
   const handleAddClient = () => {
     if (!newClientId) return;
-    const name =
-      availableOptions.find((o) => o.value === newClientId)?.label ?? newClientId;
+    const fullClient = allClients.find((c) => c.clientId === newClientId && c.type === newClientType);
     onChange([
       ...clients,
-      { clientId: newClientId, name, type: newClientType, perimeters: [] } as PartenaireClient,
+      {
+        id: fullClient?.id,
+        clientId: newClientId,
+        name: fullClient?.name ?? newClientId,
+        type: newClientType,
+        perimeters: fullClient?.perimeters ?? [],
+      } as PartenaireClient,
     ]);
     setNewClientId("");
   };
