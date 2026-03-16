@@ -26,7 +26,10 @@ export async function updateOne(
   clientId: string,
   payload: ClientDTO,
 ): Promise<Client> {
-  const instance = await clientRepository.findOneByOrFail({ clientId });
+  const instance = await clientRepository.findOneOrFail({
+    where: { clientId },
+    withDeleted: true,
+  });
   Object.assign(instance, {
     ...payload,
     perimeters: (payload.perimeters ?? []).map((p) => ({
