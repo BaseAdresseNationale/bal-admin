@@ -38,7 +38,10 @@ export async function updateOne(
   return saved;
 }
 
-export async function deleteOne(clientId: string): Promise<boolean> {
+export async function restore(clientId: string): Promise<void> {
+  await clientRepository.restore({ clientId });
+}
+
+export async function deleteOne(clientId: string): Promise<void> {
   await clientRepository.softDelete({ clientId });
-  return true;
 }

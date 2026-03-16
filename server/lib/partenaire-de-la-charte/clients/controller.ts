@@ -39,6 +39,16 @@ clientsRoutes.put("/:clientId", async (req, res) => {
   }
 });
 
+clientsRoutes.put("/:clientId/restore", async (req, res) => {
+  try {
+    await ClientService.restore(req.params.clientId);
+    res.status(204).send();
+  } catch (err) {
+    Logger.error(`Impossible de modifier le client`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 clientsRoutes.delete("/:clientId", async (req, res) => {
   try {
     await ClientService.deleteOne(req.params.clientId);
