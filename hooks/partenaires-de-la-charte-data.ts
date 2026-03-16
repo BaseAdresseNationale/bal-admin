@@ -18,13 +18,13 @@ export function usePartenairesDeLaCharteData() {
         const partenairesDeLaCharte = await getPartenairesDeLaCharte();
         setPartenairesDeLaCharteData(
           partenairesDeLaCharte.filter(
-            (partenaireDeLaCharte) => partenaireDeLaCharte.signatureDate
-          )
+            (partenaireDeLaCharte) => partenaireDeLaCharte.charteSignatureDate,
+          ),
         );
         setCandidaturesEnAttenteData(
           partenairesDeLaCharte.filter(
-            (partenaireDeLaCharte) => !partenaireDeLaCharte.signatureDate
-          )
+            (partenaireDeLaCharte) => !partenaireDeLaCharte.charteSignatureDate,
+          ),
         );
       } catch (err: unknown) {
         console.error(err);

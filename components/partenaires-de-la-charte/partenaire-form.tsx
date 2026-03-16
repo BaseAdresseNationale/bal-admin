@@ -103,7 +103,6 @@ export const PartenaireForm = ({
   controls,
   isCreation,
 }: PartenaireFormProps) => {
-  console.log(data);
   const [formData, setFormData] = useState<PartenaireDeLaCharteDTO>(
     data || newPartenaireForm,
   );

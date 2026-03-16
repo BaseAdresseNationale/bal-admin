@@ -82,14 +82,14 @@ const ClientsList = ({ isDemo = false }: ClientsListProps) => {
                 key={client.id}
                 client={client}
                 mandataire={data.mandataires.find(
-                  ({ id }) => id === client.mandataireId
+                  ({ id }) => id === client.mandataireId,
                 )}
                 chefDeFile={data.chefsDeFile.find(
-                  ({ id }) => id === client.chefDeFileId
+                  ({ id }) => id === client.chefDeFileId,
                 )}
                 partenaires={data.partenaires.filter(
-                  ({ apiDepotClientId }) =>
-                    apiDepotClientId?.includes(client.id)
+                  ({ clients }) =>
+                    clients?.some(({ clientId }) => clientId === client.id),
                 )}
                 isDemo={isDemo}
               />

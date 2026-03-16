@@ -16,10 +16,10 @@ const MoissoneurOrganizations = ({
   partenaires,
 }: MoissoneurOrganizationsProps) => {
   const getFilteredOrganizations = (
-    showDeleted: boolean
+    showDeleted: boolean,
   ): OrganizationBalAdminType[] => {
     let organisationsSort = organizations.sort((a, b) =>
-      a.perimeters && b.perimeters.length ? -1 : 1
+      a.perimeters && b.perimeters.length ? -1 : 1,
     );
 
     if (!showDeleted) {
@@ -28,9 +28,8 @@ const MoissoneurOrganizations = ({
 
     return organisationsSort.map((orga) => ({
       ...orga,
-      partenaire: partenaires.find(
-        ({ dataGouvOrganizationId }) =>
-          dataGouvOrganizationId?.includes(orga.id)
+      partenaire: partenaires.find(({ clients }) =>
+        clients.some(({ clientId }) => clientId === orga.id),
       ),
     }));
   };

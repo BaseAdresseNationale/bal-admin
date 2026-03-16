@@ -21,7 +21,6 @@ const PartenairesDeLaChartePage = ({
   candidates,
   tab,
 }: PartenairesDeLaChartePageProps) => {
-  console.log(partenaires);
   return (
     <div className="fr-container">
       <Tabs
@@ -103,11 +102,11 @@ const PartenairesDeLaChartePage = ({
 export async function getServerSideProps({ query, ...context }) {
   const cookies = context.req.headers.cookie;
   const { tab } = query;
-  console.log("Aaaa");
+
   const allPartenairesDeLaCharte = await getPartenairesDeLaCharte({
     cookie: cookies,
   });
-  console.log("Bbbbb");
+
   const partenaires = allPartenairesDeLaCharte.filter((partenaireDeLaCharte) =>
     Boolean(partenaireDeLaCharte.charteSignatureDate),
   );
