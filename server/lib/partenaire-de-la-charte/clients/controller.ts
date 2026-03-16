@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import routeGuard from "../../../route-guard";
+import adminGuard from "../../../admin-guard";
 import * as ClientService from "./service";
 import { Logger } from "../../../utils/logger.utils";
 
@@ -19,7 +20,7 @@ clientsRoutes.get("/", routeGuard, async (_req, res) => {
   }
 });
 
-clientsRoutes.post("/", async (req, res) => {
+clientsRoutes.post("/", adminGuard, async (req, res) => {
   try {
     const client = await ClientService.createOne(req.body);
     res.status(201).json(client);
@@ -29,7 +30,7 @@ clientsRoutes.post("/", async (req, res) => {
   }
 });
 
-clientsRoutes.put("/:clientId", async (req, res) => {
+clientsRoutes.put("/:clientId", adminGuard, async (req, res) => {
   try {
     const client = await ClientService.updateOne(req.params.clientId, req.body);
     res.json(client);
@@ -39,7 +40,7 @@ clientsRoutes.put("/:clientId", async (req, res) => {
   }
 });
 
-clientsRoutes.put("/:clientId/restore", async (req, res) => {
+clientsRoutes.put("/:clientId/restore", adminGuard, async (req, res) => {
   try {
     await ClientService.restore(req.params.clientId);
     res.status(204).send();
@@ -49,7 +50,7 @@ clientsRoutes.put("/:clientId/restore", async (req, res) => {
   }
 });
 
-clientsRoutes.delete("/:clientId", async (req, res) => {
+clientsRoutes.delete("/:clientId", adminGuard, async (req, res) => {
   try {
     await ClientService.deleteOne(req.params.clientId);
     res.status(204).send();
