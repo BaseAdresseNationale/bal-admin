@@ -60,6 +60,11 @@ export const ClientItem = ({
               {client.type}
             </Badge>
             {clientLabel}
+            {client.deletedAt ? (
+              <Badge severity="warning" noIcon>
+                SUPPRIMER
+              </Badge>
+            ) : null}
           </span>
         }
       >

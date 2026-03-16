@@ -11,6 +11,7 @@ import { syncClientsPerimeters } from "./clients/sync.service";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
+const clientRepository = AppDataSource.getRepository(Client);
 
 function createWherePG({
   search,
@@ -62,6 +63,7 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
 
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder("partenaireDeLaCharte")
+    .withDeleted()
     .leftJoinAndSelect("partenaireDeLaCharte.entrepriseReviews", "reviews")
     .leftJoinAndSelect("partenaireDeLaCharte.clients", "clients")
     .leftJoinAndSelect("clients.perimeters", "perimeters")
@@ -156,7 +158,10 @@ export async function findManyPaginated(
 }
 
 export async function findOneOrFail(id: string) {
-  const record = await partenaireDeLaCharteRepository.findOneByOrFail({ id });
+  const record = await partenaireDeLaCharteRepository.findOneOrFail({
+    where: { id },
+    withDeleted: true,
+  });
 
   if (!record) {
     throw new Error(`Partenaire de la charte ${id} introuvable`);
@@ -239,8 +244,21 @@ export async function updateOne(
   if (payload.clients) {
     fillPerimetersIds(payload.clients);
   }
-
   const instance = await findOneOrFail(id);
+
+  const payloadClientIds = (payload.clients || [])
+    .map((c) => c.id)
+    .filter(Boolean);
+  const clientsToUnlink = (instance.clients || []).filter(
+    (c) => c.id && !payloadClientIds.includes(c.id),
+  );
+  if (clientsToUnlink.length > 0) {
+    await clientRepository.update(
+      clientsToUnlink.map((c) => c.id),
+      { partenaireId: null },
+    );
+  }
+
   Object.assign(instance, payload);
   await partenaireDeLaCharteRepository.save(instance);
 

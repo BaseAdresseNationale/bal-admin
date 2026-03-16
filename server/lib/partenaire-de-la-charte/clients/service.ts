@@ -7,7 +7,7 @@ import { syncClientsPerimeters } from "./sync.service";
 const clientRepository = AppDataSource.getRepository(Client);
 
 export async function findAll(): Promise<Client[]> {
-  return clientRepository.find();
+  return clientRepository.find({ withDeleted: true });
 }
 
 export async function createOne(payload: ClientDTO): Promise<Client> {
@@ -20,11 +20,13 @@ export async function createOne(payload: ClientDTO): Promise<Client> {
     })),
   });
   const saved = await clientRepository.save(client);
-  await syncClientsPerimeters([saved]);
   return saved;
 }
 
-export async function updateOne(clientId: string, payload: ClientDTO): Promise<Client> {
+export async function updateOne(
+  clientId: string,
+  payload: ClientDTO,
+): Promise<Client> {
   const instance = await clientRepository.findOneByOrFail({ clientId });
   Object.assign(instance, {
     ...payload,
@@ -34,7 +36,6 @@ export async function updateOne(clientId: string, payload: ClientDTO): Promise<C
     })),
   });
   const saved = await clientRepository.save(instance);
-  await syncClientsPerimeters([saved]);
   return saved;
 }
 

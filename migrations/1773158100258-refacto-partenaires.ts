@@ -10,6 +10,7 @@ type MoissonneurOrganization = {
   id: string;
   name: string;
   perimeters: MoissonneurPerimeter[];
+  deletedAt: Date;
 };
 
 const MOISSONNEUR_BAL_URL =
@@ -43,7 +44,6 @@ async function migrateApiDepotClients(
 ): Promise<void> {
   const apiDepotClients = await fetchApiDepotClients();
   const chefsDeFile = await fetchChefsDeFile();
-
   // Build a map of clientId → partenaireId for quick lookup
   const clientIdToPartenaireId = new Map<string, string>();
   for (const partenaire of partenaires) {
@@ -55,10 +55,15 @@ async function migrateApiDepotClients(
   for (const apiDepotClient of apiDepotClients) {
     const newClientId = new ObjectId().toHexString();
     const partenaireId = clientIdToPartenaireId.get(apiDepotClient.id) ?? null;
-
     await queryRunner.query(
-      `INSERT INTO clients (id, name, client_id, partenaire_id, type) VALUES ($1, $2, $3, $4, 'api-depot')`,
-      [newClientId, apiDepotClient.nom, apiDepotClient.id, partenaireId],
+      `INSERT INTO clients (id, name, client_id, partenaire_id, type, deleted_at) VALUES ($1, $2, $3, $4, 'api-depot', $5)`,
+      [
+        newClientId,
+        apiDepotClient.nom,
+        apiDepotClient.id,
+        partenaireId,
+        apiDepotClient.isActive ? null : new Date(),
+      ],
     );
 
     const chefDeFile = apiDepotClient.chefDeFileId
@@ -79,7 +84,9 @@ async function migrateApiDepotClients(
   }
 }
 
-async function fetchMoissonneurOrganizations(): Promise<MoissonneurOrganization[]> {
+async function fetchMoissonneurOrganizations(): Promise<
+  MoissonneurOrganization[]
+> {
   const response = await fetch(`${MOISSONNEUR_BAL_URL}/organizations`);
   if (!response.ok) {
     throw new Error(
@@ -108,8 +115,14 @@ async function migrateMoissonneurClients(
     const partenaireId = orgIdToPartenaireId.get(organization.id) ?? null;
 
     await queryRunner.query(
-      `INSERT INTO clients (id, name, client_id, partenaire_id, type) VALUES ($1, $2, $3, $4, 'moissonneur-bal')`,
-      [newClientId, organization.name, organization.id, partenaireId],
+      `INSERT INTO clients (id, name, client_id, partenaire_id, type, deleted_at) VALUES ($1, $2, $3, $4, 'moissonneur-bal', $5)`,
+      [
+        newClientId,
+        organization.name,
+        organization.id,
+        partenaireId,
+        organization.deletedAt,
+      ],
     );
 
     for (const perimeter of organization.perimeters ?? []) {
@@ -145,7 +158,7 @@ export class RefactoPartenaires1773158100258 implements MigrationInterface {
       `CREATE TYPE "public"."clients_type_enum" AS ENUM('api-depot', 'moissonneur-bal')`,
     );
     await queryRunner.query(
-      `CREATE TABLE "clients" ("id" character varying(24) NOT NULL, "name" text NOT NULL, "client_id" character varying(24) NOT NULL, "partenaire_id" character varying(24), "type" "public"."clients_type_enum" NOT NULL DEFAULT 'api-depot', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_f1ab7cf3a5714dbc6bb4e1c28a4" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "clients" ("id" character varying(24) NOT NULL, "name" text NOT NULL, "client_id" character varying(24) NOT NULL, "partenaire_id" character varying(24), "type" "public"."clients_type_enum" NOT NULL DEFAULT 'api-depot', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_f1ab7cf3a5714dbc6bb4e1c28a4" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_clients_client_id" ON "clients" ("client_id") `,
@@ -183,7 +196,6 @@ export class RefactoPartenaires1773158100258 implements MigrationInterface {
       FROM partenaires_de_la_charte
       WHERE deleted_at IS NULL
     `);
-
     // on recupère les client de l'api-depot avec chef de file
     // On créer les clients avec leurs périmètre
     // On link les client au partenaire

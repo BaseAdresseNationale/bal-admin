@@ -30,14 +30,19 @@ export const ClientList = ({
 
   const availableOptions = allClients
     .filter(({ type }) => type === newClientType)
-    .map(({ clientId, name }) => ({ value: clientId, label: name ?? clientId }));
+    .map(({ clientId, name, deletedAt }) => ({
+      value: clientId,
+      label: `${name ?? clientId} ${deletedAt ? " - supprimé" : ""}`,
+    }));
 
   const getClientLabel = (client: PartenaireClient) =>
     client.name || client.clientId;
 
   const handleAddClient = () => {
     if (!newClientId) return;
-    const fullClient = allClients.find((c) => c.clientId === newClientId && c.type === newClientType);
+    const fullClient = allClients.find(
+      (c) => c.clientId === newClientId && c.type === newClientType,
+    );
     onChange([
       ...clients,
       {
@@ -46,6 +51,7 @@ export const ClientList = ({
         name: fullClient?.name ?? newClientId,
         type: newClientType,
         perimeters: fullClient?.perimeters ?? [],
+        deletedAt: fullClient.deletedAt,
       } as PartenaireClient,
     ]);
     setNewClientId("");
@@ -86,13 +92,20 @@ export const ClientList = ({
             <SelectInput
               label="Client"
               value={newClientId}
-              options={[{ value: "", label: "Sélectionnez un client" }, ...availableOptions]}
+              options={[
+                { value: "", label: "Sélectionnez un client" },
+                ...availableOptions,
+              ]}
               handleChange={(value) => setNewClientId(value as string)}
             />
           </div>
           <div
             className="fr-col-4"
-            style={{ display: "flex", alignItems: "flex-end", paddingBottom: "1.5rem" }}
+            style={{
+              display: "flex",
+              alignItems: "flex-end",
+              paddingBottom: "1.5rem",
+            }}
           >
             <Button
               iconId="fr-icon-add-line"

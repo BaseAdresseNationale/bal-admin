@@ -9,6 +9,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
   Relation,
+  DeleteDateColumn,
 } from "typeorm";
 import type { Relation as RelationType } from "typeorm";
 import { PartenaireDeLaCharte } from "../entity";
@@ -60,4 +61,7 @@ export class Client {
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt?: Date;
+
+  @DeleteDateColumn({ name: "deleted_at" })
+  deletedAt: Date;
 }

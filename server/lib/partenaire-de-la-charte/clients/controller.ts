@@ -19,7 +19,7 @@ clientsRoutes.get("/", routeGuard, async (_req, res) => {
   }
 });
 
-clientsRoutes.post("/", routeGuard, async (req, res) => {
+clientsRoutes.post("/", async (req, res) => {
   try {
     const client = await ClientService.createOne(req.body);
     res.status(201).json(client);
@@ -29,7 +29,7 @@ clientsRoutes.post("/", routeGuard, async (req, res) => {
   }
 });
 
-clientsRoutes.put("/:clientId", routeGuard, async (req, res) => {
+clientsRoutes.put("/:clientId", async (req, res) => {
   try {
     const client = await ClientService.updateOne(req.params.clientId, req.body);
     res.json(client);
@@ -39,7 +39,7 @@ clientsRoutes.put("/:clientId", routeGuard, async (req, res) => {
   }
 });
 
-clientsRoutes.delete("/:clientId", routeGuard, async (req, res) => {
+clientsRoutes.delete("/:clientId", async (req, res) => {
   try {
     await ClientService.deleteOne(req.params.clientId);
     res.status(204).send();
