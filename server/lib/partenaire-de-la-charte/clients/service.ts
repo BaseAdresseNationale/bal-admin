@@ -2,7 +2,6 @@ import { ObjectId } from "bson";
 import { AppDataSource } from "../../../utils/typeorm-client";
 import { Client } from "./entity";
 import { ClientDTO } from "./dto";
-import { syncClientsPerimeters } from "./sync.service";
 
 const clientRepository = AppDataSource.getRepository(Client);
 
@@ -40,6 +39,6 @@ export async function updateOne(
 }
 
 export async function deleteOne(clientId: string): Promise<boolean> {
-  await clientRepository.delete({ clientId });
+  await clientRepository.softDelete({ clientId });
   return true;
 }
