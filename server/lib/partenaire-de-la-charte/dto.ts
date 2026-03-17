@@ -34,6 +34,9 @@ export class PartenaireDeLaCharteDTO {
   @IsString()
   name: string;
 
+  @IsString()
+  siret: string;
+
   @IsOptional()
   @IsBase64()
   picture?: string;

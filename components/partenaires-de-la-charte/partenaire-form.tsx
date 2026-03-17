@@ -72,6 +72,7 @@ const StyledForm = styled.form`
 `;
 
 const newPartenaireForm = {
+  siret: "",
   type: PartenaireDeLaCharteTypeEnum.COMMUNE,
   organismeType: PartenaireDeLaCharteOrganismeTypeEnum.EPCI,
   name: "",
@@ -244,6 +245,33 @@ export const PartenaireForm = ({
             />
           </div>
           <div className="fr-col-6">
+              <Input
+                label="Siret*"
+                nativeInputProps={{
+                  required: true,
+                  value: formData.siret,
+                  onChange: handleEdit("siret"),
+                }}
+              />
+          </div>
+          <div className="fr-col-6">
+            {!isCreation && !isCandidate && (
+                <Input
+                  label="Date de signature*"
+                  nativeInputProps={{
+                    required: true,
+                    type: "date",
+                    value:
+                      formData.charteSignatureDate &&
+                      new Date(formData.charteSignatureDate)
+                        .toISOString()
+                        .slice(0, 10),
+                    onChange: handleEdit("charteSignatureDate"),
+                  }}
+                />
+            )}
+          </div>
+          <div className="fr-col-6">
             <MultiSelectInput
               label="Services"
               value={formData.services}
@@ -285,23 +313,7 @@ export const PartenaireForm = ({
               />
             )}
           </div>
-          {!isCreation && !isCandidate && (
-            <div className="fr-col-6">
-              <Input
-                label="Date de signature*"
-                nativeInputProps={{
-                  required: true,
-                  type: "date",
-                  value:
-                    formData.charteSignatureDate &&
-                    new Date(formData.charteSignatureDate)
-                      .toISOString()
-                      .slice(0, 10),
-                  onChange: handleEdit("charteSignatureDate"),
-                }}
-              />
-            </div>
-          )}
+
         </div>
       </section>
       <section>
