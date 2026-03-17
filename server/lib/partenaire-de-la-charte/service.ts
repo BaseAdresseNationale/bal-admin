@@ -146,6 +146,8 @@ export async function findManyPaginated(
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder("partenaireDeLaCharte")
     .leftJoinAndSelect("partenaireDeLaCharte.entrepriseReviews", "reviews")
+    .leftJoinAndSelect("partenaireDeLaCharte.clients", "clients")
+    .leftJoinAndSelect("clients.perimeters", "perimeters")
     .where(where)
     .take(limit)
     .skip(offset);
