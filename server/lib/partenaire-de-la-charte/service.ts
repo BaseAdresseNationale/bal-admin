@@ -8,6 +8,8 @@ import { ObjectId } from "bson";
 import { Logger } from "../../utils/logger.utils";
 import { Client } from "./clients/entity";
 import { syncClientsPerimeters } from "./clients/sync.service";
+import { TypePerimeterEnum } from "./clients/pertimeters/entity";
+import { getCommune, getEPCICodeFromCommune } from "../../../lib/cog";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
@@ -18,8 +20,7 @@ function createWherePG({
   services,
   type,
   withCandidates,
-  dataGouvOrganizationId,
-  apiDepotClientId,
+  codeCommune,
 }: Partial<PartenaireDeLaCharteQuery>) {
   const where: FindOptionsWhere<PartenaireDeLaCharte> = {
     ...(type && { type }),
@@ -38,28 +39,62 @@ function createWherePG({
     }
   }
 
-  // if (dataGouvOrganizationId) {
-  //   if (typeof dataGouvOrganizationId === "string") {
-  //     where.dataGouvOrganizationId = ArrayContains([dataGouvOrganizationId]);
-  //   } else if (Array.isArray(dataGouvOrganizationId)) {
-  //     where.dataGouvOrganizationId = ArrayContains(dataGouvOrganizationId);
-  //   }
-  // }
+  if (codeCommune) {
+    const commune = getCommune(codeCommune);
+    const codeDepartement = commune?.departement ?? null;
+    const codeEpci = getEPCICodeFromCommune(codeCommune);
+    return {
+      where,
+      perimetersFilter: { codeCommune, codeDepartement, codeEpci },
+    };
+  }
 
-  // if (apiDepotClientId) {
-  //   if (typeof apiDepotClientId === "string") {
-  //     where.apiDepotClientId = ArrayContains([apiDepotClientId]);
-  //   } else if (Array.isArray(apiDepotClientId)) {
-  //     where.apiDepotClientId = ArrayContains(apiDepotClientId);
-  //   }
-  // }
+  return { where, perimetersFilter: null };
+}
 
-  return where;
+type PerimetersFilter = {
+  codeCommune: string;
+  codeDepartement: string | null;
+  codeEpci: string | null;
+};
+
+function applyPerimetersFilter(
+  queryPG: ReturnType<typeof partenaireDeLaCharteRepository.createQueryBuilder>,
+  perimetersFilter: PerimetersFilter,
+) {
+  const { codeCommune, codeDepartement, codeEpci } = perimetersFilter;
+  const conditions: string[] = [
+    `(p.type = :typeCommune AND p.code = :codeCommune)`,
+  ];
+  const params: Record<string, string> = {
+    typeCommune: TypePerimeterEnum.COMMUNE,
+    codeCommune,
+  };
+  if (codeDepartement) {
+    conditions.push(`(p.type = :typeDepartement AND p.code = :codeDepartement)`);
+    params.typeDepartement = TypePerimeterEnum.DEPARTEMENT;
+    params.codeDepartement = codeDepartement;
+  }
+  if (codeEpci) {
+    conditions.push(`(p.type = :typeEpci AND p.code = :codeEpci)`);
+    params.typeEpci = TypePerimeterEnum.EPCI;
+    params.codeEpci = codeEpci;
+  }
+  queryPG.andWhere(
+    `EXISTS (
+      SELECT 1 FROM clients c
+      INNER JOIN perimeters p ON p.client_id = c.id
+      WHERE c.partenaire_id = "partenaireDeLaCharte"."id"
+      AND c.deleted_at IS NULL
+      AND (${conditions.join(" OR ")})
+    )`,
+    params,
+  );
 }
 
 export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
-  const { codeDepartement, withoutPictures } = query;
-  const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
+  const { coverDepartement, withoutPictures } = query;
+  const { where, perimetersFilter } = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder("partenaireDeLaCharte")
@@ -75,10 +110,14 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
     .orderBy("pending_reviews_count", "DESC")
     .where(where);
 
-  if (codeDepartement) {
+  if (perimetersFilter) {
+    applyPerimetersFilter(queryPG, perimetersFilter);
+  }
+
+  if (coverDepartement) {
     queryPG.andWhere(
       `(cover_departement @> :arraySearch OR entreprise_is_perimeter_france IS true)`,
-      { arraySearch: [codeDepartement] },
+      { arraySearch: [coverDepartement] },
     );
   }
 
@@ -101,8 +140,8 @@ export async function findManyPaginated(
 ) {
   const offset = (page - 1) * limit;
 
-  const { codeDepartement, withoutPictures, shuffleResults } = query;
-  const where: FindOptionsWhere<PartenaireDeLaCharte> = createWherePG(query);
+  const { coverDepartement, withoutPictures, shuffleResults } = query;
+  const { where, perimetersFilter } = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
     .createQueryBuilder("partenaireDeLaCharte")
@@ -111,10 +150,14 @@ export async function findManyPaginated(
     .take(limit)
     .skip(offset);
 
-  if (codeDepartement) {
+  if (perimetersFilter) {
+    applyPerimetersFilter(queryPG, perimetersFilter);
+  }
+
+  if (coverDepartement) {
     queryPG.andWhere(
-      `(code_departement @> :arraySearch OR is_perimeter_france IS true)`,
-      { arraySearch: [codeDepartement] },
+      `(cover_departement @> :arraySearch OR entreprise_is_perimeter_france IS true)`,
+      { arraySearch: [coverDepartement] },
     );
   }
 

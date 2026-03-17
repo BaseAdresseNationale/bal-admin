@@ -18,7 +18,7 @@ import {
 import { Client } from "./clients/entity";
 
 export interface PartenaireDeLaCharteQuery {
-  codeDepartement?: string;
+  coverDepartement?: string;
   search?: string;
   withoutPictures?: boolean;
   shuffleResults?: boolean;
@@ -27,8 +27,7 @@ export interface PartenaireDeLaCharteQuery {
     | PartenaireDeLaCharteServiceEnum[];
   type?: PartenaireDeLaCharteTypeEnum;
   withCandidates?: boolean;
-  dataGouvOrganizationId?: string | string[];
-  apiDepotClientId?: string | string[];
+  codeCommune?: string;
 }
 
 export class PartenaireDeLaCharteDTO {
