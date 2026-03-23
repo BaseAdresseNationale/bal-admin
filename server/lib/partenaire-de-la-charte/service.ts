@@ -233,8 +233,6 @@ async function uploadPublicFile(partenaireId: string, picture: string): Promise<
     { ContentType: contentType },
   );
 
-  console.log('RES', res)
-
   return fileName
 }
 
@@ -333,7 +331,6 @@ export async function updateOne(
   }
 
   Object.assign(instance, omit(payload, ['picture']));
-  console.log(instance, payload)
   await partenaireDeLaCharteRepository.save(instance);
 
   if (payload.clients) {
@@ -362,3 +359,4 @@ export async function deleteOne(id: string): Promise<boolean> {
   await partenaireDeLaCharteRepository.delete({ id });
   return true;
 }
+

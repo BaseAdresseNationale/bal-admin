@@ -9,6 +9,7 @@ import { AppDataSource } from "./utils/typeorm-client";
 import routeGuard from "./route-guard";
 import { cronEvents } from "./lib/events/cron";
 import { cronStats } from "./lib/stats/cron";
+import { cronPartenaires } from "./lib/partenaire-de-la-charte/cron";
 // PROXY
 import ProxyApiDepot from "./proxy/api-depot.proxy";
 import ProxyMoissonneurBal from "./proxy/moissonneur-bal.proxy";
@@ -77,6 +78,7 @@ async function main() {
   // Start cron events
   cronEvents();
   cronStats();
+  cronPartenaires();
 
   server.listen(port, () => {
     Logger.info(`Start listening on port ${port}`);
