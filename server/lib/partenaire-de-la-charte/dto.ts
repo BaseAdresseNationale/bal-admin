@@ -20,7 +20,6 @@ import { Client } from "./clients/entity";
 export interface PartenaireDeLaCharteQuery {
   coverDepartement?: string;
   search?: string;
-  withoutPictures?: boolean;
   shuffleResults?: boolean;
   services?:
     | PartenaireDeLaCharteServiceEnum

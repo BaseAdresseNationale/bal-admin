@@ -31,7 +31,6 @@ export async function getPartenairesDeLaCharte(
     `${NEXT_PUBLIC_BAL_ADMIN_URL}/api/partenaires-de-la-charte/`
   );
   url.searchParams.append("withCandidates", "true");
-  url.searchParams.append("withoutPictures", "true");
 
   const response = await fetch(url, { headers });
   const partenairesDeLaCharte = await processResponse(response);

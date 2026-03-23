@@ -1,6 +1,12 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 import { ObjectId } from "bson";
 import { Client, ChefDeFile } from "../types/api-depot.types";
+import {
+  PutObjectCommand,
+  PutObjectCommandInput,
+  PutObjectCommandOutput,
+  S3Client,
+} from '@aws-sdk/client-s3';
 
 type MoissonneurPerimeter = {
   type: "commune" | "departement" | "epci";
@@ -20,6 +26,32 @@ const MOISSONNEUR_BAL_URL =
 const API_DEPOT_URL =
   process.env.NEXT_PUBLIC_API_DEPOT_URL ||
   "https://plateforme-bal.adresse.data.gouv.fr/api-depot";
+
+  const s3Client = new S3Client({
+    region: process.env.S3_REGION,
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_SECRET_KEY,
+    },
+    endpoint: process.env.S3_ENDPOINT,
+  });
+
+async function uploadPublicFile(
+  fileId: string,
+  bucket: string,
+  data: Buffer,
+  options: Partial<PutObjectCommandInput> = {},
+): Promise<PutObjectCommandOutput> {
+  return s3Client.send(
+    new PutObjectCommand({
+      ACL: 'public-read',
+      Bucket: bucket,
+      Key: fileId,
+      Body: data,
+      ...options,
+    }),
+  );
+}
 
 async function fetchApiDepotClients(): Promise<Client[]> {
   const response = await fetch(`${API_DEPOT_URL}/clients`);
@@ -139,6 +171,41 @@ async function migrateMoissonneurClients(
   }
 }
 
+async function migratePartenairePicturesToS3(queryRunner: QueryRunner): Promise<void> {
+  const partenairesWithPicture: { id: string; picture_url: string }[] =
+    await queryRunner.query(`
+      SELECT id, picture_url
+      FROM partenaires_de_la_charte
+      WHERE picture_url IS NOT NULL AND deleted_at IS NULL
+    `);
+
+  for (const partenaire of partenairesWithPicture) {
+    // Format: "data:image/png;base64,<data>"
+    const match = partenaire.picture_url.match(/^data:([^;]+);base64,(.+)$/);
+    if (!match) {
+      console.warn(`Invalid base64 picture for partenaire ${partenaire.id}`);
+      continue;
+    }
+    const contentType = match[1];
+    const buffer = Buffer.from(match[2], 'base64');
+    const ext = contentType.split('/')[1] ?? 'png';
+    const fileName = `partenaires/${partenaire.id}.${ext}`;
+
+    await uploadPublicFile(
+      fileName,
+      process.env.S3_CONTAINER_ID,
+      buffer,
+      { ContentType: contentType },
+    );
+
+    const fileUrl = `${process.env.S3_ENDPOINT}/${process.env.S3_CONTAINER_ID}/${fileName}`;
+    await queryRunner.query(
+      `UPDATE partenaires_de_la_charte SET picture_url = $1 WHERE id = $2`,
+      [fileUrl, partenaire.id],
+    );
+  }
+}
+
 export class RefactoPartenaires1773158100258 implements MigrationInterface {
   name = "RefactoPartenaires1773158100258";
 
@@ -245,6 +312,13 @@ export class RefactoPartenaires1773158100258 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "partenaires_de_la_charte" DROP COLUMN "perimeter"`,
     );
+    await queryRunner.query(
+      `ALTER TABLE "partenaires_de_la_charte" RENAME "picture" TO "picture_url"`,
+    );
+
+    // ADD IMAGE IN S3
+    await migratePartenairePicturesToS3(queryRunner);
+
     // AJOUT
     await queryRunner.query(
       `ALTER TABLE "partenaires_de_la_charte" ADD "siret" text`,

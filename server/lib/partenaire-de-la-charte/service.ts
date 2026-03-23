@@ -10,6 +10,8 @@ import { Client } from "./clients/entity";
 import { syncClientsPerimeters } from "./clients/sync.service";
 import { TypePerimeterEnum } from "./clients/pertimeters/entity";
 import { getCommune, getEPCICodeFromCommune } from "../../../lib/cog";
+import { S3Service } from "../../utils/s3";
+import { omit } from 'lodash'
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
@@ -93,7 +95,7 @@ function applyPerimetersFilter(
 }
 
 export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
-  const { coverDepartement, withoutPictures } = query;
+  const { coverDepartement } = query;
   const { where, perimetersFilter } = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
@@ -123,13 +125,6 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
 
   const records: PartenaireDeLaCharte[] = await queryPG.getMany();
 
-  if (withoutPictures) {
-    return records.map((record) => {
-      const { picture, ...rest } = record;
-      return rest;
-    });
-  }
-
   return records;
 }
 
@@ -140,7 +135,7 @@ export async function findManyPaginated(
 ) {
   const offset = (page - 1) * limit;
 
-  const { coverDepartement, withoutPictures, shuffleResults } = query;
+  const { coverDepartement, shuffleResults } = query;
   const { where, perimetersFilter } = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
@@ -186,13 +181,6 @@ export async function findManyPaginated(
     data = records.sort(() => Math.random() - 0.5);
   }
 
-  if (withoutPictures) {
-    data = records.map((record) => {
-      const { picture, ...rest } = record;
-      return rest;
-    });
-  }
-
   return {
     total,
     totalCommunes,
@@ -227,6 +215,29 @@ function fillPerimetersIds(clients: Client[]) {
   }
 }
 
+async function uploadPublicFile(partenaireId: string, picture: string): Promise<string | undefined> {
+  const match = picture.match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) {
+    console.warn(`Invalid base64 picture for partenaire ${partenaireId}`);
+    return
+  }
+  const contentType = match[1];
+  const buffer = Buffer.from(match[2], 'base64');
+  const ext = contentType.split('/')[1] ?? 'png';
+  const fileName = `partenaires/${partenaireId}.${ext}`;
+
+  const res = await S3Service.uploadPublicFile(
+    fileName,
+    process.env.S3_CONTAINER_ID,
+    buffer,
+    { ContentType: contentType },
+  );
+
+  console.log('RES', res)
+
+  return fileName
+}
+
 export async function createOne(
   payload: PartenaireDeLaCharteDTO,
   options: any = {},
@@ -249,11 +260,21 @@ export async function createOne(
     fillPerimetersIds(payload.clients);
   }
 
-  const newRecord: PartenaireDeLaCharte =
+  let newRecord: PartenaireDeLaCharte =
     await partenaireDeLaCharteRepository.save(entityToSave);
 
   if (payload.clients) {
     await syncClientsPerimeters(payload.clients);
+  }
+
+
+  if (payload.picture) {
+    const fileName = await uploadPublicFile(newRecord.id, payload.picture)
+
+    if (fileName) {
+      newRecord.pictureUrl = `${process.env.S3_ENDPOINT}/${process.env.S3_CONTAINER_ID}/${fileName}`;
+      newRecord = await partenaireDeLaCharteRepository.save(entityToSave);
+    }
   }
 
   if (isCandidate) {
@@ -304,7 +325,15 @@ export async function updateOne(
     );
   }
 
-  Object.assign(instance, payload);
+  if (payload.picture) {
+    const fileName = await uploadPublicFile(instance.id, payload.picture)
+    if (fileName) {
+      instance.pictureUrl = `${process.env.S3_ENDPOINT}/${process.env.S3_CONTAINER_ID}/${fileName}`;
+    }
+  }
+
+  Object.assign(instance, omit(payload, ['picture']));
+  console.log(instance, payload)
   await partenaireDeLaCharteRepository.save(instance);
 
   if (payload.clients) {

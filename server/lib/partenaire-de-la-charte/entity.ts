@@ -44,8 +44,8 @@ export class PartenaireDeLaCharte {
   @Column("text", { nullable: true })
   siret: string;
 
-  @Column("text", { nullable: true })
-  picture?: string;
+  @Column("text", { nullable: true, name: "picture_url" })
+  pictureUrl?: string;
 
   @Column("text", { nullable: false, name: "contact_last_name" })
   contactLastName: string;

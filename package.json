@@ -23,6 +23,7 @@
     "typeorm:migration:down": "yarn typeorm migration:revert -- -d ./typeorm.config.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1014.0",
     "@ban-team/validateur-bal": "^3.3.7",
     "@codegouvfr/react-dsfr": "^1.14.7",
     "@emotion/react": "^11.11.1",

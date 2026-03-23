@@ -20,6 +20,7 @@ import {
   PartenaireDeLaCharteServiceEnum,
 } from "../../server/lib/partenaire-de-la-charte/entity";
 import { ClientList } from "./clients/client-list";
+import { omit } from 'lodash'
 
 type PartenaireFormProps = {
   title: string | React.ReactNode;
@@ -96,6 +97,21 @@ const newPartenaireForm = {
   clients: [],
 };
 
+async function initFormData(data?: PartenaireDeLaCharte): Promise<PartenaireDeLaCharteDTO> {
+  if (!data) {
+    return newPartenaireForm;
+  }
+
+  let picture: string | undefined;
+  if (data.pictureUrl) {
+    const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(data.pictureUrl)}`);
+    const { base64 } = await response.json();
+    picture = base64;
+  }
+
+  return { ...omit(data, 'pictureUrl'), picture };
+}
+
 export const PartenaireForm = ({
   title,
   data,
@@ -104,9 +120,11 @@ export const PartenaireForm = ({
   controls,
   isCreation,
 }: PartenaireFormProps) => {
-  const [formData, setFormData] = useState<PartenaireDeLaCharteDTO>(
-    data || newPartenaireForm,
-  );
+  const [formData, setFormData] = useState<PartenaireDeLaCharteDTO>(newPartenaireForm);
+
+  useEffect(() => {
+    initFormData(data).then(setFormData);
+  }, [data]);
   const [allClients, setAllClients] = useState<PartenaireClientDB[]>([]);
   const isCandidate = data && !data.charteSignatureDate;
 
