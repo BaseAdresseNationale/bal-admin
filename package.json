@@ -14,7 +14,7 @@
     "build:next": "next build",
     "build:server": "tsc --project tsconfig.server.json",
     "build": "yarn build:next && yarn build:server",
-    "start": "node dist/index.js",
+    "start": "node dist/server/index.js",
     "lint": "eslint --ext .js,.ts,.tsx .",
     "predev": "only-include-used-icons",
     "prebuild": "only-include-used-icons",
