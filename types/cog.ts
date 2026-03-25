@@ -43,6 +43,6 @@ export type EpciCOG = {
   type: string;
   modeFinancement: string;
   populationTotale: number;
-  populationMunicipalenumber;
+  populationMunicipale: number;
   membres: EpciMembreCOG[];
 };

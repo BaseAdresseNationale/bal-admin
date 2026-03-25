@@ -5,6 +5,9 @@ import { Event } from "./server/lib/events/entity";
 import { BalWidget } from "./server/lib/bal-widget/entity";
 import { Participant } from "./server/lib/participant/entity";
 import { Review } from "./server/lib/partenaire-de-la-charte/reviews/entity";
+import { Client } from "./server/lib/partenaire-de-la-charte/clients/entity";
+import { Perimeter } from "./server/lib/partenaire-de-la-charte/clients/pertimeters/entity";
+
 import { Stats } from "./server/lib/stats/entity";
 dotenv.config();
 
@@ -14,6 +17,8 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: true,
   entities: [
+    Perimeter,
+    Client,
     PartenaireDeLaCharte,
     Event,
     BalWidget,

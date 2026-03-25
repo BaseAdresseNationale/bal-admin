@@ -8,6 +8,7 @@ import {
 } from "../../server/lib/partenaire-de-la-charte/entity";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import styled from "styled-components";
+import { ClientTypeEnum } from "server/lib/partenaire-de-la-charte/clients/entity";
 
 const StyledNotification = styled.span`
   position: absolute;
@@ -45,15 +46,22 @@ export const PartenaireItem = ({
   createdAt,
   type,
   name,
-  signatureDate,
+  charteSignatureDate,
   services,
-  dataGouvOrganizationId,
-  apiDepotClientId,
-  reviews,
+  clients,
+  entrepriseReviews,
 }: PartenaireDeLaCharte) => {
-  const pendingReviewsCount = (reviews || []).filter(
-    ({ isEmailVerified, isPublished }) => isEmailVerified && !isPublished
+  const pendingReviewsCount = (entrepriseReviews || []).filter(
+    ({ isEmailVerified, isPublished }) => isEmailVerified && !isPublished,
   ).length;
+
+  const nbClientMoissonneur =
+    clients?.filter(({ type }) => type === ClientTypeEnum.MOISSONNEUR_BAL)
+      .length || 0;
+
+  const nbClientApiDepot =
+    clients?.filter(({ type }) => type === ClientTypeEnum.API_DEPOT).length ||
+    0;
 
   const badgeType =
     pendingReviewsCount > 0 ? (
@@ -83,7 +91,9 @@ export const PartenaireItem = ({
     <tr key={id}>
       <td className="fr-col fr-my-1v">{badgeType}</td>
       <td className="fr-col fr-my-1v">{name}</td>
-      <td className="fr-col fr-my-1v">{getDate(signatureDate, createdAt)}</td>
+      <td className="fr-col fr-my-1v">
+        {getDate(charteSignatureDate, createdAt)}
+      </td>
       <td className="fr-col fr-my-1v">
         {services?.map((service) => (
           <Badge
@@ -96,14 +106,14 @@ export const PartenaireItem = ({
         ))}
       </td>
       <td className="fr-col fr-my-1v">
-        {dataGouvOrganizationId?.length > 0 && (
+        {nbClientMoissonneur > 0 && (
           <Badge severity="info" noIcon>
-            {dataGouvOrganizationId?.length} organisation(s) moissonnée(s)
+            {nbClientMoissonneur} organisation(s) moissonnée(s)
           </Badge>
         )}
-        {apiDepotClientId?.length > 0 && (
+        {nbClientApiDepot > 0 && (
           <Badge severity="new" noIcon>
-            {apiDepotClientId.length} Client(s) api-depot
+            {nbClientApiDepot} Client(s) api-depot
           </Badge>
         )}
       </td>

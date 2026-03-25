@@ -9,6 +9,7 @@ import { AppDataSource } from "./utils/typeorm-client";
 import routeGuard from "./route-guard";
 import { cronEvents } from "./lib/events/cron";
 import { cronStats } from "./lib/stats/cron";
+import { cronPartenaires } from "./lib/partenaire-de-la-charte/cron";
 // PROXY
 import ProxyApiDepot from "./proxy/api-depot.proxy";
 import ProxyMoissonneurBal from "./proxy/moissonneur-bal.proxy";
@@ -17,6 +18,7 @@ import ProxyApiSignalement from "./proxy/api-signalement.proxy";
 // CONTROLLER
 import PartenaireDeLaCharteController from "./lib/partenaire-de-la-charte/controller";
 import ReviewsController from "./lib/partenaire-de-la-charte/reviews/controller";
+import ClientsController from "./lib/partenaire-de-la-charte/clients/controller";
 import EventController from "./lib/events/controller";
 import BalWidgetController from "./lib/bal-widget/controller";
 import StatsController from "./lib/stats/controller";
@@ -62,6 +64,7 @@ async function main() {
 
   // Some Partenaire de la charte routes are public, others are protected by routeGuard
   server.use("/api/partenaires-de-la-charte", PartenaireDeLaCharteController);
+  server.use("/api/clients", ClientsController);
   server.use("/api/reviews", ReviewsController);
   server.use("/api/events", EventController);
   server.use("/api/bal-widget", BalWidgetController);
@@ -75,6 +78,7 @@ async function main() {
   // Start cron events
   cronEvents();
   cronStats();
+  cronPartenaires();
 
   server.listen(port, () => {
     Logger.info(`Start listening on port ${port}`);

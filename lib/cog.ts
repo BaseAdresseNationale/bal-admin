@@ -7,7 +7,7 @@ import {
   CommuneTypeEnum,
   DepartementCOG,
   EpciCOG,
-} from "types/cog";
+} from "../types/cog";
 
 const communes = (allCommunes as CommuneCOG[]).filter((c) =>
   [
@@ -52,4 +52,11 @@ export function getDepartement(codeDepartement: string): DepartementCOG {
 
 export function getCommune(codeCommune: string): CommuneCOG {
   return communesIndex[codeCommune];
+}
+
+export function getEPCICodeFromCommune(codeCommune: string): string | null {
+  const epci = epcis.find((e) =>
+    (e as EpciCOG).membres?.some((m) => m.code === codeCommune),
+  );
+  return epci ? (epci as EpciCOG).code : null;
 }
