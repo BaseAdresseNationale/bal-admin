@@ -135,17 +135,16 @@ export async function syncClients(): Promise<void> {
   const existingByClientId = new Map(
     allExisting.map((c) => [`${c.type}:${c.clientId}`, c]),
   );
+  let syncedApiDepotIds: Set<string>
+  let syncedMoissonneurIds: Set<String>
 
-  const [syncedApiDepotIds, syncedMoissonneurIds] = await Promise.all([
-    syncApiDepotClients(existingByClientId).catch((error) => {
-      Logger.error("Erreur lors de la synchronisation des clients api-depot", error);
-      return new Set<string>();
-    }),
-    syncMoissonneurClients(existingByClientId).catch((error) => {
-      Logger.error("Erreur lors de la synchronisation des organisations moissonneur-bal", error);
-      return new Set<string>();
-    }),
-  ]);
+  try {
+    syncedApiDepotIds = await syncApiDepotClients(existingByClientId)
+    syncedMoissonneurIds = await syncMoissonneurClients(existingByClientId)
+  } catch (error) {
+    Logger.error("Erreur lors de la synchronisation des clients", error);
+    return ;
+  }
 
   // Soft-delete local clients absent des sources distantes
   for (const [key, client] of Array.from(existingByClientId)) {
