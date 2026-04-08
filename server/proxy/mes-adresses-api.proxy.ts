@@ -34,9 +34,17 @@ async function searchBal(req, res) {
   forward(response, res);
 }
 
+async function updateSettingBal(req, res) {
+  const response = await client.put(
+    `bases-locales/${req.params.baseLocaleId}`,
+    { json: req.body },
+  );
+  forward(response, res);
+}
+
 async function removeBal(req, res) {
   const response = await client.delete(
-    `bases-locales/${req.params.baseLocaleId}`
+    `bases-locales/${req.params.baseLocaleId}`,
   );
   forward(response, res);
 }
@@ -48,6 +56,7 @@ app.use(cors());
 
 app.get("/bases-locales/search", w(searchBal));
 app.get("/bases-locales/:baseLocaleId", w(getBal));
+app.put("/bases-locales/:baseLocaleId", w(updateSettingBal));
 app.delete("/bases-locales/:baseLocaleId", w(removeBal));
 
 export default app;

@@ -14,12 +14,12 @@ import type { BaseLocaleType } from "../../types/mes-adresses";
 import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
+import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
 import {
-  getAllRevisionByCommune,
-  getClients,
-  getEmailsCommune,
-} from "@/lib/api-depot";
-import { searchBasesLocales, removeBaseLocale } from "@/lib/api-mes-adresses";
+  searchBasesLocales,
+  removeBaseLocale,
+  updateSettingsBaseLocale,
+} from "@/lib/api-mes-adresses";
 import { getRevisionsByCommune } from "@/lib/api-moissonneur-bal";
 
 import { EditableList } from "@/components/editable-list";
@@ -135,7 +135,6 @@ const CommuneSource = ({
       page: page.current,
       limit: page.limit,
     });
-
     setBals(res.results);
     setPageMesAdresses({
       ...page,
@@ -159,7 +158,7 @@ const CommuneSource = ({
         await getRevisionsByCommune(code);
 
       setInitialRevisionsMoissonneur(
-        sortBy(initialRevisionsMoissonneur, "createdAt").reverse()
+        sortBy(initialRevisionsMoissonneur, "createdAt").reverse(),
       );
       setPageMoissonneur((pageMoissonneur) => ({
         ...pageMoissonneur,
@@ -191,7 +190,7 @@ const CommuneSource = ({
             ...r.client,
             sourceName:
               sourcesMoissonneur.find(
-                (s) => s.id === r.context?.extras?.sourceId
+                (s) => s.id === r.context?.extras?.sourceId,
               )?.title || "inconnu",
           },
         };
@@ -230,9 +229,31 @@ const CommuneSource = ({
     }
   }, [balToDeleted, code, fetchBals, setBalToDeleted, pageMesAdresses]);
 
+  const setOtherBalPublishedIgnored = useCallback(
+    async (baseLocale: BaseLocaleType) => {
+      try {
+        const res = await updateSettingsBaseLocale(baseLocale.id, {
+          ...baseLocale.settings,
+          otherBalPublishedIgnored:
+            !baseLocale.settings?.otherBalPublishedIgnored,
+        });
+        toast("La Bal a bien été modifiée", { type: "success" });
+      } catch (e: unknown) {
+        console.error(e);
+        if (e instanceof Error) {
+          toast(e.message, { type: "error" });
+        }
+      }
+    },
+    [],
+  );
+
   const actionsBals = {
     delete(item: BaseLocaleType) {
       setBalToDeleted(item);
+    },
+    toggleOtherBalPublishedIgnored(item: BaseLocaleType) {
+      setOtherBalPublishedIgnored(item);
     },
     select(item: BaseLocaleType) {
       if (balSelected === item.id) {
@@ -288,6 +309,7 @@ const CommuneSource = ({
           "Date mise à jour",
           "Emails",
           "Nombre numéros / certifiés",
+          "Editable",
           "Actions",
         ]}
         caption="Bals mes adresses"
@@ -332,19 +354,19 @@ export async function getServerSideProps({ params }) {
   const signalementCommuneSettings = await getSignalementCommuneSettings(code);
   const pendingSignalementCount = await getSignalementCount(
     code,
-    SignalementStatusEnum.PENDING
+    SignalementStatusEnum.PENDING,
   );
   const processedSignalementCount = await getSignalementCount(
     code,
-    SignalementStatusEnum.PROCESSED
+    SignalementStatusEnum.PROCESSED,
   );
   const ignoredSignalementCount = await getSignalementCount(
     code,
-    SignalementStatusEnum.IGNORED
+    SignalementStatusEnum.IGNORED,
   );
   const expiredSignalementCount = await getSignalementCount(
     code,
-    SignalementStatusEnum.EXPIRED
+    SignalementStatusEnum.EXPIRED,
   );
 
   const alerts = [];

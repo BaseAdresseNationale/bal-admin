@@ -5,11 +5,12 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import type { BaseLocaleType } from "../../types/mes-adresses";
 import { computeStatus } from "@/lib/bal-status";
 import { formatDate } from "@/lib/util/date";
+import ToggleSwitch from "@codegouvfr/react-dsfr/ToggleSwitch";
 
 export const BalsItem = (
   item: BaseLocaleType,
   actions: Record<string, (item: BaseLocaleType) => void>,
-  selectedItem?: string
+  selectedItem?: string,
 ) => {
   const {
     id,
@@ -21,6 +22,7 @@ export const BalsItem = (
     updatedAt,
     nbNumeros,
     nbNumerosCertifies,
+    settings,
   } = item;
 
   const computedStatus = computeStatus(status, sync);
@@ -45,6 +47,13 @@ export const BalsItem = (
       </td>
       <td className="fr-col fr-my-1v">
         {nbNumeros} / {nbNumerosCertifies}
+      </td>
+      <td>
+        <ToggleSwitch
+          label=""
+          checked={settings?.otherBalPublishedIgnored}
+          onChange={() => actions.toggleOtherBalPublishedIgnored(item)}
+        />
       </td>
       <td className="fr-col fr-my-1v">
         <div style={{ width: "150px" }}>
