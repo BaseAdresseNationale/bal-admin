@@ -237,6 +237,14 @@ const CommuneSource = ({
           otherBalPublishedIgnored:
             !baseLocale.settings?.otherBalPublishedIgnored,
         });
+
+        setBals((bals) =>
+          bals.map((bal) =>
+            bal.id === baseLocale.id
+              ? { ...bal, settings: res.settings }
+              : bal,
+          ),
+        );
         toast("La Bal a bien été modifiée", { type: "success" });
       } catch (e: unknown) {
         console.error(e);
@@ -245,7 +253,7 @@ const CommuneSource = ({
         }
       }
     },
-    [],
+    [setBals],
   );
 
   const actionsBals = {

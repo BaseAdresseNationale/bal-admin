@@ -51,7 +51,7 @@ export const BalsItem = (
       <td>
         <ToggleSwitch
           label=""
-          checked={settings?.otherBalPublishedIgnored}
+          checked={settings?.otherBalPublishedIgnored || false}
           onChange={() => actions.toggleOtherBalPublishedIgnored(item)}
         />
       </td>
