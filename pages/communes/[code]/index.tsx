@@ -1,16 +1,18 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import { sortBy } from "lodash";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
 import type {
   RevisionMoissoneurType,
   SourceMoissoneurType,
-} from "../../types/moissoneur";
+} from "types/moissoneur";
 import type {
   Client,
   Revision as RevisionApiDepot,
-} from "../../types/api-depot.types";
-import type { BaseLocaleType } from "../../types/mes-adresses";
+} from "types/api-depot.types";
+import type { BaseLocaleType } from "types/mes-adresses";
 import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
@@ -240,9 +242,7 @@ const CommuneSource = ({
 
         setBals((bals) =>
           bals.map((bal) =>
-            bal.id === baseLocale.id
-              ? { ...bal, settings: res.settings }
-              : bal,
+            bal.id === baseLocale.id ? { ...bal, settings: res.settings } : bal,
           ),
         );
         toast("La Bal a bien été modifiée", { type: "success" });
@@ -326,6 +326,13 @@ const CommuneSource = ({
         page={{ ...pageMesAdresses, onPageChange: onPageMesAdressesChange }}
         actions={actionsBals}
         selectedItem={balSelected}
+        createBtn={
+          <Link href={`/communes/${code}/new`} passHref legacyBehavior>
+            <Button iconId="fr-icon-add-line" className="fr-mb-2w">
+              Nouvelle BAL
+            </Button>
+          </Link>
+        }
       />
       <EditableList
         headers={["Source", "Date", "Nb lignes / erreurs", "Status"]}

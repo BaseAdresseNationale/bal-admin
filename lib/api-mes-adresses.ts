@@ -108,6 +108,42 @@ export async function getStatCreations({
   return processReponse(res);
 }
 
+export async function createBaseLocale(
+  nom: string,
+  emails: string[],
+  commune: string,
+): Promise<BaseLocaleType> {
+  const res = await fetch(`${PROXY_MES_ADRESSES_API}/bases-locales`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ nom, emails, commune }),
+  });
+  return processReponse(res);
+}
+
+export async function populateBaseLocale(
+  balId: string,
+): Promise<BaseLocaleType> {
+  const res = await fetch(
+    `${PROXY_MES_ADRESSES_API}/bases-locales/${balId}/populate`,
+    { method: "POST" },
+  );
+  return processReponse(res);
+}
+
+export async function uploadBALFile(
+  balId: string,
+  file: File,
+): Promise<unknown> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(
+    `${PROXY_MES_ADRESSES_API}/bases-locales/${balId}/upload`,
+    { method: "POST", body: formData },
+  );
+  return processReponse(res);
+}
+
 export async function createHabilitation(
   balId: string,
   token: string,
