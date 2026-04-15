@@ -11,6 +11,12 @@ export enum StatusSyncEnum {
   CONFLICT = "conflict",
 }
 
+export enum ImportTypeEnum {
+  API_DEPOT = "api-depot",
+  BAN = "ban",
+  CSV = "csv",
+}
+
 export type SyncType = {
   status: StatusSyncEnum;
   isPaused: boolean;
@@ -24,6 +30,7 @@ export type BaseLocaleType = {
   nom?: string;
   status?: StatusBaseLocalEnum;
   commune?: string;
+  importType: ImportTypeEnum;
   nbNumeros?: number;
   nbNumerosCertifies?: number;
   isAllCertified?: boolean;

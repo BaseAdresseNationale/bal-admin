@@ -159,7 +159,7 @@ const CommuneSource = ({
         await getRevisionsByCommune(code);
 
       setInitialRevisionsMoissonneur(
-        sortBy(initialRevisionsMoissonneur, "createdAt").reverse()
+        sortBy(initialRevisionsMoissonneur, "createdAt").reverse(),
       );
       setPageMoissonneur((pageMoissonneur) => ({
         ...pageMoissonneur,
@@ -191,7 +191,7 @@ const CommuneSource = ({
             ...r.client,
             sourceName:
               sourcesMoissonneur.find(
-                (s) => s.id === r.context?.extras?.sourceId
+                (s) => s.id === r.context?.extras?.sourceId,
               )?.title || "inconnu",
           },
         };
@@ -288,6 +288,7 @@ const CommuneSource = ({
           "Date mise à jour",
           "Emails",
           "Nombre numéros / certifiés",
+          "Import",
           "Actions",
         ]}
         caption="Bals mes adresses"
@@ -332,19 +333,19 @@ export async function getServerSideProps({ params }) {
   const signalementCommuneSettings = await getSignalementCommuneSettings(code);
   const pendingSignalementCount = await getSignalementCount(
     code,
-    SignalementStatusEnum.PENDING
+    SignalementStatusEnum.PENDING,
   );
   const processedSignalementCount = await getSignalementCount(
     code,
-    SignalementStatusEnum.PROCESSED
+    SignalementStatusEnum.PROCESSED,
   );
   const ignoredSignalementCount = await getSignalementCount(
     code,
-    SignalementStatusEnum.IGNORED
+    SignalementStatusEnum.IGNORED,
   );
   const expiredSignalementCount = await getSignalementCount(
     code,
-    SignalementStatusEnum.EXPIRED
+    SignalementStatusEnum.EXPIRED,
   );
 
   const alerts = [];
