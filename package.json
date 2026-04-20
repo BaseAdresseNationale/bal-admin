@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1014.0",
-    "@ban-team/validateur-bal": "^3.4.0",
+    "@ban-team/validateur-bal": "^3.5.2",
     "@codegouvfr/react-dsfr": "^1.14.7",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
