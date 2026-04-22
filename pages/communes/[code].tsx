@@ -14,11 +14,7 @@ import type { BaseLocaleType } from "../../types/mes-adresses";
 import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
-import {
-  getAllRevisionByCommune,
-  getClients,
-  getEmailsCommune,
-} from "@/lib/api-depot";
+import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
 import { searchBasesLocales, removeBaseLocale } from "@/lib/api-mes-adresses";
 import { getRevisionsByCommune } from "@/lib/api-moissonneur-bal";
 

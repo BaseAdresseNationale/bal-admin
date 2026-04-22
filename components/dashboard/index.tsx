@@ -9,6 +9,7 @@ import CreationCountChart from "./charts/creation-count";
 import { useDashboardData } from "@/hooks/dashboard-data";
 import StatsBanSynchroComponent from "./stats-ban-synchro";
 import Loader from "../loader";
+import { LastsRevisionsPendingList } from "./lasts-revisions-pending/lasts-revisions-pending-list";
 
 export const defaultChartOptions = {
   responsive: true,
@@ -146,6 +147,8 @@ const Dashboard = () => {
           nbRevisionsWithBanErrors={dashboardData.nbRevisionsWithBanErrors}
           nbRevisionsWithWarnings={dashboardData.nbRevisionsWithWarnings}
         />
+        <h3 style={{ paddingTop: "16px" }}>Dernières révisions en attentes</h3>
+        <LastsRevisionsPendingList />
         <h3 style={{ paddingTop: "16px" }}>Stats de déployement BAL</h3>
         <div className="dashboard-header">
           {timeLapses.map(({ label }, index) => (
