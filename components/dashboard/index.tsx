@@ -7,7 +7,7 @@ import FirstPublicationEvolutionChart from "./charts/first-publication-evolution
 import PublicationCountChart from "./charts/publication-count";
 import CreationCountChart from "./charts/creation-count";
 import { useDashboardData } from "@/hooks/dashboard-data";
-import StatsBanSynchroComponent from "./stats-ban-synchro";
+import { RevisionsRejectedBanList } from "./revisions-rejected-ban/revisions-rejected-ban-list";
 import Loader from "../loader";
 import { LastsRevisionsPendingList } from "./lasts-revisions-pending/lasts-revisions-pending-list";
 
@@ -138,14 +138,9 @@ const Dashboard = () => {
   return (
     <Loader isLoading={isLoading}>
       <DashboardContainer>
-        <h3 style={{ paddingTop: "16px" }}>Stats de synchro avec la BAN</h3>
-        <StatsBanSynchroComponent
-          nbCommunesWithBanErrors={dashboardData.nbCommunesWithBanErrors}
-          nbCommunesStillWithBanErrors={
-            dashboardData.nbCommunesStillWithBanErrors
-          }
-          nbRevisionsWithBanErrors={dashboardData.nbRevisionsWithBanErrors}
-          nbRevisionsWithWarnings={dashboardData.nbRevisionsWithWarnings}
+        <h3 style={{ paddingTop: "16px" }}>Révisions rejetées par la BAN</h3>
+        <RevisionsRejectedBanList
+          codeCommunes={dashboardData.nbCommunesStillWithBanErrors}
         />
         <h3 style={{ paddingTop: "16px" }}>Dernières révisions en attentes</h3>
         <LastsRevisionsPendingList />
