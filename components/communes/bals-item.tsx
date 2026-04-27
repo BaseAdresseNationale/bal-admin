@@ -2,7 +2,11 @@ import Link from "next/link";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 
-import { BaseLocaleType, ImportTypeEnum } from "../../types/mes-adresses";
+import {
+  BaseLocaleType,
+  ImportTypeEnum,
+  StatusBaseLocalEnum,
+} from "../../types/mes-adresses";
 import { computeStatus } from "@/lib/bal-status";
 import { formatDate } from "@/lib/util/date";
 import ToggleSwitch from "@codegouvfr/react-dsfr/ToggleSwitch";
@@ -62,7 +66,12 @@ export const BalsItem = (
       <td>
         <ToggleSwitch
           label=""
-          checked={settings?.otherBalPublishedIgnored || false}
+          disabled={status === StatusBaseLocalEnum.PUBLISHED}
+          checked={
+            status === StatusBaseLocalEnum.PUBLISHED ||
+            settings?.otherBalPublishedIgnored ||
+            false
+          }
           onChange={() => actions.toggleOtherBalPublishedIgnored(item)}
         />
       </td>
