@@ -41,7 +41,6 @@ const authorizationStrategyOptions = [
 
 const newClientFormData: Partial<Client> = {
   nom: "",
-  isRelaxMode: false,
   isActive: false,
   mandataireId: null,
   mandataire: null,
@@ -53,7 +52,7 @@ const ClientForm = () => {
   const clientId: string = router.query?.clientId as string;
   const isDemo: boolean = router.query?.demo === "1";
   const [authorizationStrategy, setAuthorizationStrategy] = useState(
-    authorizationStrategyOptions[0].value
+    authorizationStrategyOptions[0].value,
   );
   const [isFormValid, setIsFormValid] = useState(false);
   const [submitError, setSubmitError] = useState();
@@ -80,7 +79,6 @@ const ClientForm = () => {
         setAuthorizationStrategy(client.authorizationStrategy);
         setFormData({
           nom: client.nom,
-          isRelaxMode: client.isRelaxMode,
           isActive: client.isActive,
           mandataireId: client.mandataireId,
           chefDeFileId: client.chefDeFileId,
@@ -99,29 +97,21 @@ const ClientForm = () => {
     (property: string) => (value: any) => {
       setFormData((state) => ({ ...state, [property]: value }));
     },
-    []
+    [],
   );
 
   const handleToggle = useCallback(
     (property: string) => () => {
       setFormData((state) => ({ ...state, [property]: !state[property] }));
     },
-    []
+    [],
   );
 
   const handleSumit = async (event) => {
     event.preventDefault();
-    const {
-      nom,
-      isRelaxMode,
-      isActive,
-      mandataireId,
-      mandataire,
-      chefDeFileId,
-    } = formData;
+    const { nom, isActive, mandataireId, mandataire, chefDeFileId } = formData;
     const body: Partial<Client> = {
       nom,
-      isRelaxMode,
       isActive,
       authorizationStrategy,
     };
@@ -139,7 +129,7 @@ const ClientForm = () => {
       } else if (mandataire) {
         const newMandataire: Mandataire = await createMandataire(
           mandataire,
-          isDemo
+          isDemo,
         );
         body.mandataireId = newMandataire.id;
       }
@@ -213,13 +203,6 @@ const ClientForm = () => {
                 helperText="Authorise le client à utiliser l’API"
                 checked={formData.isActive}
                 onChange={handleToggle("isActive")}
-              />
-
-              <ToggleSwitch
-                label="Mode relax"
-                helperText="Le mode relax assoupli les vérifications du Validateur BAL"
-                checked={formData.isRelaxMode}
-                onChange={handleToggle("isRelaxMode")}
               />
 
               <SelectInput

@@ -39,19 +39,6 @@ const ClientItem = ({
       />
     </td>
     <td className="fr-col fr-my-1v">
-      <Checkbox
-        options={[
-          {
-            label: "",
-            nativeInputProps: {
-              checked: client.isRelaxMode,
-              disabled: true,
-            },
-          },
-        ]}
-      />
-    </td>
-    <td className="fr-col fr-my-1v">
       {partenaires && partenaires.length > 0 ? (
         partenaires.map((partenaire) => (
           <div key={partenaire.id}>

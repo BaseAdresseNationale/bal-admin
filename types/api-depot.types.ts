@@ -166,7 +166,6 @@ export type Client = {
   legacyId: string;
   nom: string;
   isActive: boolean;
-  isRelaxMode: boolean;
   token?: string;
   authorizationStrategy: AuthorizationStrategyEnum;
   createdAt: Date;

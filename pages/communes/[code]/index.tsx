@@ -317,7 +317,8 @@ const CommuneSource = ({
           "Date mise à jour",
           "Emails",
           "Nombre numéros / certifiés",
-          "Editable",
+          "Edition",
+          "Import",
           "Actions",
         ]}
         caption="Bals mes adresses"

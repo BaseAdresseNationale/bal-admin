@@ -34,18 +34,6 @@ const ClientHeader = ({ client, partenaire }: ClientHeaderProps) => (
               },
             ]}
           />
-          <Checkbox
-            state={client.isRelaxMode ? "success" : "error"}
-            options={[
-              {
-                label: "Mode relax",
-                nativeInputProps: {
-                  checked: client.isRelaxMode,
-                  disabled: true,
-                },
-              },
-            ]}
-          />
 
           {partenaire ? (
             <>

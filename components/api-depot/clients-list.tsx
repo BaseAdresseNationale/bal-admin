@@ -69,7 +69,6 @@ const ClientsList = ({ isDemo = false }: ClientsListProps) => {
               <th scope="col">Chef de file</th>
               <th scope="col">Stratégie d’autorisation</th>
               <th scope="col">Activé</th>
-              <th scope="col">Mode relax</th>
               <th scope="col">Partenaire</th>
               <th scope="col">Editer</th>
               <th scope="col">Consulter</th>
