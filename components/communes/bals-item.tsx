@@ -2,9 +2,14 @@ import Link from "next/link";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 
-import { BaseLocaleType, ImportTypeEnum } from "../../types/mes-adresses";
+import {
+  BaseLocaleType,
+  ImportTypeEnum,
+  StatusBaseLocalEnum,
+} from "../../types/mes-adresses";
 import { computeStatus } from "@/lib/bal-status";
 import { formatDate } from "@/lib/util/date";
+import ToggleSwitch from "@codegouvfr/react-dsfr/ToggleSwitch";
 
 export const BalsItem = (
   item: BaseLocaleType,
@@ -21,6 +26,7 @@ export const BalsItem = (
     updatedAt,
     nbNumeros,
     nbNumerosCertifies,
+    settings,
     importType,
   } = item;
 
@@ -56,6 +62,18 @@ export const BalsItem = (
       </td>
       <td className="fr-col fr-my-1v">
         {nbNumeros} / {nbNumerosCertifies}
+      </td>
+      <td>
+        <ToggleSwitch
+          label=""
+          disabled={status === StatusBaseLocalEnum.PUBLISHED}
+          checked={
+            status === StatusBaseLocalEnum.PUBLISHED ||
+            settings?.otherBalPublishedIgnored ||
+            false
+          }
+          onChange={() => actions.toggleOtherBalPublishedIgnored(item)}
+        />
       </td>
       <td className="fr-col fr-my-1v">
         <Badge severity={getSeverityImport()} noIcon>

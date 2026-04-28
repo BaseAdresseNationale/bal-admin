@@ -1,5 +1,8 @@
 import { Habilitation } from "types/api-depot.types";
-import type { BaseLocaleType } from "../types/mes-adresses";
+import type {
+  BaseLocaleSettingType,
+  BaseLocaleType,
+} from "../types/mes-adresses";
 import type { PageType } from "../types/page";
 
 const NEXT_PUBLIC_API_MES_ADRESSES =
@@ -32,19 +35,36 @@ async function processReponse(res: Response) {
 }
 
 export async function getBaseLocale(
-  baseLocaleId: string
+  baseLocaleId: string,
 ): Promise<BaseLocaleType> {
   const res: Response = await fetch(
-    `${PROXY_MES_ADRESSES_API}/bases-locales/${baseLocaleId}`
+    `${PROXY_MES_ADRESSES_API}/bases-locales/${baseLocaleId}`,
   );
   return processReponse(res);
 }
 
 export async function getBaseLocaleIsHabilitationValid(
-  baseLocaleId: string
+  baseLocaleId: string,
 ): Promise<boolean> {
   const res: Response = await fetch(
-    `${NEXT_PUBLIC_API_MES_ADRESSES}/bases-locales/${baseLocaleId}/habilitation/is-valid`
+    `${NEXT_PUBLIC_API_MES_ADRESSES}/bases-locales/${baseLocaleId}/habilitation/is-valid`,
+  );
+  return processReponse(res);
+}
+
+export async function updateSettingsBaseLocale(
+  baseLocaleId: string,
+  settings: BaseLocaleSettingType,
+) {
+  const res: Response = await fetch(
+    `${PROXY_MES_ADRESSES_API}/bases-locales/${baseLocaleId}`,
+    {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ settings }),
+    },
   );
   return processReponse(res);
 }
@@ -54,13 +74,13 @@ export async function removeBaseLocale(baseLocaleId: string) {
     `${PROXY_MES_ADRESSES_API}/bases-locales/${baseLocaleId}`,
     {
       method: "DELETE",
-    }
+    },
   );
   return processReponse(res);
 }
 
 export async function searchBasesLocales(
-  query: SearchBasesLocalesParams
+  query: SearchBasesLocalesParams,
 ): Promise<PageType<BaseLocaleType>> {
   const { page = 1, limit = 20, deleted = false } = query;
   const offset = (page - 1) * limit;
@@ -70,7 +90,7 @@ export async function searchBasesLocales(
     .join("&");
 
   const res: Response = await fetch(
-    `${PROXY_MES_ADRESSES_API}/bases-locales/search?${queryString}`
+    `${PROXY_MES_ADRESSES_API}/bases-locales/search?${queryString}`,
   );
   return processReponse(res);
 }
@@ -83,21 +103,57 @@ export async function getStatCreations({
   to: string;
 }) {
   const res = await fetch(
-    `${NEXT_PUBLIC_API_MES_ADRESSES}/stats/bals/creations?from=${from}&to=${to}`
+    `${NEXT_PUBLIC_API_MES_ADRESSES}/stats/bals/creations?from=${from}&to=${to}`,
+  );
+  return processReponse(res);
+}
+
+export async function createBaseLocale(
+  nom: string,
+  emails: string[],
+  commune: string,
+): Promise<BaseLocaleType> {
+  const res = await fetch(`${PROXY_MES_ADRESSES_API}/bases-locales`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ nom, emails, commune }),
+  });
+  return processReponse(res);
+}
+
+export async function populateBaseLocale(
+  balId: string,
+): Promise<BaseLocaleType> {
+  const res = await fetch(
+    `${PROXY_MES_ADRESSES_API}/bases-locales/${balId}/populate`,
+    { method: "POST" },
+  );
+  return processReponse(res);
+}
+
+export async function uploadBALFile(
+  balId: string,
+  file: File,
+): Promise<unknown> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(
+    `${PROXY_MES_ADRESSES_API}/bases-locales/${balId}/upload`,
+    { method: "POST", body: formData },
   );
   return processReponse(res);
 }
 
 export async function createHabilitation(
   balId: string,
-  token: string
+  token: string,
 ): Promise<Habilitation> {
   const res = await fetch(
     `${NEXT_PUBLIC_API_MES_ADRESSES}/bases-locales/${balId}/habilitation`,
     {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
-    }
+    },
   );
 
   return processReponse(res);

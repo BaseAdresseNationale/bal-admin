@@ -34,9 +34,41 @@ async function searchBal(req, res) {
   forward(response, res);
 }
 
+async function updateSettingBal(req, res) {
+  const response = await client.put(
+    `bases-locales/${req.params.baseLocaleId}`,
+    { json: req.body },
+  );
+  forward(response, res);
+}
+
 async function removeBal(req, res) {
   const response = await client.delete(
-    `bases-locales/${req.params.baseLocaleId}`
+    `bases-locales/${req.params.baseLocaleId}`,
+  );
+  forward(response, res);
+}
+
+async function createBal(req, res) {
+  const response = await client.post("bases-locales", { json: req.body });
+  forward(response, res);
+}
+
+async function populateBal(req, res) {
+  const response = await client.post(
+    `bases-locales/${req.params.baseLocaleId}/populate`,
+    { json: {} },
+  );
+  forward(response, res);
+}
+
+async function uploadFile(req, res) {
+  const response = await client.post(
+    `bases-locales/${req.params.baseLocaleId}/upload`,
+    {
+      body: req,
+      headers: { "content-type": req.headers["content-type"] },
+    },
   );
   forward(response, res);
 }
@@ -48,6 +80,10 @@ app.use(cors());
 
 app.get("/bases-locales/search", w(searchBal));
 app.get("/bases-locales/:baseLocaleId", w(getBal));
+app.post("/bases-locales", w(createBal));
+app.post("/bases-locales/:baseLocaleId/populate", w(populateBal));
+app.post("/bases-locales/:baseLocaleId/upload", w(uploadFile));
+app.put("/bases-locales/:baseLocaleId", w(updateSettingBal));
 app.delete("/bases-locales/:baseLocaleId", w(removeBal));
 
 export default app;

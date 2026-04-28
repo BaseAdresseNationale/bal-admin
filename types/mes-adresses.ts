@@ -24,6 +24,14 @@ export type SyncType = {
   lastUploadedRevisionId: string;
 };
 
+export class BaseLocaleSettingType {
+  otherBalPublishedIgnored?: boolean;
+  languageGoalIgnored?: boolean;
+  toponymeGoalIgnored?: boolean;
+  fondsDeCartes?: any[];
+  ignoredAlertCodes?: string[];
+}
+
 export type BaseLocaleType = {
   id: string;
   token?: string;
@@ -39,4 +47,5 @@ export type BaseLocaleType = {
   createdAt?: string;
   updatedAt?: string;
   deletedAt?: string;
+  settings: BaseLocaleSettingType;
 };
