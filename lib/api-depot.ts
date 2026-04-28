@@ -1,4 +1,3 @@
-import { LastsRevisionsPendingList } from "@/components/dashboard/lasts-revisions-pending/lasts-revisions-pending-list";
 import {
   ChefDeFile,
   Client,
