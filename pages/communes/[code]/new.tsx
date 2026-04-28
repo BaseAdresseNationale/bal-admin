@@ -5,6 +5,7 @@ import { NewBalForm } from "@/components/communes/new-bal-form";
 import {
   createBaseLocale,
   populateBaseLocale,
+  updateSettingsBaseLocale,
   uploadBALFile,
 } from "@/lib/api-mes-adresses";
 
@@ -25,6 +26,10 @@ const NewBalPage = () => {
       } else if (source === "ban") {
         await populateBaseLocale(newBal.id);
       }
+      await updateSettingsBaseLocale(newBal.id, {
+        ...newBal.settings,
+        otherBalPublishedIgnored: true,
+      });
       toast("BAL créée avec succès", { type: "success" });
       await router.push(`/communes/${code}`);
     } catch (e: unknown) {
