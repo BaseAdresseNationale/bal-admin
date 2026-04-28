@@ -37,7 +37,12 @@ const Header = ({ session }: HeaderProps) => (
               </div>
             </div>
             <div className="fr-header__service">
-              <Link href="/" legacyBehavior passHref title="Accueil - [BAL Admin / ANCT]">
+              <Link
+                href="/"
+                legacyBehavior
+                passHref
+                title="Accueil - [BAL Admin / ANCT]"
+              >
                 <p className="fr-header__service-title">
                   Base Adresse Locale / Admin - ANCT
                 </p>
@@ -110,7 +115,14 @@ const Header = ({ session }: HeaderProps) => (
                   Communes
                 </a>
               </Link>
-            </li>{" "}
+            </li>
+            <li className="fr-nav__item">
+              <Link href="/blocked-bals" legacyBehavior passHref>
+                <a className="fr-nav__link" target="_self">
+                  BALs bloquées
+                </a>
+              </Link>
+            </li>
             <li className="fr-nav__item">
               <Link href="/api-depot" legacyBehavior passHref>
                 <a className="fr-nav__link" target="_self">

@@ -173,3 +173,12 @@ export type Client = {
   mandataire?: Mandataire;
   chefDeFile?: ChefDeFile;
 };
+
+export type LastsRevisionsPending = {
+  id: string;
+  codeCommune: string;
+  createdAt: string;
+  status: string;
+  legacyId: string;
+  validation?: Validation | null;
+};

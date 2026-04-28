@@ -7,7 +7,6 @@ import FirstPublicationEvolutionChart from "./charts/first-publication-evolution
 import PublicationCountChart from "./charts/publication-count";
 import CreationCountChart from "./charts/creation-count";
 import { useDashboardData } from "@/hooks/dashboard-data";
-import StatsBanSynchroComponent from "./stats-ban-synchro";
 import Loader from "../loader";
 
 export const defaultChartOptions = {
@@ -137,15 +136,6 @@ const Dashboard = () => {
   return (
     <Loader isLoading={isLoading}>
       <DashboardContainer>
-        <h3 style={{ paddingTop: "16px" }}>Stats de synchro avec la BAN</h3>
-        <StatsBanSynchroComponent
-          nbCommunesWithBanErrors={dashboardData.nbCommunesWithBanErrors}
-          nbCommunesStillWithBanErrors={
-            dashboardData.nbCommunesStillWithBanErrors
-          }
-          nbRevisionsWithBanErrors={dashboardData.nbRevisionsWithBanErrors}
-          nbRevisionsWithWarnings={dashboardData.nbRevisionsWithWarnings}
-        />
         <h3 style={{ paddingTop: "16px" }}>Stats de déployement BAL</h3>
         <div className="dashboard-header">
           {timeLapses.map(({ label }, index) => (

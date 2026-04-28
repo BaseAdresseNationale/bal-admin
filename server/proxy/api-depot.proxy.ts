@@ -68,7 +68,7 @@ async function createMandataire(req, res) {
 
 async function getMandataire(req, res) {
   const response = await req.client.get(
-    `mandataires/${req.params.mandataireId}`
+    `mandataires/${req.params.mandataireId}`,
   );
   forward(response, res);
 }
@@ -85,7 +85,7 @@ async function createChefDeFile(req, res) {
 
 async function getChefDeFile(req, res) {
   const response = await req.client.get(
-    `chefs-de-file/${req.params.chefDeFileId}`
+    `chefs-de-file/${req.params.chefDeFileId}`,
   );
   forward(response, res);
 }
@@ -98,7 +98,7 @@ async function getChefsDeFile(req, res) {
 async function updateChefDeFile(req, res) {
   const response = await req.client.put(
     `chefs-de-file/${req.params.chefDeFileId}`,
-    { json: req.body }
+    { json: req.body },
   );
   forward(response, res);
 }
@@ -117,7 +117,7 @@ async function getStatFirstPublicationEvolution(req, res) {
   const { from, to } = req.query;
 
   const response = await client.get(
-    `stats/firsts-publications?from=${from}&to=${to}`
+    `stats/firsts-publications?from=${from}&to=${to}`,
   );
   forward(response, res);
 }
@@ -147,14 +147,22 @@ async function getAllRevisionsByCommune(req, res) {
   const response = await req.client.get(
     `communes/${req.params.codeCommune}/revisions?${
       queryParams ? `&${queryParams}` : ""
-    }`
+    }`,
+  );
+  forward(response, res);
+}
+
+async function getLastsRevisionsPending(req, res) {
+  const queryParams = new URLSearchParams(req.query).toString();
+  const response = await req.client.get(
+    `revisions-lasts-pending?${queryParams ? `&${queryParams}` : ""}`,
   );
   forward(response, res);
 }
 
 async function validateHabilitation(req, res) {
   const response = await req.client.put(
-    `habilitations/${req.params.habilitationId}/validate`
+    `habilitations/${req.params.habilitationId}/validate`,
   );
   forward(response, res);
 }
@@ -189,6 +197,7 @@ app.get("/stats/firsts-publications", w(getStatFirstPublicationEvolution));
 app.get("/stats/publications", w(getStatPublications));
 
 app.get("/communes/:codeCommune/revisions", w(getAllRevisionsByCommune));
+app.get("/revisions-lasts-pending", w(getLastsRevisionsPending));
 
 app.put("/habilitations/:habilitationId/validate", w(validateHabilitation));
 

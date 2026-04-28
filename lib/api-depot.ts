@@ -1,6 +1,7 @@
 import {
   ChefDeFile,
   Client,
+  LastsRevisionsPending,
   Mandataire,
   Revision,
 } from "types/api-depot.types";
@@ -27,6 +28,11 @@ async function processResponse(res: Response) {
   }
 }
 
+export type LastsRevisionsPendingPaginated = {
+  total: number;
+  result: LastsRevisionsPending[];
+};
+
 function getProxyURL(isDemo: boolean = false): string {
   return isDemo ? PROXY_API_DEPOT_DEMO_URL : PROXY_API_DEPOT_URL;
 }
@@ -40,7 +46,7 @@ export async function getClient(clientId, isDemo): Promise<Client> {
 export async function updateClient(
   clientId: string,
   body: Partial<Client>,
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<Client> {
   const response = await fetch(`${getProxyURL(isDemo)}/clients/${clientId}`, {
     method: "PUT",
@@ -53,7 +59,7 @@ export async function updateClient(
 
 export async function createClient(
   body: Partial<Client>,
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<Client> {
   const response = await fetch(`${getProxyURL(isDemo)}/clients`, {
     method: "POST",
@@ -72,7 +78,7 @@ export async function getClients(isDemo: boolean = false): Promise<Client[]> {
 
 export async function createMandataire(
   body: Partial<Mandataire>,
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<Mandataire> {
   const response = await fetch(`${getProxyURL(isDemo)}/mandataires`, {
     method: "POST",
@@ -85,17 +91,17 @@ export async function createMandataire(
 
 export async function getMandataire(
   mandataireId: string,
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<Mandataire> {
   const response = await fetch(
-    `${getProxyURL(isDemo)}/mandataires/${mandataireId}`
+    `${getProxyURL(isDemo)}/mandataires/${mandataireId}`,
   );
 
   return processResponse(response);
 }
 
 export async function getMandataires(
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<Mandataire[]> {
   const response = await fetch(`${getProxyURL(isDemo)}/mandataires`);
 
@@ -104,7 +110,7 @@ export async function getMandataires(
 
 export async function createChefDeFile(
   body: Partial<ChefDeFile>,
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<ChefDeFile> {
   const response = await fetch(`${getProxyURL(isDemo)}/chefs-de-file`, {
     method: "POST",
@@ -118,7 +124,7 @@ export async function createChefDeFile(
 export async function updateChefDeFile(
   chefDeFileId: string,
   body: Partial<ChefDeFile>,
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<ChefDeFile> {
   const response = await fetch(
     `${getProxyURL(isDemo)}/chefs-de-file/${chefDeFileId}`,
@@ -126,7 +132,7 @@ export async function updateChefDeFile(
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
-    }
+    },
   );
 
   return processResponse(response);
@@ -134,17 +140,17 @@ export async function updateChefDeFile(
 
 export async function getChefDeFile(
   chefDeFileId: string,
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<ChefDeFile> {
   const response = await fetch(
-    `${getProxyURL(isDemo)}/chefs-de-file/${chefDeFileId}`
+    `${getProxyURL(isDemo)}/chefs-de-file/${chefDeFileId}`,
   );
 
   return processResponse(response);
 }
 
 export async function getChefsDeFile(
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<ChefDeFile[]> {
   const response = await fetch(`${getProxyURL(isDemo)}/chefs-de-file`);
 
@@ -153,10 +159,10 @@ export async function getChefsDeFile(
 
 export async function getStatFirstPublicationEvolution(
   { from, to }: { from: string; to: string },
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ) {
   const res = await fetch(
-    `${getProxyURL(isDemo)}/stats/firsts-publications?from=${from}&to=${to}`
+    `${getProxyURL(isDemo)}/stats/firsts-publications?from=${from}&to=${to}`,
   );
 
   if (res.ok) {
@@ -166,10 +172,10 @@ export async function getStatFirstPublicationEvolution(
 
 export async function getStatPublications(
   { from, to }: { from: string; to: string },
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ) {
   const res = await fetch(
-    `${getProxyURL(isDemo)}/stats/publications?from=${from}&to=${to}`
+    `${getProxyURL(isDemo)}/stats/publications?from=${from}&to=${to}`,
   );
 
   if (res.ok) {
@@ -178,7 +184,7 @@ export async function getStatPublications(
 }
 
 export async function getCurrentRevisions(
-  codesCommunes: string[]
+  codesCommunes: string[],
 ): Promise<Revision[]> {
   const url = new URL(`${NEXT_PUBLIC_API_DEPOT_URL}/current-revisions`);
   for (const codeCommune of codesCommunes) {
@@ -192,12 +198,23 @@ export async function getCurrentRevisions(
 
 export async function getAllRevisionByCommune(
   codeCommune: string,
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ): Promise<Revision[]> {
   const response = await fetch(
     `${getProxyURL(
-      isDemo
-    )}/communes/${codeCommune}/revisions?status=all&ancienneCommuneAllowed=true`
+      isDemo,
+    )}/communes/${codeCommune}/revisions?status=all&ancienneCommuneAllowed=true`,
+  );
+
+  return processResponse(response);
+}
+
+export async function getLastsRevisionsPending({
+  page = 1,
+  limit = 10,
+}): Promise<LastsRevisionsPendingPaginated> {
+  const response = await fetch(
+    `${getProxyURL()}/revisions-lasts-pending?page=${page}&limit=${limit}`,
   );
 
   return processResponse(response);
@@ -205,14 +222,14 @@ export async function getAllRevisionByCommune(
 
 export async function validateHabilitation(
   habilitationId: string,
-  isDemo: boolean = false
+  isDemo: boolean = false,
 ) {
   const response = await fetch(
     `${getProxyURL(isDemo)}/habilitations/${habilitationId}/validate`,
     {
       method: "PUT",
       headers: { "content-type": "application/json" },
-    }
+    },
   );
 
   return processResponse(response);
@@ -224,7 +241,7 @@ export async function getEmailsCommune(codeCommune: string) {
     {
       method: "GET",
       headers: { "content-type": "application/json" },
-    }
+    },
   );
 
   return processResponse(response);
