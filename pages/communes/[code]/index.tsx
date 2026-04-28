@@ -1,25 +1,27 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import { sortBy } from "lodash";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
 import type {
   RevisionMoissoneurType,
   SourceMoissoneurType,
-} from "../../types/moissoneur";
+} from "types/moissoneur";
 import type {
   Client,
   Revision as RevisionApiDepot,
-} from "../../types/api-depot.types";
-import type { BaseLocaleType } from "../../types/mes-adresses";
+} from "types/api-depot.types";
+import type { BaseLocaleType } from "types/mes-adresses";
 import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
+import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
 import {
-  getAllRevisionByCommune,
-  getClients,
-  getEmailsCommune,
-} from "@/lib/api-depot";
-import { searchBasesLocales, removeBaseLocale } from "@/lib/api-mes-adresses";
+  searchBasesLocales,
+  removeBaseLocale,
+  updateSettingsBaseLocale,
+} from "@/lib/api-mes-adresses";
 import { getRevisionsByCommune } from "@/lib/api-moissonneur-bal";
 
 import { EditableList } from "@/components/editable-list";
@@ -135,7 +137,6 @@ const CommuneSource = ({
       page: page.current,
       limit: page.limit,
     });
-
     setBals(res.results);
     setPageMesAdresses({
       ...page,
@@ -230,9 +231,37 @@ const CommuneSource = ({
     }
   }, [balToDeleted, code, fetchBals, setBalToDeleted, pageMesAdresses]);
 
+  const setOtherBalPublishedIgnored = useCallback(
+    async (baseLocale: BaseLocaleType) => {
+      try {
+        const res = await updateSettingsBaseLocale(baseLocale.id, {
+          ...baseLocale.settings,
+          otherBalPublishedIgnored:
+            !baseLocale.settings?.otherBalPublishedIgnored,
+        });
+
+        setBals((bals) =>
+          bals.map((bal) =>
+            bal.id === baseLocale.id ? { ...bal, settings: res.settings } : bal,
+          ),
+        );
+        toast("La Bal a bien été modifiée", { type: "success" });
+      } catch (e: unknown) {
+        console.error(e);
+        if (e instanceof Error) {
+          toast(e.message, { type: "error" });
+        }
+      }
+    },
+    [setBals],
+  );
+
   const actionsBals = {
     delete(item: BaseLocaleType) {
       setBalToDeleted(item);
+    },
+    toggleOtherBalPublishedIgnored(item: BaseLocaleType) {
+      setOtherBalPublishedIgnored(item);
     },
     select(item: BaseLocaleType) {
       if (balSelected === item.id) {
@@ -288,6 +317,7 @@ const CommuneSource = ({
           "Date mise à jour",
           "Emails",
           "Nombre numéros / certifiés",
+          "Edition",
           "Import",
           "Actions",
         ]}
@@ -297,10 +327,17 @@ const CommuneSource = ({
         page={{ ...pageMesAdresses, onPageChange: onPageMesAdressesChange }}
         actions={actionsBals}
         selectedItem={balSelected}
+        createBtn={
+          <Link href={`/communes/${code}/new`} passHref legacyBehavior>
+            <Button iconId="fr-icon-add-line" className="fr-mb-2w">
+              Nouvelle BAL
+            </Button>
+          </Link>
+        }
       />
       <EditableList
         headers={["Source", "Date", "Nb lignes / erreurs", "Status"]}
-        caption="Révisions Moissoneur"
+        caption="Révisions Moissonneur"
         data={revisionsMoissoneur}
         renderItem={RevisionItemMoissoneur}
         page={{ ...pageMoissonneur, onPageChange: onPageMoissonneurChange }}
