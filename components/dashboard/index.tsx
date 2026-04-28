@@ -7,9 +7,7 @@ import FirstPublicationEvolutionChart from "./charts/first-publication-evolution
 import PublicationCountChart from "./charts/publication-count";
 import CreationCountChart from "./charts/creation-count";
 import { useDashboardData } from "@/hooks/dashboard-data";
-import { RevisionsRejectedBanList } from "./revisions-rejected-ban/revisions-rejected-ban-list";
 import Loader from "../loader";
-import { LastsRevisionsPendingList } from "./lasts-revisions-pending/lasts-revisions-pending-list";
 
 export const defaultChartOptions = {
   responsive: true,
@@ -138,12 +136,6 @@ const Dashboard = () => {
   return (
     <Loader isLoading={isLoading}>
       <DashboardContainer>
-        <h3 style={{ paddingTop: "16px" }}>Révisions rejetées par la BAN</h3>
-        <RevisionsRejectedBanList
-          codeCommunes={dashboardData.nbCommunesStillWithBanErrors}
-        />
-        <h3 style={{ paddingTop: "16px" }}>Dernières révisions en attentes</h3>
-        <LastsRevisionsPendingList />
         <h3 style={{ paddingTop: "16px" }}>Stats de déployement BAL</h3>
         <div className="dashboard-header">
           {timeLapses.map(({ label }, index) => (
