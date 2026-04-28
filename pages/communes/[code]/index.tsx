@@ -337,7 +337,7 @@ const CommuneSource = ({
       />
       <EditableList
         headers={["Source", "Date", "Nb lignes / erreurs", "Status"]}
-        caption="Révisions Moissoneur"
+        caption="Révisions Moissonneur"
         data={revisionsMoissoneur}
         renderItem={RevisionItemMoissoneur}
         page={{ ...pageMoissonneur, onPageChange: onPageMoissonneurChange }}
