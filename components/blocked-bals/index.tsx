@@ -11,7 +11,7 @@ const BlockedBals = () => {
       <Loader isLoading={isLoading}>
         <h3 style={{ paddingTop: "16px" }}>Révisions rejetées par la BAN</h3>
         <RevisionsRejectedBanList
-          codeCommunes={dashboardData.nbCommunesStillWithBanErrors}
+          codeCommunes={dashboardData.codesCommunesWithBanErrors}
         />
         {/* <h3 style={{ paddingTop: "16px" }}>Dernières révisions en attentes</h3>
         <LastsRevisionsPendingList /> */}
