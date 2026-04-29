@@ -9,6 +9,7 @@ export interface StatsData {
   depot_publications?: StatData<any>;
   mes_adresses_bals_creations?: StatData<any>;
   codes_communes_with_ban_errors?: StatData<string[]>;
+  blocked_revisions?: StatData<string[]>;
 }
 
 export async function getStats(): Promise<StatsData> {

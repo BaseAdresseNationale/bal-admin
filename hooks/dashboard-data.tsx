@@ -7,6 +7,7 @@ interface DashboardData {
   publicationsResponse: any[];
   creationsResponse: any[];
   codesCommunesWithBanErrors: string[];
+  blockedRevisions: string[];
 }
 
 const initialDashboardData: DashboardData = {
@@ -14,6 +15,7 @@ const initialDashboardData: DashboardData = {
   publicationsResponse: [],
   creationsResponse: [],
   codesCommunesWithBanErrors: [],
+  blockedRevisions: [],
 };
 
 export function useDashboardData() {
@@ -37,6 +39,7 @@ export function useDashboardData() {
           creationsResponse: stats.mes_adresses_bals_creations.value,
           codesCommunesWithBanErrors:
             stats.codes_communes_with_ban_errors.value || [],
+          blockedRevisions: stats.blocked_revisions.value || [],
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);

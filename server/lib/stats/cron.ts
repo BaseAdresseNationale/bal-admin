@@ -1,10 +1,18 @@
 import { schedule } from "node-cron";
 import { findAllStats, createOne, deleteOne } from "./service";
+import { Revision, StatusRevisionEnum } from "../../../types/api-depot.types";
 
 const fetchBanErrors = async (codeCommune) => {
+  const banURL = process.env.NEXT_PUBLIC_API_BAN_URL;
+  if (!banURL) {
+    console.warn(
+      "Variable d'environnement NEXT_PUBLIC_API_BAN_URL manquante : impossible de récupérer les alerts BAN",
+    );
+    return [];
+  }
   try {
     const result = await fetch(
-      `https://plateforme.adresse.data.gouv.fr/api/alerts/communes/${codeCommune}/status?limit=1`,
+      `${banURL}/api/alerts/communes/${codeCommune}/status?limit=1`,
     );
     return (await result.json()).response;
   } catch (error) {
@@ -17,15 +25,58 @@ const fetchBanErrors = async (codeCommune) => {
 };
 
 const fetchCurrentRevisions = async () => {
-  try {
-    const result = await fetch(
-      `https://plateforme-bal.adresse.data.gouv.fr/api-depot/current-revisions`,
+  const depotUrl = process.env.NEXT_PUBLIC_API_DEPOT_URL;
+  if (!depotUrl) {
+    console.warn(
+      "Variable d'environnement NEXT_PUBLIC_API_DEPOT_URL manquante : impossible de récupérer les révisions courantes",
     );
+    return [];
+  }
+  try {
+    const result = await fetch(`${depotUrl}/current-revisions`);
     return await result.json();
   } catch (error) {
     console.error(`Error fetching BAL errors route /current-revisions:`, error);
     return [];
   }
+};
+
+const fetchLastRevisions = async () => {
+  const depotUrl = process.env.NEXT_PUBLIC_API_DEPOT_URL;
+  if (!depotUrl) {
+    console.warn(
+      "Variable d'environnement NEXT_PUBLIC_API_DEPOT_URL manquante : impossible de récupérer les dernières révisions",
+    );
+    return [];
+  }
+  try {
+    const result = await fetch(`${depotUrl}/last-revisions`);
+    return await result.json();
+  } catch (error) {
+    console.error(`Error fetching BAL errors route /last-revisions:`, error);
+    return [];
+  }
+};
+
+const fetchAndStoreBlockedRevisionsStats = async () => {
+  const CHUNK_SIZE = 50;
+  // const codesCommunes = await fetchCommunes();
+  const lastRevisions: any[] = await fetchLastRevisions();
+  let blockedRevisions: string[] = [];
+
+  console.log("CRON: démarage des calculs des statistiques des BAL bloquées");
+  for (const revision of lastRevisions) {
+    if (
+      revision.status === StatusRevisionEnum.PENDING &&
+      ((revision.files?.[0] && revision.validation.valid === false) ||
+        revision.is_ready)
+    ) {
+      blockedRevisions.push(revision.id);
+    }
+  }
+  await deleteOne("blocked_revisions");
+  await createOne("blocked_revisions", blockedRevisions);
+  console.log("CRON: fin des calculs des statistique de synchro avec la BAN");
 };
 
 const fetchAndStoreBanSynchroStats = async () => {
@@ -132,16 +183,18 @@ export const cronStats = async () => {
   const existingStats = await findAllStats();
 
   // Lance le calcul uniquement si aucune statistique n'existe
-  if (existingStats.length === 0) {
-    await fetchAndStoreBanSynchroStats();
-    await fetchAndStorePublicationStats();
-  } else {
-    console.log("Pas de calcul des stats de synchro avec la BAN");
-  }
+  // if (existingStats.length === 0) {
+  //   await fetchAndStoreBanSynchroStats();
+  await fetchAndStoreBlockedRevisionsStats();
+  //   await fetchAndStorePublicationStats();
+  // } else {
+  //   console.log("Pas de calcul des stats de synchro avec la BAN");
+  // }
 
   schedule("0 8 * * *", () => {
     // Cette tâche s'exécute tous les jours à 8h00
     fetchAndStoreBanSynchroStats();
+    fetchAndStoreBlockedRevisionsStats();
     fetchAndStorePublicationStats();
   });
 };
