@@ -131,6 +131,16 @@ export async function populateBaseLocale(
   return processReponse(res);
 }
 
+export async function syncAndPublishBaseLocale(
+  balId: string,
+): Promise<BaseLocaleType> {
+  const res = await fetch(
+    `${PROXY_MES_ADRESSES_API}/admin/bases-locales/${balId}/sync-ids-ban-publish`,
+    { method: "POST" },
+  );
+  return processReponse(res);
+}
+
 export async function uploadBALFile(
   balId: string,
   file: File,

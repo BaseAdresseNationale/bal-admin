@@ -21,6 +21,7 @@ import {
   searchBasesLocales,
   removeBaseLocale,
   updateSettingsBaseLocale,
+  syncAndPublishBaseLocale,
 } from "@/lib/api-mes-adresses";
 import { getRevisionsByCommune } from "@/lib/api-moissonneur-bal";
 
@@ -81,6 +82,7 @@ const CommuneSource = ({
   const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] =
     useState<RevisionMoissoneurType[]>([]);
   const [balToDeleted, setBalToDeleted] = useState<BaseLocaleType>(null);
+  const [balToSync, setBalToSync] = useState<BaseLocaleType>(null);
 
   const [sourcesMoissonneur, setSourcesMoissonneur] = useState<
     SourceMoissoneurType[]
@@ -231,6 +233,20 @@ const CommuneSource = ({
     }
   }, [balToDeleted, code, fetchBals, setBalToDeleted, pageMesAdresses]);
 
+  const onSyncBal = useCallback(async () => {
+    try {
+      await syncAndPublishBaseLocale(balToSync.id);
+      await fetchBals(code, pageMesAdresses).catch(console.error);
+      setBalToSync(null);
+      toast("La BAL a bien été synchroniser et publier", { type: "success" });
+    } catch (e: unknown) {
+      console.error(e);
+      if (e instanceof Error) {
+        toast(e.message, { type: "error" });
+      }
+    }
+  }, [balToSync, code, fetchBals, pageMesAdresses]);
+
   const setOtherBalPublishedIgnored = useCallback(
     async (baseLocale: BaseLocaleType) => {
       try {
@@ -258,7 +274,12 @@ const CommuneSource = ({
 
   const actionsBals = {
     delete(item: BaseLocaleType) {
+      console.log("a");
       setBalToDeleted(item);
+    },
+    sync(item: BaseLocaleType) {
+      console.log("b");
+      setBalToSync(item);
     },
     toggleOtherBalPublishedIgnored(item: BaseLocaleType) {
       setOtherBalPublishedIgnored(item);
@@ -289,10 +310,18 @@ const CommuneSource = ({
   return (
     <div className="fr-container fr-my-4w">
       <ModalAlert
+        id="modal-deletion"
+        title="Voulez vous vraiment supprimer cette BAL ?"
         item={balToDeleted}
         setItem={setBalToDeleted}
         onAction={onDeleteBal}
-        title="Voulez vous vraiment supprimer cette bal ?"
+      />
+      <ModalAlert
+        id="modal-synchronisation"
+        title="Voulez vous vraiment synchroniser et publier cette BAL ?"
+        item={balToSync}
+        setItem={setBalToSync}
+        onAction={onSyncBal}
       />
       <h1>
         {getCommune(code)?.nom || (
