@@ -1,6 +1,11 @@
 import { ObjectId } from "bson";
 import { AppDataSource } from "../../utils/typeorm-client";
-import { BalWidget } from "./entity";
+import { BalWidget, Sondage } from "./entity";
+import {
+  addSondageResponse,
+  createSondageDoc,
+  syncSondageDocColumns,
+} from "./grist";
 
 const balWidgetRepository = AppDataSource.getRepository(BalWidget);
 
@@ -14,8 +19,24 @@ export async function getConfig(): Promise<BalWidget> {
   }
 }
 
+async function syncSondagesWithGrist(sondages: Sondage[]): Promise<Sondage[]> {
+  if (!sondages || sondages.length === 0) return sondages || [];
+  return Promise.all(
+    sondages.map(async (sondage) => {
+      if (!sondage.gristDocId) {
+        const gristDocId = await createSondageDoc(sondage);
+        return { ...sondage, gristDocId };
+      }
+      await syncSondageDocColumns(sondage);
+      return sondage;
+    }),
+  );
+}
+
 export async function setConfig(payload: BalWidget) {
-  const record = await await balWidgetRepository.findOneByOrFail({});
+  payload.sondages = await syncSondagesWithGrist(payload.sondages || []);
+
+  const record = await balWidgetRepository.findOneBy({});
   if (!record) {
     payload.id = new ObjectId().toHexString();
     await balWidgetRepository.insert(payload);
@@ -24,4 +45,59 @@ export async function setConfig(payload: BalWidget) {
   }
 
   return getConfig();
+}
+
+export async function submitSondageResponse(
+  sondageId: string,
+  answers: Record<string, string | number>,
+): Promise<void> {
+  const config = await getConfig();
+  const sondage = config?.sondages?.find((s) => s.id === sondageId);
+
+  if (!sondage) {
+    const err: any = new Error("Sondage introuvable");
+    err.status = 404;
+    throw err;
+  }
+  if (!sondage.enabled) {
+    const err: any = new Error("Sondage désactivé");
+    err.status = 403;
+    throw err;
+  }
+
+  // Validation stricte du payload : chaque clé doit correspondre à une question
+  // du sondage, et la valeur doit être du bon type.
+  const questionsById = new Map(sondage.questions.map((q) => [q.id, q]));
+  const cleaned: Record<string, string | number> = {};
+  for (const [questionId, value] of Object.entries(answers)) {
+    const question = questionsById.get(questionId);
+    if (!question) {
+      const err: any = new Error(`Question inconnue : ${questionId}`);
+      err.status = 400;
+      throw err;
+    }
+    if (question.type === "rating-5-stars") {
+      const n = Number(value);
+      if (!Number.isInteger(n) || n < 1 || n > 5) {
+        const err: any = new Error(
+          `Valeur invalide pour la question "${question.label}" : entier entre 1 et 5 attendu`,
+        );
+        err.status = 400;
+        throw err;
+      }
+      cleaned[questionId] = n;
+    } else if (question.type === "free-text") {
+      if (typeof value !== "string") {
+        const err: any = new Error(
+          `Valeur invalide pour la question "${question.label}" : texte attendu`,
+        );
+        err.status = 400;
+        throw err;
+      }
+      // Borne de sécurité pour éviter les payloads abusifs
+      cleaned[questionId] = value.slice(0, 5000);
+    }
+  }
+
+  await addSondageResponse(sondage, cleaned);
 }

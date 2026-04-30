@@ -11,6 +11,23 @@ export interface BALWidgetLink {
   url: string;
 }
 
+export type SondageQuestionType = "rating-5-stars" | "free-text";
+
+export interface SondageQuestion {
+  id: string;
+  type: SondageQuestionType;
+  label: string;
+}
+
+export interface Sondage {
+  id: string;
+  name: string;
+  enabled: boolean;
+  site: string;
+  questions: SondageQuestion[];
+  gristDocId?: string;
+}
+
 @Entity({ name: "bal_widget" })
 export class BalWidget {
   @PrimaryColumn("varchar", { length: 24 })
@@ -47,6 +64,9 @@ export class BalWidget {
     welcomeBlockTitle: string;
     topArticles: BALWidgetLink[];
   };
+
+  @Column("json", { nullable: true, default: [] })
+  sondages: Sondage[];
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt?: Date;

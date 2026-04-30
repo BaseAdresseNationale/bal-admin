@@ -33,13 +33,14 @@ const defaultConfig: BalWidget = {
     welcomeBlockTitle: "Ces articles pourraient vous aider",
     topArticles: [],
   },
+  sondages: [],
 };
 
 const BALWidgetPage = ({ config: baseConfig }: BALWidgetPageProps) => {
   const [config, setConfig] = useState<BalWidget>(baseConfig);
   const initialConfig = useMemo(
     () => (baseConfig ? { ...baseConfig } : { ...defaultConfig }),
-    [baseConfig]
+    [baseConfig],
   );
 
   const [formData, setFormData] = useState<BalWidget>(initialConfig);
