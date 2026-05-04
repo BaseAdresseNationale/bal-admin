@@ -160,6 +160,13 @@ async function getLastsRevisionsPending(req, res) {
   forward(response, res);
 }
 
+async function syncIdsBANPublish(req, res) {
+  const response = await req.client.post(
+    `revisions/${req.params.revisionId}/sync-ids-ban-publish`,
+  );
+  forward(response, res);
+}
+
 async function validateHabilitation(req, res) {
   const response = await req.client.put(
     `habilitations/${req.params.habilitationId}/validate`,
@@ -198,6 +205,7 @@ app.get("/stats/publications", w(getStatPublications));
 
 app.get("/communes/:codeCommune/revisions", w(getAllRevisionsByCommune));
 app.get("/revisions-lasts-pending", w(getLastsRevisionsPending));
+app.post("/revisions/:revisionId/sync-ids-ban-publish", w(syncIdsBANPublish));
 
 app.put("/habilitations/:habilitationId/validate", w(validateHabilitation));
 

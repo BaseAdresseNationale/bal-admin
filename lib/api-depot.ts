@@ -220,6 +220,22 @@ export async function getLastsRevisionsPending({
   return processResponse(response);
 }
 
+export async function syncRevisionAndPublish(
+  revisionId: string,
+  isDemo: boolean = false,
+): Promise<Client> {
+  const response = await fetch(
+    `${getProxyURL(isDemo)}/revisions/${revisionId}/sync-ids-ban-publish`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({}),
+    },
+  );
+
+  return processResponse(response);
+}
+
 export async function validateHabilitation(
   habilitationId: string,
   isDemo: boolean = false,

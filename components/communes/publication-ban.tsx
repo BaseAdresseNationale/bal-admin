@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Alert } from "types/alerts.types";
 import { Revision } from "types/api-depot.types";
 import { parseAlertMessage } from "@/lib/util/ban";
@@ -10,6 +11,8 @@ import { parseAlertMessage } from "@/lib/util/ban";
 interface PublicationBanProps {
   revision: Revision;
   alerts: Alert[];
+  onSyncRevisionAndPublish?: () => void;
+  lockSyncRevision: boolean;
 }
 
 const getSeverity = (status: string) => {
@@ -34,27 +37,33 @@ const getAlertType = (status: string) => {
   }
 };
 
+const publicationBanModal = createModal({
+  id: "publication-ban-modal",
+  isOpenedByDefault: false,
+});
+
 export const PublicationBan: React.FC<PublicationBanProps> = ({
   revision,
   alerts,
+  onSyncRevisionAndPublish,
+  lockSyncRevision,
 }) => {
   const [status, setStatus] = useState<
     "error" | "warning" | "active" | "unknown"
   >("active");
   const [rawMessage, setRawMessage] = useState("");
   const [label, setLabel] = useState("");
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const determineStatus = async () => {
       const revisionAlerts = alerts.filter((a) => a.revisionId === revision.id);
       const latestAlert = revisionAlerts
         .filter(
-          (alert) => alert.status === "warning" || alert.status === "error"
+          (alert) => alert.status === "warning" || alert.status === "error",
         )
         .sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )[0];
 
       if (!latestAlert) {
@@ -72,7 +81,7 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
         setStatus("error");
         setRawMessage(
           latestAlert?.message ||
-            "Révision courante non synchronisée avec la base"
+            "Révision courante non synchronisée avec la base",
         );
         setLabel("Erreur");
         return;
@@ -91,21 +100,6 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
     determineStatus();
   }, [revision, alerts]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element;
-      if (!target.closest(".custom-modal") && !target.closest("button")) {
-        setShowModal(false);
-      }
-    };
-
-    if (showModal) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [showModal]);
-
   const displayMessage = parseAlertMessage(rawMessage);
 
   // Ne pas afficher si le parser retourne null pour les messages de succès
@@ -123,67 +117,37 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
   return (
     <>
       {status !== "unknown" && (
+        <>
+          <Button
+            priority="tertiary no outline"
+            size="small"
+            onClick={() => publicationBanModal.open()}
+            title="Cliquer pour voir le détail"
+            className="fr-p-0"
+          >
+            <Badge severity={getSeverity(status)}>{label}</Badge>
+          </Button>
+        </>
+      )}
+      {status === "error" && onSyncRevisionAndPublish && (
         <Button
-          priority="tertiary no outline"
-          size="small"
-          onClick={() => setShowModal(!showModal)}
-          title="Cliquer pour voir le détail"
-          className="fr-p-0"
-        >
-          <Badge severity={getSeverity(status)}>{label}</Badge>
-        </Button>
+          title="Synchroniser"
+          className={`fr-col fr-m-1v${
+            lockSyncRevision ? " fr-btn--spinning" : ""
+          }`}
+          iconId="ri-refresh-line"
+          disabled={lockSyncRevision}
+          onClick={onSyncRevisionAndPublish}
+        />
       )}
 
-      {showModal && (
-        <div
-          className="fr-modal fr-modal--opened custom-modal"
-          style={{
-            position: "fixed",
-            left: "50%",
-            top: "50%",
-            transform: "translateY(-50%) translateX(-50%)",
-            maxWidth: "600px",
-            width: "auto",
-            zIndex: 1000,
-            background: "transparent",
-          }}
-        >
-          <div
-            className="fr-modal__content"
-            style={{
-              background: "var(--background-default-grey-hover)",
-              padding: "0",
-            }}
-          >
-            <div
-              className={`fr-alert fr-alert--${getAlertType(status)}`}
-              style={{
-                maxHeight: "500px",
-                overflowY: "auto",
-                overflowX: "hidden",
-              }}
-            >
-              <button
-                className="fr-btn--close fr-btn"
-                title="Fermer"
-                onClick={() => setShowModal(false)}
-              >
-                Fermer
-              </button>
-              <div
-                className="fr-alert__title"
-                style={{
-                  fontSize: "1rem",
-                  fontWeight: "bold",
-                  whiteSpace: "pre-line",
-                }}
-              >
-                {displayMessage || rawMessage}
-              </div>
-            </div>
-          </div>
+      <publicationBanModal.Component title={label} size="medium">
+        <div className={`fr-alert fr-alert--${getAlertType(status)}`}>
+          <p style={{ whiteSpace: "pre-line" }}>
+            {displayMessage || rawMessage}
+          </p>
         </div>
-      )}
+      </publicationBanModal.Component>
     </>
   );
 };

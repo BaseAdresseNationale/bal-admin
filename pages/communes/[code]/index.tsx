@@ -10,13 +10,18 @@ import type {
 } from "types/moissoneur";
 import type {
   Client,
+  Revision,
   Revision as RevisionApiDepot,
 } from "types/api-depot.types";
 import type { BaseLocaleType } from "types/mes-adresses";
 import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
-import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
+import {
+  getAllRevisionByCommune,
+  getEmailsCommune,
+  syncRevisionAndPublish,
+} from "@/lib/api-depot";
 import {
   searchBasesLocales,
   removeBaseLocale,
@@ -79,6 +84,7 @@ const CommuneSource = ({
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<
     RevisionApiDepot[]
   >([]);
+  const [lockSyncRevision, setLockSyncRevision] = useState(false);
   const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] =
     useState<RevisionMoissoneurType[]>([]);
   const [balToDeleted, setBalToDeleted] = useState<BaseLocaleType>(null);
@@ -146,30 +152,50 @@ const CommuneSource = ({
     });
   }, []);
 
+  const fetchDataApiDepot = useCallback(async () => {
+    const initialRevisionsApiDepot: RevisionApiDepot[] =
+      await getAllRevisionByCommune(code);
+    // Show the last revisions first
+    setInitialRevisionsApiDepot(initialRevisionsApiDepot.reverse());
+    setPageApiDepot((pageApiDepot) => ({
+      ...pageApiDepot,
+      count: initialRevisionsApiDepot.length,
+    }));
+  }, [code]);
+
+  const fetchDataMoissonneur = async () => {
+    const initialRevisionsMoissonneur: RevisionMoissoneurType[] =
+      await getRevisionsByCommune(code);
+
+    setInitialRevisionsMoissonneur(
+      sortBy(initialRevisionsMoissonneur, "createdAt").reverse(),
+    );
+    setPageMoissonneur((pageMoissonneur) => ({
+      ...pageMoissonneur,
+      count: initialRevisionsMoissonneur.length,
+    }));
+  };
+
+  const onSyncRevisionAndPublish = useCallback(
+    async (revision: Revision) => {
+      try {
+        setLockSyncRevision(true);
+        await syncRevisionAndPublish(revision.id);
+        await fetchDataApiDepot();
+        toast("La BAL a bien été synchroniser et publier", { type: "success" });
+      } catch (e: unknown) {
+        console.error(e);
+        if (e instanceof Error) {
+          toast(e.message, { type: "error" });
+        }
+      } finally {
+        setLockSyncRevision(false);
+      }
+    },
+    [fetchDataApiDepot],
+  );
+
   useEffect(() => {
-    const fetchDataApiDepot = async () => {
-      const initialRevisionsApiDepot: RevisionApiDepot[] =
-        await getAllRevisionByCommune(code);
-      // Show the last revisions first
-      setInitialRevisionsApiDepot(initialRevisionsApiDepot.reverse());
-      setPageApiDepot((pageApiDepot) => ({
-        ...pageApiDepot,
-        count: initialRevisionsApiDepot.length,
-      }));
-    };
-    const fetchDataMoissonneur = async () => {
-      const initialRevisionsMoissonneur: RevisionMoissoneurType[] =
-        await getRevisionsByCommune(code);
-
-      setInitialRevisionsMoissonneur(
-        sortBy(initialRevisionsMoissonneur, "createdAt").reverse(),
-      );
-      setPageMoissonneur((pageMoissonneur) => ({
-        ...pageMoissonneur,
-        count: initialRevisionsMoissonneur.length,
-      }));
-    };
-
     fetchDataApiDepot().catch(console.error);
     fetchDataMoissonneur().catch(console.error);
   }, [code]);
@@ -185,7 +211,14 @@ const CommuneSource = ({
       const res = {
         ...r,
         selected: balSelected === r.context?.extras?.balId,
-        publicationBan: <PublicationBan revision={r} alerts={alerts} />,
+        publicationBan: (
+          <PublicationBan
+            revision={r}
+            alerts={alerts}
+            onSyncRevisionAndPublish={() => onSyncRevisionAndPublish(r)}
+            lockSyncRevision={lockSyncRevision}
+          />
+        ),
       };
       if (r.client.legacyId === "moissonneur-bal") {
         return {
@@ -204,9 +237,11 @@ const CommuneSource = ({
   }, [
     pageApiDepot,
     initialRevisionsApiDepot,
-    sourcesMoissonneur,
-    alerts,
     balSelected,
+    alerts,
+    onSyncRevisionAndPublish,
+    sourcesMoissonneur,
+    lockSyncRevision,
   ]);
 
   const revisionsMoissoneur = useMemo(() => {

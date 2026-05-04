@@ -54,6 +54,15 @@ const GlobalStyle = createGlobalStyle`
   [data-fr-theme="light"] .fr-modal__content strong {
     color: var(--text-default-grey);
   }
+
+  @keyframes fr-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .fr-btn--spinning::before {
+    animation: fr-spin 1s linear infinite;
+  }
 `;
 
 const App = ({ Component, pageProps: { session, ...pageProps } }) => (
