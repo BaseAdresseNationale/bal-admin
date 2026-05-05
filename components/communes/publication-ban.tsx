@@ -12,7 +12,7 @@ interface PublicationBanProps {
   revision: Revision;
   alerts: Alert[];
   onSyncRevisionAndPublish?: () => void;
-  lockSyncRevision: boolean;
+  lockSyncRevision?: boolean;
 }
 
 const getSeverity = (status: string) => {
