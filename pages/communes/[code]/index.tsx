@@ -49,7 +49,12 @@ import {
 import { CommuneInfosHeader } from "@/components/communes/commune-infos-header";
 import { getMarieTelephones } from "server/utils/api-annuaire";
 import { getSources } from "@/lib/api-moissonneur-bal";
-import { getCommuneAlerts } from "@/lib/api-ban";
+import {
+  fetchLookupCommune,
+  getCommuneAlerts,
+  LookupResponse,
+  TypeCompositionEnum,
+} from "@/lib/api-ban";
 import { Alert as AlertBAN } from "types/alerts.types";
 import { PublicationBan } from "@/components/communes/publication-ban";
 
@@ -68,6 +73,7 @@ type CommuneSourcePageProps = {
   sourcesMoissonneur: SourceMoissoneurType[];
   clientApiDepot: Client[];
   alerts: AlertBAN[];
+  lookup: LookupResponse;
 };
 
 const CommuneSource = ({
@@ -78,6 +84,7 @@ const CommuneSource = ({
   signalementCommuneSettings,
   signalementSources,
   alerts,
+  lookup,
 }: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
   const [balSelected, setBalSelected] = useState<string>(null);
@@ -239,9 +246,9 @@ const CommuneSource = ({
     initialRevisionsApiDepot,
     balSelected,
     alerts,
+    lockSyncRevision,
     onSyncRevisionAndPublish,
     sourcesMoissonneur,
-    lockSyncRevision,
   ]);
 
   const revisionsMoissoneur = useMemo(() => {
@@ -309,11 +316,9 @@ const CommuneSource = ({
 
   const actionsBals = {
     delete(item: BaseLocaleType) {
-      console.log("a");
       setBalToDeleted(item);
     },
     sync(item: BaseLocaleType) {
-      console.log("b");
       setBalToSync(item);
     },
     toggleOtherBalPublishedIgnored(item: BaseLocaleType) {
@@ -371,6 +376,7 @@ const CommuneSource = ({
         signalementCommuneSettings={signalementCommuneSettings}
         signalementSources={signalementSources}
         codeCommune={code}
+        lookup={lookup}
       />
       <EditableList
         headers={[
@@ -449,6 +455,8 @@ export async function getServerSideProps({ params }) {
     SignalementStatusEnum.EXPIRED,
   );
 
+  const lookup = await fetchLookupCommune(code);
+
   const alerts = [];
 
   try {
@@ -470,6 +478,7 @@ export async function getServerSideProps({ params }) {
       signalementCommuneSettings,
       signalementSources,
       alerts,
+      lookup,
     },
   };
 }
