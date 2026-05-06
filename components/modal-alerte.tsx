@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
+import Loader from "./loader";
 
 type ModalAlertProps<T> = {
   id: string;
@@ -17,6 +18,7 @@ export const ModalAlert = <T extends unknown>({
   onAction,
   title,
 }: ModalAlertProps<T>) => {
+  const [isLoading, setIsLoading] = useState(false);
   const modal = useMemo(
     () => createModal({ id, isOpenedByDefault: false }),
     [id],
@@ -42,18 +44,24 @@ export const ModalAlert = <T extends unknown>({
         {
           doClosesModal: true,
           children: "Non",
+          disabled: isLoading,
         },
         {
           doClosesModal: false,
           async onClick() {
+            setIsLoading(true);
             await onAction();
+            setIsLoading(false);
             modal.close();
           },
           children: "Oui",
+          disabled: isLoading,
         },
       ]}
     >
-      Attention, cette action est irréversible.
+      <Loader isLoading={isLoading}>
+        Attention, cette action est irréversible.
+      </Loader>
     </modal.Component>
   );
 };

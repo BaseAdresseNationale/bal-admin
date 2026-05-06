@@ -11,8 +11,7 @@ import { parseAlertMessage } from "@/lib/util/ban";
 interface PublicationBanProps {
   revision: Revision;
   alerts: Alert[];
-  onSyncRevisionAndPublish?: () => void;
-  lockSyncRevision?: boolean;
+  setRevisionToSync?: () => void;
 }
 
 const getSeverity = (status: string) => {
@@ -45,8 +44,7 @@ const publicationBanModal = createModal({
 export const PublicationBan: React.FC<PublicationBanProps> = ({
   revision,
   alerts,
-  onSyncRevisionAndPublish,
-  lockSyncRevision,
+  setRevisionToSync,
 }) => {
   const [status, setStatus] = useState<
     "error" | "warning" | "active" | "unknown"
@@ -129,15 +127,12 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
           </Button>
         </>
       )}
-      {status === "error" && onSyncRevisionAndPublish && (
+      {status === "error" && setRevisionToSync && revision.isCurrent && (
         <Button
+          style={{ marginLeft: "8px" }}
           title="Synchroniser"
-          className={`fr-col fr-m-1v${
-            lockSyncRevision ? " fr-btn--spinning" : ""
-          }`}
           iconId="ri-refresh-line"
-          disabled={lockSyncRevision}
-          onClick={onSyncRevisionAndPublish}
+          onClick={setRevisionToSync}
         />
       )}
 

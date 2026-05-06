@@ -96,30 +96,22 @@ const CommuneSource = ({
     useState<RevisionMoissoneurType[]>([]);
   const [balToDeleted, setBalToDeleted] = useState<BaseLocaleType>(null);
   const [balToSync, setBalToSync] = useState<BaseLocaleType>(null);
+  const [revisionToSync, setRevisionToSync] = useState<Revision>(null);
 
   const [sourcesMoissonneur, setSourcesMoissonneur] = useState<
     SourceMoissoneurType[]
   >([]);
-  useEffect(() => {
-    async function fetchSourcesMoissonneur() {
-      const sources = await getSources();
-      setSourcesMoissonneur(sources);
-    }
-    fetchSourcesMoissonneur().catch(console.error);
-  }, []);
 
   const [pageApiDepot, setPageApiDepot] = useState({
     limit: 10,
     count: 0,
     current: 1,
   });
-
   const [pageMoissonneur, setPageMoissonneur] = useState({
     limit: 10,
     count: 0,
     current: 1,
   });
-
   const [pageMesAdresses, setPageMesAdresses] = useState({
     limit: 10,
     count: 0,
@@ -183,33 +175,36 @@ const CommuneSource = ({
     }));
   };
 
-  const onSyncRevisionAndPublish = useCallback(
-    async (revision: Revision) => {
-      try {
-        setLockSyncRevision(true);
-        await syncRevisionAndPublish(revision.id);
-        await fetchDataApiDepot();
-        toast("La BAL a bien été synchroniser et publier", { type: "success" });
-      } catch (e: unknown) {
-        console.error(e);
-        if (e instanceof Error) {
-          toast(e.message, { type: "error" });
-        }
-      } finally {
-        setLockSyncRevision(false);
+  const onSyncRevision = useCallback(async () => {
+    try {
+      setLockSyncRevision(true);
+      await syncRevisionAndPublish(revisionToSync.id);
+      await fetchDataApiDepot();
+      toast("La BAL a bien été synchroniser et publier", { type: "success" });
+    } catch (e: unknown) {
+      console.error(e);
+      if (e instanceof Error) {
+        toast(e.message, { type: "error" });
       }
-    },
-    [fetchDataApiDepot],
-  );
+    } finally {
+      setLockSyncRevision(false);
+    }
+  }, [revisionToSync, fetchDataApiDepot]);
 
-  useEffect(() => {
-    fetchDataApiDepot().catch(console.error);
-    fetchDataMoissonneur().catch(console.error);
-  }, [code]);
-
-  useEffect(() => {
-    fetchBals(code, pageMesAdresses).catch(console.error);
-  }, [code]);
+  const onSyncBal = useCallback(async () => {
+    try {
+      await syncAndPublishBaseLocale(balToSync.id);
+      await fetchBals(code, pageMesAdresses).catch(console.error);
+      await fetchDataApiDepot();
+      setBalToSync(null);
+      toast("La BAL a bien été synchroniser et publier", { type: "success" });
+    } catch (e: unknown) {
+      console.error(e);
+      if (e instanceof Error) {
+        toast(e.message, { type: "error" });
+      }
+    }
+  }, [balToSync, code, fetchBals, fetchDataApiDepot, pageMesAdresses]);
 
   const revisionsApiDepot = useMemo(() => {
     const start = (pageApiDepot.current - 1) * pageApiDepot.limit;
@@ -222,8 +217,7 @@ const CommuneSource = ({
           <PublicationBan
             revision={r}
             alerts={alerts}
-            onSyncRevisionAndPublish={() => onSyncRevisionAndPublish(r)}
-            lockSyncRevision={lockSyncRevision}
+            setRevisionToSync={() => setRevisionToSync(r)}
           />
         ),
       };
@@ -246,8 +240,6 @@ const CommuneSource = ({
     initialRevisionsApiDepot,
     balSelected,
     alerts,
-    lockSyncRevision,
-    onSyncRevisionAndPublish,
     sourcesMoissonneur,
   ]);
 
@@ -274,20 +266,6 @@ const CommuneSource = ({
       }
     }
   }, [balToDeleted, code, fetchBals, setBalToDeleted, pageMesAdresses]);
-
-  const onSyncBal = useCallback(async () => {
-    try {
-      await syncAndPublishBaseLocale(balToSync.id);
-      await fetchBals(code, pageMesAdresses).catch(console.error);
-      setBalToSync(null);
-      toast("La BAL a bien été synchroniser et publier", { type: "success" });
-    } catch (e: unknown) {
-      console.error(e);
-      if (e instanceof Error) {
-        toast(e.message, { type: "error" });
-      }
-    }
-  }, [balToSync, code, fetchBals, pageMesAdresses]);
 
   const setOtherBalPublishedIgnored = useCallback(
     async (baseLocale: BaseLocaleType) => {
@@ -333,6 +311,20 @@ const CommuneSource = ({
     },
   };
 
+  useEffect(() => {
+    async function fetchSourcesMoissonneur() {
+      const sources = await getSources();
+      setSourcesMoissonneur(sources);
+    }
+    fetchSourcesMoissonneur().catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    fetchDataApiDepot().catch(console.error);
+    fetchDataMoissonneur().catch(console.error);
+    fetchBals(code, pageMesAdresses).catch(console.error);
+  }, [code]);
+
   if (!isCommune(code)) {
     return (
       <div className="fr-container">
@@ -357,11 +349,18 @@ const CommuneSource = ({
         onAction={onDeleteBal}
       />
       <ModalAlert
-        id="modal-synchronisation"
+        id="modal-synchronisation-bal"
         title="Voulez vous vraiment synchroniser et publier cette BAL ?"
         item={balToSync}
         setItem={setBalToSync}
         onAction={onSyncBal}
+      />
+      <ModalAlert
+        id="modal-synchronisation-revision"
+        title="Voulez vous vraiment synchroniser et publier cette révision ?"
+        item={revisionToSync}
+        setItem={setRevisionToSync}
+        onAction={onSyncRevision}
       />
       <h1>
         {getCommune(code)?.nom || (
