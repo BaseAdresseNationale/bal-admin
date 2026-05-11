@@ -139,15 +139,10 @@ const fetchAndStorePublicationStats = async () => {
 };
 
 export const cronStats = async () => {
-  const existingStats = await findAllStats();
-
-  // Lance le calcul uniquement si aucune statistique n'existe
-  if (existingStats.length === 0) {
-    await fetchAndStoreBanSynchroStats();
-    await fetchAndStorePublicationStats();
-  } else {
-    console.log("Pas de calcul des stats de synchro avec la BAN");
-  }
+  // Lance le calcul des stats
+  console.log("Calcul des stats");
+  await fetchAndStoreBanSynchroStats();
+  await fetchAndStorePublicationStats();
 
   schedule("0 8 * * *", () => {
     // Cette tâche s'exécute tous les jours à 8h00
