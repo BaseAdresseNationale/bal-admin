@@ -1,10 +1,16 @@
 import { schedule } from "node-cron";
-import { createOne, deleteOne } from "./service";
+import { createOne, deleteOne, findAllStats } from "./service";
+import allCommunes from "@etalab/decoupage-administratif/data/communes.json";
+import { CommuneCOG, CommuneTypeEnum } from "../../../types/cog";
 
-const fetchCommunes = async () => {
-  const result = await fetch("https://geo.api.gouv.fr/communes");
-  return (await result.json()).map((commune) => commune.code);
-};
+const codesCommunes = (allCommunes as CommuneCOG[])
+  .filter((c) =>
+    [
+      CommuneTypeEnum.COMMUNE_ACTUELLE,
+      CommuneTypeEnum.ARRONDISSEMENT_MUNICIPAL,
+    ].includes(c.type),
+  )
+  .map((commune) => commune.code);
 
 const fetchBanErrors = async (codeCommune) => {
   try {
@@ -23,7 +29,6 @@ const fetchBanErrors = async (codeCommune) => {
 
 const fetchAndStoreBanSynchroStats = async () => {
   const CHUNK_SIZE = 50;
-  const codesCommunes = await fetchCommunes();
   let nbCommunesWithBanErrors = 0;
   let nbCommunesStillWithBanErrors = [];
   let nbRevisionsWithBanErrors = 0;
@@ -158,9 +163,12 @@ const calculStats = async () => {
 };
 
 export const cronStats = async () => {
-  // Lance le calcul des stats
-  console.log("Calcul des stats");
-  calculStats();
+  const existingStats = await findAllStats();
+  // Lance le calcul uniquement si aucune statistique n'existe
+  if (existingStats.length === 0) {
+    console.log("Calcul des stats");
+    calculStats();
+  }
   schedule("0 8 * * *", async () => {
     // Cette tâche s'exécute tous les jours à 8h00
     calculStats();
