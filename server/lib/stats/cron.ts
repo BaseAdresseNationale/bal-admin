@@ -1,6 +1,6 @@
 import { schedule } from "node-cron";
 import { findAllStats, createOne, deleteOne } from "./service";
-import { Revision, StatusRevisionEnum } from "../../../types/api-depot.types";
+import { StatusRevisionEnum } from "../../../types/api-depot.types";
 
 const fetchBanErrors = async (codeCommune) => {
   const banURL = process.env.NEXT_PUBLIC_API_BAN_URL;
@@ -59,8 +59,6 @@ const fetchLastRevisions = async () => {
 };
 
 const fetchAndStoreBlockedRevisionsStats = async () => {
-  const CHUNK_SIZE = 50;
-  // const codesCommunes = await fetchCommunes();
   const lastRevisions: any[] = await fetchLastRevisions();
   let blockedRevisions: string[] = [];
 
@@ -81,7 +79,6 @@ const fetchAndStoreBlockedRevisionsStats = async () => {
 
 const fetchAndStoreBanSynchroStats = async () => {
   const CHUNK_SIZE = 50;
-  // const codesCommunes = await fetchCommunes();
   const currentRevisions = await fetchCurrentRevisions();
   let codesCommunesWithBanErrors: string[] = [];
 
@@ -179,22 +176,42 @@ const fetchAndStorePublicationStats = async () => {
   }
 };
 
+const calculStats = async () => {
+  try {
+    await fetchAndStoreBanSynchroStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul initial des stats BAN synchro :",
+      error,
+    );
+  }
+  try {
+    await fetchAndStoreBlockedRevisionsStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul initial des dernieres révisions en pending :",
+      error,
+    );
+  }
+  try {
+    await fetchAndStorePublicationStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul initial des stats publications :",
+      error,
+    );
+  }
+};
+
 export const cronStats = async () => {
   const existingStats = await findAllStats();
-
   // Lance le calcul uniquement si aucune statistique n'existe
-  // if (existingStats.length === 0) {
-  //   await fetchAndStoreBanSynchroStats();
-  await fetchAndStoreBlockedRevisionsStats();
-  //   await fetchAndStorePublicationStats();
-  // } else {
-  //   console.log("Pas de calcul des stats de synchro avec la BAN");
-  // }
-
-  schedule("0 8 * * *", () => {
+  if (existingStats.length === 0) {
+    console.log("Calcul des stats");
+    calculStats();
+  }
+  schedule("0 8 * * *", async () => {
     // Cette tâche s'exécute tous les jours à 8h00
-    fetchAndStoreBanSynchroStats();
-    fetchAndStoreBlockedRevisionsStats();
-    fetchAndStorePublicationStats();
+    calculStats();
   });
 };
