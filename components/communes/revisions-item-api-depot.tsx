@@ -55,7 +55,7 @@ export const RevisionItemApiDepot = ({
       {publishedAt ? formatDate(publishedAt, "PPpp") : "inconnu"}
     </td>
     <td className="fr-col fr-my-1v">
-      {status == "published" && (
+      {Boolean(validation) && (
         <Link
           target="_blank"
           passHref
