@@ -138,15 +138,31 @@ const fetchAndStorePublicationStats = async () => {
   }
 };
 
+const calculStats = async () => {
+  try {
+    await fetchAndStoreBanSynchroStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul initial des stats BAN synchro :",
+      error,
+    );
+  }
+  try {
+    await fetchAndStorePublicationStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul initial des stats publications :",
+      error,
+    );
+  }
+};
+
 export const cronStats = async () => {
   // Lance le calcul des stats
   console.log("Calcul des stats");
-  await fetchAndStoreBanSynchroStats();
-  await fetchAndStorePublicationStats();
-
-  schedule("0 8 * * *", () => {
+  calculStats();
+  schedule("0 8 * * *", async () => {
     // Cette tâche s'exécute tous les jours à 8h00
-    fetchAndStoreBanSynchroStats();
-    fetchAndStorePublicationStats();
+    calculStats();
   });
 };
