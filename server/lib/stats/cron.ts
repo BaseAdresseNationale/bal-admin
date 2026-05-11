@@ -1,5 +1,5 @@
 import { schedule } from "node-cron";
-import { findAllStats, createOne, deleteOne } from "./service";
+import { createOne, deleteOne } from "./service";
 
 const fetchCommunes = async () => {
   const result = await fetch("https://geo.api.gouv.fr/communes");
