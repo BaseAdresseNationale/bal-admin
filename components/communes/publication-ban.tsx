@@ -130,13 +130,13 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
       {status === "error" &&
         setRevisionToSync &&
         revision.isCurrent &&
-        !revision.context.extras.balId(
+        !revision.context.extras.balId && (
           <Button
             style={{ marginLeft: "8px" }}
             title="Synchroniser"
             iconId="ri-refresh-line"
             onClick={setRevisionToSync}
-          />,
+          />
         )}
 
       <publicationBanModal.Component title={label} size="medium">
