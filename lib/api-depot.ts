@@ -222,10 +222,9 @@ export async function getLastsRevisionsPending({
 
 export async function syncRevisionAndPublish(
   revisionId: string,
-  isDemo: boolean = false,
 ): Promise<Client> {
   const response = await fetch(
-    `${getProxyURL(isDemo)}/revisions/${revisionId}/sync-ids-ban-publish`,
+    `${PROXY_API_DEPOT_URL}/revisions/${revisionId}/sync-ids-ban-publish`,
     {
       method: "POST",
       headers: { "content-type": "application/json" },
