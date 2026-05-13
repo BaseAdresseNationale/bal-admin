@@ -4,6 +4,8 @@ import {
 } from "types/signalement.types";
 import { SignalementTable } from "./signalement-table";
 import styled from "styled-components";
+import { LookupResponse, TypeCompositionEnum } from "@/lib/api-ban";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -32,6 +34,7 @@ interface CommuneInfosHeaderProps {
   signalementCommuneSettings?: SignalementCommuneSettings;
   codeCommune: string;
   signalementSources: SignalementSource[];
+  lookup: LookupResponse;
 }
 
 export function CommuneInfosHeader({
@@ -41,18 +44,41 @@ export function CommuneInfosHeader({
   signalementCommuneSettings,
   codeCommune,
   signalementSources,
+  lookup,
 }: CommuneInfosHeaderProps) {
   return (
     <StyledWrapper>
       <div>
-        <h5>Contact mairie</h5>
         <div>
-          <b>Email(s) : </b>
-          {emails.join(", ")}
+          <h5>Contact mairie</h5>
+          <div>
+            <b>Email(s) : </b>
+            {emails.join(", ")}
+          </div>
+          <div>
+            <b>Numéro(s) de téléphone : </b>
+            {telephones.join(", ")}
+          </div>
         </div>
-        <div>
-          <b>Numéro(s) de téléphone : </b>
-          {telephones.join(", ")}
+        <div style={{ paddingTop: "32px" }}>
+          <h5>Synchronisation avec la BAN</h5>
+          <div>
+            <b>Type de composition : </b>
+            <Badge
+              severity={
+                lookup.typeComposition === TypeCompositionEnum.BAL
+                  ? "success"
+                  : null
+              }
+            >
+              {lookup.typeComposition}
+            </Badge>
+          </div>
+          <b>
+            {lookup.withBanId
+              ? "Sur le Nouveau Socle"
+              : "Sur l'ancien ban-plateforme (sans ids stablent)"}
+          </b>
         </div>
       </div>
       <SignalementTable

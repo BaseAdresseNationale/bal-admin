@@ -84,26 +84,31 @@ export const BalsItem = (
         <div style={{ width: "150px" }}>
           <Button
             title="Sélectionner"
-            className="fr-col-4 fr-m-1v"
-            iconId={
-              selectedItem === id
-                ? "fr-icon-cursor-fill"
-                : "fr-icon-cursor-line"
-            }
+            className="fr-col fr-m-1v"
+            iconId={selectedItem === id ? "ri-eye-close-fill" : "ri-eye-fill"}
             onClick={() => {
               actions.select(item);
             }}
           />
           <Button
+            title="Synchroniser"
+            className="fr-col fr-m-1v"
+            iconId="ri-refresh-line"
+            onClick={() => {
+              actions.sync(item);
+            }}
+            disabled={status !== StatusBaseLocalEnum.PUBLISHED}
+          />
+          <Button
             title="Supprimer"
-            className="fr-col-4 fr-m-1v"
+            className="fr-col fr-m-1v"
             iconId="fr-icon-delete-bin-fill"
             onClick={() => {
               actions.delete(item);
             }}
           />
           <Link
-            className="fr-col-4 fr-m-1v"
+            className="fr-col fr-m-1v"
             passHref
             href={{
               pathname: "/mes-adresses/base-locale",

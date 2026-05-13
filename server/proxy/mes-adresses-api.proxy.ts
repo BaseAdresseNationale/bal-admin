@@ -73,6 +73,14 @@ async function uploadFile(req, res) {
   forward(response, res);
 }
 
+async function syncAndPublishBal(req, res) {
+  const response = await client.post(
+    `admin/bases-locales/${req.params.baseLocaleId}/sync-ids-ban-publish`,
+    { json: {} },
+  );
+  forward(response, res);
+}
+
 const app = express.Router();
 
 app.use(express.json());
@@ -83,6 +91,10 @@ app.get("/bases-locales/:baseLocaleId", w(getBal));
 app.post("/bases-locales", w(createBal));
 app.post("/bases-locales/:baseLocaleId/populate", w(populateBal));
 app.post("/bases-locales/:baseLocaleId/upload", w(uploadFile));
+app.post(
+  "/admin/bases-locales/:baseLocaleId/sync-ids-ban-publish",
+  w(syncAndPublishBal),
+);
 app.put("/bases-locales/:baseLocaleId", w(updateSettingBal));
 app.delete("/bases-locales/:baseLocaleId", w(removeBal));
 

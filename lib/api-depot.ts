@@ -217,6 +217,21 @@ export async function getRevision(revisionId: string): Promise<Revision> {
   return processResponse(response);
 }
 
+export async function syncRevisionAndPublish(
+  revisionId: string,
+): Promise<Client> {
+  const response = await fetch(
+    `${PROXY_API_DEPOT_URL}/revisions/${revisionId}/sync-ids-ban-publish`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({}),
+    },
+  );
+
+  return processResponse(response);
+}
+
 export async function validateHabilitation(
   habilitationId: string,
   isDemo: boolean = false,
