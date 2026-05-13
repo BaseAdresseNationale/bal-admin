@@ -127,14 +127,17 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
           </Button>
         </>
       )}
-      {status === "error" && setRevisionToSync && revision.isCurrent && (
-        <Button
-          style={{ marginLeft: "8px" }}
-          title="Synchroniser"
-          iconId="ri-refresh-line"
-          onClick={setRevisionToSync}
-        />
-      )}
+      {status === "error" &&
+        setRevisionToSync &&
+        revision.isCurrent &&
+        !revision.context.extras.balId(
+          <Button
+            style={{ marginLeft: "8px" }}
+            title="Synchroniser"
+            iconId="ri-refresh-line"
+            onClick={setRevisionToSync}
+          />,
+        )}
 
       <publicationBanModal.Component title={label} size="medium">
         <div className={`fr-alert fr-alert--${getAlertType(status)}`}>
