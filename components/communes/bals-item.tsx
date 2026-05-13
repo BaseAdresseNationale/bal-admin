@@ -97,6 +97,7 @@ export const BalsItem = (
             onClick={() => {
               actions.sync(item);
             }}
+            disabled={status !== StatusBaseLocalEnum.PUBLISHED}
           />
           <Button
             title="Supprimer"
