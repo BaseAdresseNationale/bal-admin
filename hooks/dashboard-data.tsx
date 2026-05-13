@@ -6,20 +6,16 @@ interface DashboardData {
   firstPublicationEvolutionResponse: any[];
   publicationsResponse: any[];
   creationsResponse: any[];
-  nbCommunesWithBanErrors: number;
-  nbCommunesStillWithBanErrors: string[];
-  nbRevisionsWithBanErrors: number;
-  nbRevisionsWithWarnings: number;
+  codesCommunesWithBanErrors: string[];
+  blockedRevisions: string[];
 }
 
 const initialDashboardData: DashboardData = {
   firstPublicationEvolutionResponse: [],
   publicationsResponse: [],
   creationsResponse: [],
-  nbCommunesWithBanErrors: 0,
-  nbCommunesStillWithBanErrors: [],
-  nbRevisionsWithBanErrors: 0,
-  nbRevisionsWithWarnings: 0,
+  codesCommunesWithBanErrors: [],
+  blockedRevisions: [],
 };
 
 export function useDashboardData() {
@@ -41,12 +37,9 @@ export function useDashboardData() {
             stats.depot_firsts_publications.value,
           publicationsResponse: stats.depot_publications.value,
           creationsResponse: stats.mes_adresses_bals_creations.value,
-          nbCommunesWithBanErrors: stats.nb_communes_with_ban_errors.value || 0,
-          nbCommunesStillWithBanErrors:
-            stats.nb_communes_still_with_ban_errors.value || [],
-          nbRevisionsWithBanErrors:
-            stats.nb_revisions_with_ban_errors.value || 0,
-          nbRevisionsWithWarnings: stats.nb_revisions_with_warnings.value || 0,
+          codesCommunesWithBanErrors:
+            stats.codes_communes_with_ban_errors.value || [],
+          blockedRevisions: stats.blocked_revisions.value || [],
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);

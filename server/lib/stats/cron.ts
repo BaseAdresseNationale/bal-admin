@@ -1,21 +1,18 @@
 import { schedule } from "node-cron";
-import { createOne, deleteOne, findAllStats } from "./service";
-import allCommunes from "@etalab/decoupage-administratif/data/communes.json";
-import { CommuneCOG, CommuneTypeEnum } from "../../../types/cog";
-
-const codesCommunes = (allCommunes as CommuneCOG[])
-  .filter((c) =>
-    [
-      CommuneTypeEnum.COMMUNE_ACTUELLE,
-      CommuneTypeEnum.ARRONDISSEMENT_MUNICIPAL,
-    ].includes(c.type),
-  )
-  .map((commune) => commune.code);
+import { findAllStats, createOne, deleteOne } from "./service";
+import { StatusRevisionEnum } from "../../../types/api-depot.types";
 
 const fetchBanErrors = async (codeCommune) => {
+  const banURL = process.env.NEXT_PUBLIC_API_BAN_URL;
+  if (!banURL) {
+    console.warn(
+      "Variable d'environnement NEXT_PUBLIC_API_BAN_URL manquante : impossible de récupérer les alerts BAN",
+    );
+    return [];
+  }
   try {
     const result = await fetch(
-      `https://plateforme.adresse.data.gouv.fr/api/alerts/communes/${codeCommune}/status?limit=10`,
+      `${banURL}/api/alerts/communes/${codeCommune}/status?limit=1`,
     );
     return (await result.json()).response;
   } catch (error) {
@@ -27,60 +24,96 @@ const fetchBanErrors = async (codeCommune) => {
   }
 };
 
+const fetchCurrentRevisions = async () => {
+  const depotUrl = process.env.NEXT_PUBLIC_API_DEPOT_URL;
+  if (!depotUrl) {
+    console.warn(
+      "Variable d'environnement NEXT_PUBLIC_API_DEPOT_URL manquante : impossible de récupérer les révisions courantes",
+    );
+    return [];
+  }
+  try {
+    const result = await fetch(`${depotUrl}/current-revisions`);
+    return await result.json();
+  } catch (error) {
+    console.error(`Error fetching BAL errors route /current-revisions:`, error);
+    return [];
+  }
+};
+
+const fetchLastRevisions = async () => {
+  const depotUrl = process.env.NEXT_PUBLIC_API_DEPOT_URL;
+  if (!depotUrl) {
+    console.warn(
+      "Variable d'environnement NEXT_PUBLIC_API_DEPOT_URL manquante : impossible de récupérer les dernières révisions",
+    );
+    return [];
+  }
+  try {
+    const result = await fetch(`${depotUrl}/last-revisions`);
+    return await result.json();
+  } catch (error) {
+    console.error(`Error fetching BAL errors route /last-revisions:`, error);
+    return [];
+  }
+};
+
+const fetchAndStoreBlockedRevisionsStats = async () => {
+  const lastRevisions: any[] = await fetchLastRevisions();
+  let blockedRevisions: string[] = [];
+
+  console.log("CRON: démarage des calculs des statistiques des BAL bloquées");
+  for (const revision of lastRevisions) {
+    if (
+      revision.status === StatusRevisionEnum.PENDING &&
+      ((revision.files?.[0] && revision.validation.valid === false) ||
+        revision.is_ready)
+    ) {
+      blockedRevisions.push(revision.id);
+    }
+  }
+  await deleteOne("blocked_revisions");
+  await createOne("blocked_revisions", blockedRevisions);
+  console.log("CRON: fin des calculs des statistique de synchro avec la BAN");
+};
+
 const fetchAndStoreBanSynchroStats = async () => {
   const CHUNK_SIZE = 50;
-  let nbCommunesWithBanErrors = 0;
-  let nbCommunesStillWithBanErrors = [];
-  let nbRevisionsWithBanErrors = 0;
-  let nbRevisionsWithWarnings = 0;
+  const currentRevisions = await fetchCurrentRevisions();
+  let codesCommunesWithBanErrors: string[] = [];
 
   console.log(
     "CRON: démarage des calculs des statistiques de synchro avec la BAN",
   );
-  for (let i = 0; i < codesCommunes.length; i += CHUNK_SIZE) {
-    const codesCommunesChunk = codesCommunes.slice(i, i + CHUNK_SIZE);
+  for (let i = 0; i < currentRevisions.length; i += CHUNK_SIZE) {
+    const codesCommunesChunk = currentRevisions
+      .slice(i, i + CHUNK_SIZE)
+      .map(({ codeCommune }) => codeCommune);
     const datas = await Promise.all(
       codesCommunesChunk.map((codeCommune) => fetchBanErrors(codeCommune)),
     );
 
-    for (const { revisions_recentes, commune } of datas) {
-      const nbRevisionsErrors =
-        revisions_recentes?.filter(({ status }) => status === "error") || [];
-      nbRevisionsWithBanErrors += nbRevisionsErrors.length;
-
-      const nbRevisionsWarnings =
-        revisions_recentes?.filter(({ status }) => status === "warning") || [];
-      nbRevisionsWithWarnings += nbRevisionsWarnings.length;
-
-      if (nbRevisionsErrors.length > 0) {
-        nbCommunesWithBanErrors++;
-      }
-      const sortedRevisionsErrors =
-        revisions_recentes
-          ?.slice()
-          ?.sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-          ) || [];
-      if (sortedRevisionsErrors?.[0]?.status === "error") {
-        nbCommunesStillWithBanErrors.push(commune.code);
+    for (let j = 0; j < CHUNK_SIZE && j + i < currentRevisions.length; j++) {
+      const currentRevision = currentRevisions[i + j];
+      const alertsCommune = datas.find(
+        ({ commune }) =>
+          commune && commune.code === currentRevision.codeCommune,
+      );
+      const alertsLastRevision = alertsCommune?.revisions_recentes?.[0];
+      if (
+        alertsLastRevision &&
+        (alertsLastRevision.revisionId !== currentRevision.id ||
+          alertsLastRevision.status === "error")
+      ) {
+        codesCommunesWithBanErrors.push(currentRevision.codeCommune);
       }
     }
     if (i % CHUNK_SIZE === 0) {
-      console.log(`${i}/${codesCommunes.length}`);
+      console.log(`${i}/${currentRevisions.length}`);
     }
   }
-  await deleteOne("nb_communes_with_ban_errors");
-  await createOne("nb_communes_with_ban_errors", nbCommunesWithBanErrors);
-  await deleteOne("nb_communes_still_with_ban_errors");
-  await createOne(
-    "nb_communes_still_with_ban_errors",
-    nbCommunesStillWithBanErrors,
-  );
-  await deleteOne("nb_revisions_with_ban_errors");
-  await createOne("nb_revisions_with_ban_errors", nbRevisionsWithBanErrors);
-  await deleteOne("nb_revisions_with_warnings");
-  await createOne("nb_revisions_with_warnings", nbRevisionsWithWarnings);
+  await deleteOne("codes_communes_with_ban_errors");
+  await createOne("codes_communes_with_ban_errors", codesCommunesWithBanErrors);
   console.log("CRON: fin des calculs des statistique de synchro avec la BAN");
 };
 
@@ -149,6 +182,14 @@ const calculStats = async () => {
   } catch (error) {
     console.error(
       "Erreur lors du calcul initial des stats BAN synchro :",
+      error,
+    );
+  }
+  try {
+    await fetchAndStoreBlockedRevisionsStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul initial des dernieres révisions en pending :",
       error,
     );
   }
