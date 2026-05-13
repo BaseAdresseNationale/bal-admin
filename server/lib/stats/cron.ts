@@ -1,6 +1,11 @@
 import { schedule } from "node-cron";
 import { findAllStats, createOne, deleteOne } from "./service";
-import { StatusRevisionEnum } from "../../../types/api-depot.types";
+import { Revision, StatusRevisionEnum } from "../../../types/api-depot.types";
+
+export type RevisionLast = Pick<
+  Revision,
+  "id" | "codeCommune" | "isReady" | "status"
+> & { isValid: boolean };
 
 const fetchBanErrors = async (codeCommune) => {
   const banURL = process.env.NEXT_PUBLIC_API_BAN_URL;
@@ -59,15 +64,14 @@ const fetchLastRevisions = async () => {
 };
 
 const fetchAndStoreBlockedRevisionsStats = async () => {
-  const lastRevisions: any[] = await fetchLastRevisions();
+  const lastRevisions: RevisionLast[] = await fetchLastRevisions();
   let blockedRevisions: string[] = [];
 
   console.log("CRON: démarage des calculs des statistiques des BAL bloquées");
   for (const revision of lastRevisions) {
     if (
       revision.status === StatusRevisionEnum.PENDING &&
-      ((revision.files?.[0] && revision.validation.valid === false) ||
-        revision.is_ready)
+      (revision.isValid === false || revision.isReady)
     ) {
       blockedRevisions.push(revision.id);
     }
@@ -178,14 +182,6 @@ const fetchAndStorePublicationStats = async () => {
 
 const calculStats = async () => {
   try {
-    await fetchAndStoreBanSynchroStats();
-  } catch (error) {
-    console.error(
-      "Erreur lors du calcul initial des stats BAN synchro :",
-      error,
-    );
-  }
-  try {
     await fetchAndStoreBlockedRevisionsStats();
   } catch (error) {
     console.error(
@@ -193,6 +189,16 @@ const calculStats = async () => {
       error,
     );
   }
+
+  try {
+    await fetchAndStoreBanSynchroStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul initial des stats BAN synchro :",
+      error,
+    );
+  }
+
   try {
     await fetchAndStorePublicationStats();
   } catch (error) {
