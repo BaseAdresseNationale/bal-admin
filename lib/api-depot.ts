@@ -209,12 +209,9 @@ export async function getAllRevisionByCommune(
   return processResponse(response);
 }
 
-export async function getLastsRevisionsPending({
-  page = 1,
-  limit = 10,
-}): Promise<LastsRevisionsPendingPaginated> {
+export async function getRevision(revisionId: string): Promise<Revision> {
   const response = await fetch(
-    `${getProxyURL()}/revisions-lasts-pending?page=${page}&limit=${limit}`,
+    `${NEXT_PUBLIC_API_DEPOT_URL}/revisions/${revisionId}`,
   );
 
   return processResponse(response);
