@@ -57,7 +57,10 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
       const revisionAlerts = alerts.filter((a) => a.revisionId === revision.id);
       const latestAlert = revisionAlerts
         .filter(
-          (alert) => alert.status === "warning" || alert.status === "error",
+          (alert) =>
+            alert.status === "warning" ||
+            alert.status === "error" ||
+            alert.status === "success",
         )
         .sort(
           (a, b) =>
@@ -65,6 +68,10 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
         )[0];
 
       if (!latestAlert) {
+        setStatus("error");
+        setRawMessage("Révision courante non synchronisée avec la base");
+        setLabel("Erreur");
+      } else if (latestAlert.status === "success") {
         if (revision.isCurrent) {
           setStatus("active");
           setRawMessage("Révision synchronisée");
@@ -73,9 +80,7 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
         }
         setStatus("unknown");
         return;
-      }
-      // Révision courante non synchronisée
-      if (latestAlert.status === "error") {
+      } else if (latestAlert.status === "error") {
         setStatus("error");
         setRawMessage(
           latestAlert?.message ||

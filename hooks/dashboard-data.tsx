@@ -34,12 +34,12 @@ export function useDashboardData() {
 
         setDashboardData({
           firstPublicationEvolutionResponse:
-            stats.depot_firsts_publications.value,
-          publicationsResponse: stats.depot_publications.value,
-          creationsResponse: stats.mes_adresses_bals_creations.value,
+            stats.depot_firsts_publications?.value,
+          publicationsResponse: stats.depot_publications?.value,
+          creationsResponse: stats.mes_adresses_bals_creations?.value,
           codesCommunesWithBanErrors:
-            stats.codes_communes_with_ban_errors.value || [],
-          blockedRevisions: stats.blocked_revisions.value || [],
+            stats.codes_communes_with_ban_errors?.value || [],
+          blockedRevisions: stats.blocked_revisions?.value || [],
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
