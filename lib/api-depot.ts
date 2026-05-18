@@ -183,6 +183,18 @@ export async function getStatPublications(
   }
 }
 
+export async function getCurrentRevision(
+  codeCommune: string,
+): Promise<Revision> {
+  const url = new URL(
+    `${NEXT_PUBLIC_API_DEPOT_URL}/communes/${codeCommune}/current-revision`,
+  );
+
+  const response = await fetch(url);
+
+  return processResponse(response);
+}
+
 export async function getCurrentRevisions(
   codesCommunes: string[],
 ): Promise<Revision[]> {
@@ -209,12 +221,24 @@ export async function getAllRevisionByCommune(
   return processResponse(response);
 }
 
-export async function getLastsRevisionsPending({
-  page = 1,
-  limit = 10,
-}): Promise<LastsRevisionsPendingPaginated> {
+export async function getRevision(revisionId: string): Promise<Revision> {
   const response = await fetch(
-    `${getProxyURL()}/revisions-lasts-pending?page=${page}&limit=${limit}`,
+    `${NEXT_PUBLIC_API_DEPOT_URL}/revisions/${revisionId}`,
+  );
+
+  return processResponse(response);
+}
+
+export async function syncRevisionAndPublish(
+  revisionId: string,
+): Promise<Client> {
+  const response = await fetch(
+    `${PROXY_API_DEPOT_URL}/revisions/${revisionId}/sync-ids-ban-publish`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({}),
+    },
   );
 
   return processResponse(response);

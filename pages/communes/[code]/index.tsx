@@ -10,17 +10,24 @@ import type {
 } from "types/moissoneur";
 import type {
   Client,
+  Revision,
   Revision as RevisionApiDepot,
 } from "types/api-depot.types";
 import type { BaseLocaleType } from "types/mes-adresses";
 import { getCommune, isCommune } from "@/lib/cog";
 
 import { ModalAlert } from "@/components/modal-alerte";
-import { getAllRevisionByCommune, getEmailsCommune } from "@/lib/api-depot";
+import {
+  getAllRevisionByCommune,
+  getCurrentRevision,
+  getEmailsCommune,
+  syncRevisionAndPublish,
+} from "@/lib/api-depot";
 import {
   searchBasesLocales,
   removeBaseLocale,
   updateSettingsBaseLocale,
+  syncAndPublishBaseLocale,
 } from "@/lib/api-mes-adresses";
 import { getRevisionsByCommune } from "@/lib/api-moissonneur-bal";
 
@@ -43,7 +50,12 @@ import {
 import { CommuneInfosHeader } from "@/components/communes/commune-infos-header";
 import { getMarieTelephones } from "server/utils/api-annuaire";
 import { getSources } from "@/lib/api-moissonneur-bal";
-import { getCommuneAlerts } from "@/lib/api-ban";
+import {
+  fetchLookupCommune,
+  getCommuneAlerts,
+  LookupResponse,
+  TypeCompositionEnum,
+} from "@/lib/api-ban";
 import { Alert as AlertBAN } from "types/alerts.types";
 import { PublicationBan } from "@/components/communes/publication-ban";
 
@@ -62,6 +74,8 @@ type CommuneSourcePageProps = {
   sourcesMoissonneur: SourceMoissoneurType[];
   clientApiDepot: Client[];
   alerts: AlertBAN[];
+  lookup: LookupResponse;
+  hasBalPublished: boolean;
 };
 
 const CommuneSource = ({
@@ -72,39 +86,35 @@ const CommuneSource = ({
   signalementCommuneSettings,
   signalementSources,
   alerts,
+  lookup,
+  hasBalPublished,
 }: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
   const [balSelected, setBalSelected] = useState<string>(null);
   const [initialRevisionsApiDepot, setInitialRevisionsApiDepot] = useState<
     RevisionApiDepot[]
   >([]);
+  const [lockSyncRevision, setLockSyncRevision] = useState(false);
   const [initialRevisionsMoissonneur, setInitialRevisionsMoissonneur] =
     useState<RevisionMoissoneurType[]>([]);
   const [balToDeleted, setBalToDeleted] = useState<BaseLocaleType>(null);
+  const [balToSync, setBalToSync] = useState<BaseLocaleType>(null);
+  const [revisionToSync, setRevisionToSync] = useState<Revision>(null);
 
   const [sourcesMoissonneur, setSourcesMoissonneur] = useState<
     SourceMoissoneurType[]
   >([]);
-  useEffect(() => {
-    async function fetchSourcesMoissonneur() {
-      const sources = await getSources();
-      setSourcesMoissonneur(sources);
-    }
-    fetchSourcesMoissonneur().catch(console.error);
-  }, []);
 
   const [pageApiDepot, setPageApiDepot] = useState({
     limit: 10,
     count: 0,
     current: 1,
   });
-
   const [pageMoissonneur, setPageMoissonneur] = useState({
     limit: 10,
     count: 0,
     current: 1,
   });
-
   const [pageMesAdresses, setPageMesAdresses] = useState({
     limit: 10,
     count: 0,
@@ -144,37 +154,60 @@ const CommuneSource = ({
     });
   }, []);
 
-  useEffect(() => {
-    const fetchDataApiDepot = async () => {
-      const initialRevisionsApiDepot: RevisionApiDepot[] =
-        await getAllRevisionByCommune(code);
-      // Show the last revisions first
-      setInitialRevisionsApiDepot(initialRevisionsApiDepot.reverse());
-      setPageApiDepot((pageApiDepot) => ({
-        ...pageApiDepot,
-        count: initialRevisionsApiDepot.length,
-      }));
-    };
-    const fetchDataMoissonneur = async () => {
-      const initialRevisionsMoissonneur: RevisionMoissoneurType[] =
-        await getRevisionsByCommune(code);
-
-      setInitialRevisionsMoissonneur(
-        sortBy(initialRevisionsMoissonneur, "createdAt").reverse(),
-      );
-      setPageMoissonneur((pageMoissonneur) => ({
-        ...pageMoissonneur,
-        count: initialRevisionsMoissonneur.length,
-      }));
-    };
-
-    fetchDataApiDepot().catch(console.error);
-    fetchDataMoissonneur().catch(console.error);
+  const fetchDataApiDepot = useCallback(async () => {
+    const initialRevisionsApiDepot: RevisionApiDepot[] =
+      await getAllRevisionByCommune(code);
+    // Show the last revisions first
+    setInitialRevisionsApiDepot(initialRevisionsApiDepot.reverse());
+    setPageApiDepot((pageApiDepot) => ({
+      ...pageApiDepot,
+      count: initialRevisionsApiDepot.length,
+    }));
   }, [code]);
 
-  useEffect(() => {
-    fetchBals(code, pageMesAdresses).catch(console.error);
-  }, [code]);
+  const fetchDataMoissonneur = async () => {
+    const initialRevisionsMoissonneur: RevisionMoissoneurType[] =
+      await getRevisionsByCommune(code);
+
+    setInitialRevisionsMoissonneur(
+      sortBy(initialRevisionsMoissonneur, "createdAt").reverse(),
+    );
+    setPageMoissonneur((pageMoissonneur) => ({
+      ...pageMoissonneur,
+      count: initialRevisionsMoissonneur.length,
+    }));
+  };
+
+  const onSyncRevision = useCallback(async () => {
+    try {
+      setLockSyncRevision(true);
+      await syncRevisionAndPublish(revisionToSync.id);
+      await fetchDataApiDepot();
+      toast("La BAL a bien été synchroniser et publier", { type: "success" });
+    } catch (e: unknown) {
+      console.error(e);
+      if (e instanceof Error) {
+        toast(e.message, { type: "error" });
+      }
+    } finally {
+      setLockSyncRevision(false);
+    }
+  }, [revisionToSync, fetchDataApiDepot]);
+
+  const onSyncBal = useCallback(async () => {
+    try {
+      await syncAndPublishBaseLocale(balToSync.id);
+      await fetchBals(code, pageMesAdresses).catch(console.error);
+      await fetchDataApiDepot();
+      setBalToSync(null);
+      toast("La BAL a bien été synchroniser et publier", { type: "success" });
+    } catch (e: unknown) {
+      console.error(e);
+      if (e instanceof Error) {
+        toast(e.message, { type: "error" });
+      }
+    }
+  }, [balToSync, code, fetchBals, fetchDataApiDepot, pageMesAdresses]);
 
   const revisionsApiDepot = useMemo(() => {
     const start = (pageApiDepot.current - 1) * pageApiDepot.limit;
@@ -183,7 +216,13 @@ const CommuneSource = ({
       const res = {
         ...r,
         selected: balSelected === r.context?.extras?.balId,
-        publicationBan: <PublicationBan revision={r} alerts={alerts} />,
+        publicationBan: (
+          <PublicationBan
+            revision={r}
+            alerts={alerts}
+            setRevisionToSync={() => setRevisionToSync(r)}
+          />
+        ),
       };
       if (r.client.legacyId === "moissonneur-bal") {
         return {
@@ -202,9 +241,9 @@ const CommuneSource = ({
   }, [
     pageApiDepot,
     initialRevisionsApiDepot,
-    sourcesMoissonneur,
-    alerts,
     balSelected,
+    alerts,
+    sourcesMoissonneur,
   ]);
 
   const revisionsMoissoneur = useMemo(() => {
@@ -260,6 +299,9 @@ const CommuneSource = ({
     delete(item: BaseLocaleType) {
       setBalToDeleted(item);
     },
+    sync(item: BaseLocaleType) {
+      setBalToSync(item);
+    },
     toggleOtherBalPublishedIgnored(item: BaseLocaleType) {
       setOtherBalPublishedIgnored(item);
     },
@@ -271,6 +313,17 @@ const CommuneSource = ({
       }
     },
   };
+
+  useEffect(() => {
+    async function fetchSourcesMoissonneur() {
+      const sources = await getSources();
+      setSourcesMoissonneur(sources);
+    }
+    fetchDataApiDepot().catch(console.error);
+    fetchSourcesMoissonneur().catch(console.error);
+    fetchDataMoissonneur().catch(console.error);
+    fetchBals(code, pageMesAdresses).catch(console.error);
+  }, [code]);
 
   if (!isCommune(code)) {
     return (
@@ -289,10 +342,25 @@ const CommuneSource = ({
   return (
     <div className="fr-container fr-my-4w">
       <ModalAlert
+        id="modal-deletion"
+        title="Voulez vous vraiment supprimer cette BAL ?"
         item={balToDeleted}
         setItem={setBalToDeleted}
         onAction={onDeleteBal}
-        title="Voulez vous vraiment supprimer cette bal ?"
+      />
+      <ModalAlert
+        id="modal-synchronisation-bal"
+        title="Voulez vous vraiment synchroniser et publier cette BAL ?"
+        item={balToSync}
+        setItem={setBalToSync}
+        onAction={onSyncBal}
+      />
+      <ModalAlert
+        id="modal-synchronisation-revision"
+        title="Voulez vous vraiment synchroniser et publier cette révision ?"
+        item={revisionToSync}
+        setItem={setRevisionToSync}
+        onAction={onSyncRevision}
       />
       <h1>
         {getCommune(code)?.nom || (
@@ -307,6 +375,7 @@ const CommuneSource = ({
         signalementCommuneSettings={signalementCommuneSettings}
         signalementSources={signalementSources}
         codeCommune={code}
+        lookup={lookup}
       />
       <EditableList
         headers={[
@@ -327,6 +396,7 @@ const CommuneSource = ({
         page={{ ...pageMesAdresses, onPageChange: onPageMesAdressesChange }}
         actions={actionsBals}
         selectedItem={balSelected}
+        extras={{ hasBalPublished }}
         createBtn={
           <Link href={`/communes/${code}/new`} passHref legacyBehavior>
             <Button iconId="fr-icon-add-line" className="fr-mb-2w">
@@ -385,11 +455,19 @@ export async function getServerSideProps({ params }) {
     SignalementStatusEnum.EXPIRED,
   );
 
+  const lookup = await fetchLookupCommune(code);
+
   const alerts = [];
 
   try {
     const res = await getCommuneAlerts(code);
     alerts.push(...res);
+  } catch {}
+
+  let hasBalPublished = false;
+  try {
+    const currentRevision = await getCurrentRevision(code);
+    hasBalPublished = Boolean(currentRevision?.context?.extras?.balId);
   } catch {}
 
   return {
@@ -406,6 +484,8 @@ export async function getServerSideProps({ params }) {
       signalementCommuneSettings,
       signalementSources,
       alerts,
+      lookup,
+      hasBalPublished,
     },
   };
 }

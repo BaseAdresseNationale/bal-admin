@@ -14,7 +14,8 @@ import ToggleSwitch from "@codegouvfr/react-dsfr/ToggleSwitch";
 export const BalsItem = (
   item: BaseLocaleType,
   actions: Record<string, (item: BaseLocaleType) => void>,
-  selectedItem?: string,
+  selectedItem: string = "",
+  { hasBalPublished }: { hasBalPublished: boolean },
 ) => {
   const {
     id,
@@ -64,16 +65,18 @@ export const BalsItem = (
         {nbNumeros} / {nbNumerosCertifies}
       </td>
       <td>
-        <ToggleSwitch
-          label=""
-          disabled={status === StatusBaseLocalEnum.PUBLISHED}
-          checked={
-            status === StatusBaseLocalEnum.PUBLISHED ||
-            settings?.otherBalPublishedIgnored ||
-            false
-          }
-          onChange={() => actions.toggleOtherBalPublishedIgnored(item)}
-        />
+        {hasBalPublished && (
+          <ToggleSwitch
+            label=""
+            disabled={status === StatusBaseLocalEnum.PUBLISHED}
+            checked={
+              status === StatusBaseLocalEnum.PUBLISHED ||
+              settings?.otherBalPublishedIgnored ||
+              false
+            }
+            onChange={() => actions.toggleOtherBalPublishedIgnored(item)}
+          />
+        )}
       </td>
       <td className="fr-col fr-my-1v">
         <Badge severity={getSeverityImport()} noIcon>
@@ -84,26 +87,31 @@ export const BalsItem = (
         <div style={{ width: "150px" }}>
           <Button
             title="Sélectionner"
-            className="fr-col-4 fr-m-1v"
-            iconId={
-              selectedItem === id
-                ? "fr-icon-cursor-fill"
-                : "fr-icon-cursor-line"
-            }
+            className="fr-col fr-m-1v"
+            iconId={selectedItem === id ? "ri-eye-close-fill" : "ri-eye-fill"}
             onClick={() => {
               actions.select(item);
             }}
           />
           <Button
+            title="Synchroniser"
+            className="fr-col fr-m-1v"
+            iconId="ri-refresh-line"
+            onClick={() => {
+              actions.sync(item);
+            }}
+            disabled={status !== StatusBaseLocalEnum.PUBLISHED}
+          />
+          <Button
             title="Supprimer"
-            className="fr-col-4 fr-m-1v"
+            className="fr-col fr-m-1v"
             iconId="fr-icon-delete-bin-fill"
             onClick={() => {
               actions.delete(item);
             }}
           />
           <Link
-            className="fr-col-4 fr-m-1v"
+            className="fr-col fr-m-1v"
             passHref
             href={{
               pathname: "/mes-adresses/base-locale",

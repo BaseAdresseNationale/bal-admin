@@ -1,55 +1,67 @@
-import React, {useEffect} from 'react'
-import {createModal} from '@codegouvfr/react-dsfr/Modal'
-import {useIsModalOpen} from '@codegouvfr/react-dsfr/Modal/useIsModalOpen'
-
-const modal = createModal({
-  id: 'modal-alert',
-  isOpenedByDefault: false,
-})
+import React, { useEffect, useMemo, useState } from "react";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
+import Loader from "./loader";
 
 type ModalAlertProps<T> = {
+  id: string;
   item: T;
   setItem: (item: T | null) => void;
   onAction: () => Promise<void>;
   title: string;
-}
+};
 
-export const ModalAlert = <T extends unknown>({item, setItem, onAction, title}: ModalAlertProps<T>) => {
-  const isOpen = useIsModalOpen(modal)
+export const ModalAlert = <T extends unknown>({
+  id,
+  item,
+  setItem,
+  onAction,
+  title,
+}: ModalAlertProps<T>) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const modal = useMemo(
+    () => createModal({ id, isOpenedByDefault: false }),
+    [id],
+  );
+  const isOpen = useIsModalOpen(modal);
 
   useEffect(() => {
     if (modal && item) {
-      modal.open()
+      modal.open();
     }
-  }, [item])
+  }, [item, modal]);
 
   useEffect(() => {
     if (!isOpen) {
-      setItem(null)
+      setItem(null);
     }
-  }, [isOpen, setItem])
+  }, [isOpen, setItem]);
 
   return (
     <modal.Component
       title={title}
-      buttons={
-        [
-          {
-            doClosesModal: true,
-            children: 'Annuler',
+      buttons={[
+        {
+          doClosesModal: true,
+          children: "Non",
+          disabled: isLoading,
+        },
+        {
+          doClosesModal: false,
+          async onClick() {
+            setIsLoading(true);
+            await onAction();
+            setIsLoading(false);
+            modal.close();
           },
-          {
-            doClosesModal: false,
-            async onClick() {
-              await onAction()
-              modal.close()
-            },
-            children: 'Supprimer',
-          },
-        ]
-      }
+          children: "Oui",
+          disabled: isLoading,
+        },
+      ]}
     >
-      Attention, cette action est irréversible.
+      <Loader isLoading={isLoading}>
+        Attention, cette action est irréversible.
+      </Loader>
     </modal.Component>
-  )
-}
+  );
+};

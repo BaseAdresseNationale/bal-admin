@@ -9,7 +9,8 @@ type EditableListProps<T> = {
   renderItem: (
     item: T,
     actions?: Record<string, (item: T) => void>,
-    selectedItem?: string
+    selectedItem?: string,
+    extras?: any,
   ) => React.ReactNode;
   filter?: {
     placeholder?: string;
@@ -21,6 +22,7 @@ type EditableListProps<T> = {
     count: number;
     onPageChange: (page: number) => void;
   };
+  extras?: any;
   actions?: Record<string, (item: T) => void>;
   selectedItem?: string;
 };
@@ -33,6 +35,7 @@ export const EditableList = <T extends unknown>({
   renderItem,
   filter,
   page,
+  extras,
   actions,
   selectedItem,
 }: EditableListProps<T>) => {
@@ -45,14 +48,14 @@ export const EditableList = <T extends unknown>({
     }
 
     return data.filter((item) =>
-      item[filter.property].toLowerCase().includes(filterInput.toLowerCase())
+      item[filter.property].toLowerCase().includes(filterInput.toLowerCase()),
     );
   }, [data, filterInput, filter]);
 
   useEffect(() => {
     if (pageinationRef.current) {
       const paginationLinks = pageinationRef.current.querySelectorAll(
-        ".fr-pagination__link"
+        ".fr-pagination__link",
       );
       paginationLinks.forEach((link: Element, index) => {
         if (index - 1 === page?.current) {
@@ -98,7 +101,7 @@ export const EditableList = <T extends unknown>({
             </thead>
             <tbody>
               {filteredData.map((item) =>
-                renderItem(item, actions, selectedItem)
+                renderItem(item, actions, selectedItem, extras),
               )}
             </tbody>
           </table>
