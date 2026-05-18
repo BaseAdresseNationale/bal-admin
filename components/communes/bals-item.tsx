@@ -14,7 +14,8 @@ import ToggleSwitch from "@codegouvfr/react-dsfr/ToggleSwitch";
 export const BalsItem = (
   item: BaseLocaleType,
   actions: Record<string, (item: BaseLocaleType) => void>,
-  selectedItem?: string,
+  selectedItem: string = "",
+  { hasBalPublished }: { hasBalPublished: boolean },
 ) => {
   const {
     id,
@@ -64,16 +65,18 @@ export const BalsItem = (
         {nbNumeros} / {nbNumerosCertifies}
       </td>
       <td>
-        <ToggleSwitch
-          label=""
-          disabled={status === StatusBaseLocalEnum.PUBLISHED}
-          checked={
-            status === StatusBaseLocalEnum.PUBLISHED ||
-            settings?.otherBalPublishedIgnored ||
-            false
-          }
-          onChange={() => actions.toggleOtherBalPublishedIgnored(item)}
-        />
+        {hasBalPublished && (
+          <ToggleSwitch
+            label=""
+            disabled={status === StatusBaseLocalEnum.PUBLISHED}
+            checked={
+              status === StatusBaseLocalEnum.PUBLISHED ||
+              settings?.otherBalPublishedIgnored ||
+              false
+            }
+            onChange={() => actions.toggleOtherBalPublishedIgnored(item)}
+          />
+        )}
       </td>
       <td className="fr-col fr-my-1v">
         <Badge severity={getSeverityImport()} noIcon>

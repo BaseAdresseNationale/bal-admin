@@ -183,6 +183,18 @@ export async function getStatPublications(
   }
 }
 
+export async function getCurrentRevision(
+  codeCommune: string,
+): Promise<Revision> {
+  const url = new URL(
+    `${NEXT_PUBLIC_API_DEPOT_URL}/communes/${codeCommune}/current-revision`,
+  );
+
+  const response = await fetch(url);
+
+  return processResponse(response);
+}
+
 export async function getCurrentRevisions(
   codesCommunes: string[],
 ): Promise<Revision[]> {

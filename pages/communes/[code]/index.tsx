@@ -19,6 +19,7 @@ import { getCommune, isCommune } from "@/lib/cog";
 import { ModalAlert } from "@/components/modal-alerte";
 import {
   getAllRevisionByCommune,
+  getCurrentRevision,
   getEmailsCommune,
   syncRevisionAndPublish,
 } from "@/lib/api-depot";
@@ -74,6 +75,7 @@ type CommuneSourcePageProps = {
   clientApiDepot: Client[];
   alerts: AlertBAN[];
   lookup: LookupResponse;
+  hasBalPublished: boolean;
 };
 
 const CommuneSource = ({
@@ -85,6 +87,7 @@ const CommuneSource = ({
   signalementSources,
   alerts,
   lookup,
+  hasBalPublished,
 }: CommuneSourcePageProps) => {
   const [bals, setBals] = useState<BaseLocaleType[]>([]);
   const [balSelected, setBalSelected] = useState<string>(null);
@@ -316,11 +319,8 @@ const CommuneSource = ({
       const sources = await getSources();
       setSourcesMoissonneur(sources);
     }
-    fetchSourcesMoissonneur().catch(console.error);
-  }, []);
-
-  useEffect(() => {
     fetchDataApiDepot().catch(console.error);
+    fetchSourcesMoissonneur().catch(console.error);
     fetchDataMoissonneur().catch(console.error);
     fetchBals(code, pageMesAdresses).catch(console.error);
   }, [code]);
@@ -396,6 +396,7 @@ const CommuneSource = ({
         page={{ ...pageMesAdresses, onPageChange: onPageMesAdressesChange }}
         actions={actionsBals}
         selectedItem={balSelected}
+        extras={{ hasBalPublished }}
         createBtn={
           <Link href={`/communes/${code}/new`} passHref legacyBehavior>
             <Button iconId="fr-icon-add-line" className="fr-mb-2w">
@@ -463,6 +464,12 @@ export async function getServerSideProps({ params }) {
     alerts.push(...res);
   } catch {}
 
+  let hasBalPublished = false;
+  try {
+    const currentRevision = await getCurrentRevision(code);
+    hasBalPublished = Boolean(currentRevision?.context?.extras?.balId);
+  } catch {}
+
   return {
     props: {
       code,
@@ -478,6 +485,7 @@ export async function getServerSideProps({ params }) {
       signalementSources,
       alerts,
       lookup,
+      hasBalPublished,
     },
   };
 }
