@@ -36,16 +36,16 @@ const getAlertType = (status: string) => {
   }
 };
 
-const publicationBanModal = createModal({
-  id: "publication-ban-modal",
-  isOpenedByDefault: false,
-});
-
 export const PublicationBan: React.FC<PublicationBanProps> = ({
   revision,
   alerts,
   setRevisionToSync,
 }) => {
+  const publicationBanModal = createModal({
+    id: `publication-ban-modal-${revision.id}`,
+    isOpenedByDefault: false,
+  });
+
   const [status, setStatus] = useState<
     "error" | "warning" | "active" | "unknown"
   >("active");
@@ -76,10 +76,8 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
           setStatus("active");
           setRawMessage("Révision synchronisée");
           setLabel("Valide");
-          return;
         }
         setStatus("unknown");
-        return;
       } else if (latestAlert.status === "error") {
         setStatus("error");
         setRawMessage(
@@ -87,7 +85,6 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
             "Révision courante non synchronisée avec la base",
         );
         setLabel("Erreur");
-        return;
       } else if (latestAlert?.status === "warning") {
         setStatus("warning");
         setRawMessage(latestAlert?.message || "Avertissement détecté");
@@ -102,6 +99,10 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
 
     determineStatus();
   }, [revision, alerts]);
+
+  if (status === "error") {
+    console.log(status, label, rawMessage);
+  }
 
   const displayMessage = parseAlertMessage(rawMessage);
 
