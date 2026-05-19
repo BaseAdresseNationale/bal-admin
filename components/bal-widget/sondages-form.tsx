@@ -68,6 +68,12 @@ export function validateSondages(
         sondageId: sondage.id,
       };
     }
+    if (sondage.questions.length === 0) {
+      return {
+        message: `Le sondage « ${sondage.name} » doit contenir au moins une question`,
+        sondageId: sondage.id,
+      };
+    }
     for (const question of sondage.questions) {
       if (!question.label.trim()) {
         return {
