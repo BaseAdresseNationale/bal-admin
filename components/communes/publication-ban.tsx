@@ -5,7 +5,8 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Alert } from "types/alerts.types";
-import { Revision } from "types/api-depot.types";
+import { Revision, StatusRevisionEnum } from "types/api-depot.types";
+import { differenceInMinutes } from "date-fns";
 import { parseAlertMessage } from "@/lib/util/ban";
 
 interface PublicationBanProps {
@@ -20,6 +21,8 @@ const getSeverity = (status: string) => {
       return "error";
     case "warning":
       return "warning";
+    case "inprogress":
+      return "info";
     default:
       return "success";
   }
@@ -31,6 +34,8 @@ const getAlertType = (status: string) => {
       return "error";
     case "warning":
       return "warning";
+    case "inprogress":
+      return "info";
     default:
       return "success";
   }
@@ -47,13 +52,16 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
   });
 
   const [status, setStatus] = useState<
-    "error" | "warning" | "active" | "unknown"
+    "error" | "warning" | "active" | "inprogress" | "unknown"
   >("active");
   const [rawMessage, setRawMessage] = useState("");
   const [label, setLabel] = useState("");
 
   useEffect(() => {
     const determineStatus = async () => {
+      if (revision.status !== StatusRevisionEnum.PUBLISHED) {
+        return;
+      }
       const revisionAlerts = alerts.filter((a) => a.revisionId === revision.id);
       const latestAlert = revisionAlerts
         .filter(
@@ -68,16 +76,26 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
         )[0];
 
       if (!latestAlert) {
-        setStatus("error");
-        setRawMessage("Révision courante non synchronisée avec la base");
-        setLabel("Erreur");
+        if (
+          revision.publishedAt &&
+          differenceInMinutes(new Date(), new Date(revision.publishedAt)) < 10
+        ) {
+          setStatus("inprogress");
+          setRawMessage("La BAN n'a pas encore synchronisée la BAL");
+          setLabel("En cours");
+        } else {
+          setStatus("error");
+          setRawMessage("Révision courante non synchronisée avec la base");
+          setLabel("Erreur");
+        }
       } else if (latestAlert.status === "success") {
         if (revision.isCurrent) {
           setStatus("active");
           setRawMessage("Révision synchronisée");
           setLabel("Valide");
+        } else {
+          setStatus("unknown");
         }
-        setStatus("unknown");
       } else if (latestAlert.status === "error") {
         setStatus("error");
         setRawMessage(

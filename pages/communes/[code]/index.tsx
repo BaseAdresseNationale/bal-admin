@@ -216,7 +216,7 @@ const CommuneSource = ({
       const res = {
         ...r,
         selected: balSelected === r.context?.extras?.balId,
-        publicationBan: (
+        publicationBan: r.isCurrent && (
           <PublicationBan
             revision={r}
             alerts={alerts}
