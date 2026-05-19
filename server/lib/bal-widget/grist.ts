@@ -1,5 +1,6 @@
-import { Sondage, SondageQuestion } from "./entity";
-const GRIST_API_URL = process.env.GRIST_API_URL;
+import { Sondage, SondageQuestion, SondageQuestionType } from "./entity";
+const GRIST_URL = process.env.NEXT_PUBLIC_GRIST_URL;
+const GRIST_API_URL = GRIST_URL ? `${GRIST_URL}/api` : undefined;
 const GRIST_API_KEY = process.env.GRIST_API_KEY;
 const GRIST_WORKSPACE_ID = process.env.GRIST_WORKSPACE_ID;
 
@@ -9,7 +10,7 @@ const SUBMITTED_AT_COL_ID = "submitted_at";
 function assertGristConfigured() {
   if (!GRIST_API_URL || !GRIST_API_KEY || !GRIST_WORKSPACE_ID) {
     throw new Error(
-      "Configuration Grist incomplète : GRIST_API_URL, GRIST_API_KEY et GRIST_WORKSPACE_ID sont requis",
+      "Configuration Grist incomplète : NEXT_PUBLIC_GRIST_URL, GRIST_API_KEY et GRIST_WORKSPACE_ID sont requis",
     );
   }
 }
@@ -24,9 +25,9 @@ export function questionColId(questionId: string): string {
 
 function questionGristType(question: SondageQuestion): string {
   switch (question.type) {
-    case "rating-5-stars":
+    case SondageQuestionType.RATING_5_STARS:
       return "Int";
-    case "free-text":
+    case SondageQuestionType.FREE_TEXT:
     default:
       return "Text";
   }

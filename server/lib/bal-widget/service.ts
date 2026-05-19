@@ -1,6 +1,6 @@
 import { ObjectId } from "bson";
 import { AppDataSource } from "../../utils/typeorm-client";
-import { BalWidget, Sondage } from "./entity";
+import { BalWidget, Sondage, SondageQuestionType } from "./entity";
 import {
   addSondageResponse,
   createSondageDoc,
@@ -76,7 +76,7 @@ export async function submitSondageResponse(
       err.status = 400;
       throw err;
     }
-    if (question.type === "rating-5-stars") {
+    if (question.type === SondageQuestionType.RATING_5_STARS) {
       const n = Number(value);
       if (!Number.isInteger(n) || n < 1 || n > 5) {
         const err: any = new Error(
@@ -86,7 +86,7 @@ export async function submitSondageResponse(
         throw err;
       }
       cleaned[questionId] = n;
-    } else if (question.type === "free-text") {
+    } else if (question.type === SondageQuestionType.FREE_TEXT) {
       if (typeof value !== "string") {
         const err: any = new Error(
           `Valeur invalide pour la question "${question.label}" : texte attendu`,

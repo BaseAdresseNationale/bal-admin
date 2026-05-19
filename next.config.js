@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 
-const withTM = require('next-transpile-modules')(['@codegouvfr/react-dsfr'])
+const withTM = require("next-transpile-modules")([
+  "@codegouvfr/react-dsfr",
+  "@uiw/react-md-editor",
+  "@uiw/react-markdown-preview",
+]);
 
 module.exports = withTM({
   reactStrictMode: true,
@@ -9,17 +13,17 @@ module.exports = withTM({
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ['static.data.gouv.fr']
+    domains: ["static.data.gouv.fr"],
   },
   compiler: {
-    styledComponents: true
+    styledComponents: true,
   },
   webpack(config) {
     config.module.rules.push({
       test: /\.woff2$/,
-      type: 'asset/resource'
-    })
+      type: "asset/resource",
+    });
 
-    return config
-  }
-})
+    return config;
+  },
+});

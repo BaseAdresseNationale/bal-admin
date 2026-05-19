@@ -11,7 +11,10 @@ export interface BALWidgetLink {
   url: string;
 }
 
-export type SondageQuestionType = "rating-5-stars" | "free-text";
+export enum SondageQuestionType {
+  RATING_5_STARS = "rating-5-stars",
+  FREE_TEXT = "free-text",
+}
 
 export interface SondageQuestion {
   id: string;
@@ -22,6 +25,7 @@ export interface SondageQuestion {
 export interface Sondage {
   id: string;
   name: string;
+  description?: string;
   enabled: boolean;
   site: string;
   questions: SondageQuestion[];
@@ -37,7 +41,6 @@ export class BalWidget {
   global: {
     title: string;
     hideWidget: boolean;
-    showOnPages: string[];
   };
 
   @Column("json", { nullable: true })

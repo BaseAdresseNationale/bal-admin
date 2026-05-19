@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import dynamic from "next/dynamic";
 import styled from "styled-components";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -10,6 +11,11 @@ import {
   SondageQuestion,
   SondageQuestionType,
 } from "../../server/lib/bal-widget/entity";
+
+const MDEditor = dynamic(
+  () => import("@uiw/react-md-editor").then((mod) => mod.default),
+  { ssr: false },
+);
 
 type SondagesFormProps = {
   sondages: Sondage[];
@@ -23,9 +29,16 @@ const AVAILABLE_SITES: string[] = (
   .map((s) => s.trim())
   .filter(Boolean);
 
+const GRIST_URL = process.env.NEXT_PUBLIC_GRIST_URL || "";
+
+function getGristDocUrl(gristDocId?: string): string | null {
+  if (!gristDocId || !GRIST_URL) return null;
+  return `${GRIST_URL}/o/anct/${gristDocId}`;
+}
+
 const QUESTION_TYPE_LABELS: Record<SondageQuestionType, string> = {
-  "rating-5-stars": "Notation 5 étoiles",
-  "free-text": "Texte libre",
+  [SondageQuestionType.RATING_5_STARS]: "Notation 5 étoiles",
+  [SondageQuestionType.FREE_TEXT]: "Texte libre",
 };
 
 const RequiredMark = () => (
@@ -95,10 +108,25 @@ const StyledSondages = styled.div`
     margin-left: auto;
   }
 
+  .sondage-results-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+  }
+
   .sondage-body {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px dashed var(--border-default-grey);
+  }
+
+  .sondage-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .sondage-description-editor {
+    margin-top: 0.5rem;
   }
 
   .question-row {
@@ -128,8 +156,6 @@ function generateId(): string {
 }
 
 export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
   const updateSondage = (id: string, patch: Partial<Sondage>) => {
     onChange(sondages.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   };
@@ -137,7 +163,6 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
   const removeSondage = (id: string) => {
     if (!window.confirm("Supprimer ce sondage ?")) return;
     onChange(sondages.filter((s) => s.id !== id));
-    if (expandedId === id) setExpandedId(null);
   };
 
   const handleToggleEnabled = (sondage: Sondage) => () => {
@@ -188,7 +213,6 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
       questions: [],
     };
     onChange([...sondages, sondage]);
-    setExpandedId(sondage.id);
   };
 
   const addQuestion = (sondage: Sondage, type: SondageQuestionType) => () => {
@@ -238,7 +262,6 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
       )}
 
       {sondages.map((sondage) => {
-        const isExpanded = expandedId === sondage.id;
         return (
           <div key={sondage.id} className="sondage-card">
             <div className="sondage-header">
@@ -282,23 +305,14 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
               </div>
               <div className="sondage-actions">
                 <ToggleSwitch
-                  label=""
+                  label={
+                    sondage.enabled
+                      ? "Désactiver ce sondage"
+                      : "Activer ce sondage"
+                  }
                   checked={sondage.enabled}
                   onChange={handleToggleEnabled(sondage)}
                 />
-                <Button
-                  type="button"
-                  priority="tertiary no outline"
-                  iconId={
-                    isExpanded
-                      ? "fr-icon-arrow-up-s-line"
-                      : "fr-icon-arrow-down-s-line"
-                  }
-                  onClick={() => setExpandedId(isExpanded ? null : sondage.id)}
-                  title={isExpanded ? "Réduire" : "Modifier les questions"}
-                >
-                  {isExpanded ? "Réduire" : "Questions"}
-                </Button>
                 <Button
                   type="button"
                   priority="tertiary no outline"
@@ -308,11 +322,48 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                 >
                   Supprimer
                 </Button>
+                {getGristDocUrl(sondage.gristDocId) && (
+                  <a
+                    className="sondage-results-link fr-link"
+                    href={getGristDocUrl(sondage.gristDocId) as string}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Voir les résultats du sondage sur Grist (nouvel onglet)"
+                  >
+                    Voir les résultats
+                  </a>
+                )}
               </div>
             </div>
 
-            {isExpanded && (
-              <div className="sondage-body">
+            <div className="sondage-body">
+              <div className="sondage-section">
+                <h5>Description</h5>
+                <p className="fr-text--sm fr-mb-1w">
+                  Texte affiché en tête du sondage. Markdown supporté. Vous
+                  pouvez insérer des emojis via le sélecteur de votre OS
+                  (⌘⌃Espace sur macOS, Win+. sur Windows).
+                </p>
+                <div
+                  className="sondage-description-editor"
+                  data-color-mode="light"
+                >
+                  <MDEditor
+                    value={sondage.description || ""}
+                    onChange={(value) =>
+                      updateSondage(sondage.id, { description: value || "" })
+                    }
+                    height={200}
+                    preview="live"
+                    textareaProps={{
+                      placeholder:
+                        "Écrivez la description du sondage en Markdown…",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="sondage-section">
                 <h5>Questions</h5>
                 {sondage.questions.length === 0 && (
                   <p className="fr-text--sm">Aucune question.</p>
@@ -330,7 +381,7 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                         required: true,
                         value: question.label,
                         placeholder:
-                          question.type === "rating-5-stars"
+                          question.type === SondageQuestionType.RATING_5_STARS
                             ? "Comment évaluez-vous… ?"
                             : "Votre commentaire…",
                         onChange: (e) =>
@@ -346,6 +397,7 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                       iconId="fr-icon-delete-line"
                       onClick={removeQuestion(sondage, question.id)}
                       title="Supprimer la question"
+                      aria-label="Supprimer la question"
                     >
                       {""}
                     </Button>
@@ -358,7 +410,10 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                     type="button"
                     priority="secondary"
                     iconId="fr-icon-star-line"
-                    onClick={addQuestion(sondage, "rating-5-stars")}
+                    onClick={addQuestion(
+                      sondage,
+                      SondageQuestionType.RATING_5_STARS,
+                    )}
                   >
                     + Notation 5 étoiles
                   </Button>
@@ -366,13 +421,16 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                     type="button"
                     priority="secondary"
                     iconId="fr-icon-edit-line"
-                    onClick={addQuestion(sondage, "free-text")}
+                    onClick={addQuestion(
+                      sondage,
+                      SondageQuestionType.FREE_TEXT,
+                    )}
                   >
                     + Texte libre
                   </Button>
                 </div>
               </div>
-            )}
+            </div>
           </div>
         );
       })}

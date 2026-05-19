@@ -14,7 +14,6 @@ const defaultConfig: BalWidget = {
   global: {
     title: "Centre d'aide Base Adresse Locale",
     hideWidget: false,
-    showOnPages: [],
   },
   communes: {
     welcomeBlockTitle: "Vous êtes une commune ?",
