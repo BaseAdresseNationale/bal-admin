@@ -29,4 +29,29 @@ BALWidgetRoutes.post("/config", routeGuard, async (req, res) => {
   }
 });
 
+BALWidgetRoutes.post("/sondages/:id/responses", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const answers =
+      req.body && typeof req.body === "object" ? req.body.answers : null;
+    if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
+      res.status(400).json({
+        error: "Le payload doit contenir un objet `answers`",
+      });
+      return;
+    }
+    await BALWidgetService.submitSondageResponse(id, answers);
+    res.status(204).send();
+  } catch (err) {
+    const status = err.status || 500;
+    if (status >= 500) {
+      Logger.error(
+        `Erreur lors de la soumission de la réponse au sondage ${req.params.id}`,
+        err,
+      );
+    }
+    res.status(status).json({ error: err.message });
+  }
+});
+
 export default BALWidgetRoutes;

@@ -14,7 +14,6 @@ const defaultConfig: BalWidget = {
   global: {
     title: "Centre d'aide Base Adresse Locale",
     hideWidget: false,
-    showOnPages: [],
   },
   communes: {
     welcomeBlockTitle: "Vous êtes une commune ?",
@@ -33,13 +32,14 @@ const defaultConfig: BalWidget = {
     welcomeBlockTitle: "Ces articles pourraient vous aider",
     topArticles: [],
   },
+  sondages: [],
 };
 
 const BALWidgetPage = ({ config: baseConfig }: BALWidgetPageProps) => {
   const [config, setConfig] = useState<BalWidget>(baseConfig);
   const initialConfig = useMemo(
     () => (baseConfig ? { ...baseConfig } : { ...defaultConfig }),
-    [baseConfig]
+    [baseConfig],
   );
 
   const [formData, setFormData] = useState<BalWidget>(initialConfig);

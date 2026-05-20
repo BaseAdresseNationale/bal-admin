@@ -3,12 +3,14 @@ import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import styled from "styled-components";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
-
+import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
+import { toast } from "react-toastify";
 import { BalWidget } from "../../server/lib/bal-widget/entity";
 import { MultiStringInput } from "../multi-string-input";
 import { MultiLinkInput } from "../multi-link-input";
 import { MultiSelectInput } from "../multi-select-input";
+import { SondagesForm, validateSondages } from "./sondages-form";
+import { Sondage } from "../../server/lib/bal-widget/entity";
 import { Client } from "types/api-depot.types";
 import { SourceMoissoneurType } from "types/moissoneur";
 import { getClients } from "@/lib/api-depot";
@@ -52,7 +54,7 @@ export const BALWidgetConfigForm = ({
   const [selectedTabId, setSelectedTabId] = useState("communes");
   const [apiDepotClients, setApiDepotClients] = useState<Client[]>([]);
   const [harvestSources, setHarvestSources] = useState<SourceMoissoneurType[]>(
-    []
+    [],
   );
 
   const canPublish = useMemo(() => {
@@ -117,6 +119,12 @@ export const BALWidgetConfigForm = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const sondageError = validateSondages(formData.sondages || []);
+    if (sondageError) {
+      setSelectedTabId("sondages");
+      toast(sondageError.message, { type: "error" });
+      return;
+    }
     await onSubmit(formData);
   };
 
@@ -133,25 +141,18 @@ export const BALWidgetConfigForm = ({
             onChange: handleEdit("global", "title"),
           }}
         />
-        <Checkbox
-          className="perimeter-checkbox"
-          options={[
-            {
-              label: "Cacher le widget",
-              nativeInputProps: {
-                checked: formData.global?.hideWidget || false,
-                onChange: handleToggle("global", "hideWidget"),
-              },
-            },
-          ]}
-        />
-        <MultiStringInput
-          label="Afficher le widget uniquement sur les pages :"
-          value={formData.global?.showOnPages || []}
-          onChange={(value) =>
-            handleEdit("global", "showOnPages")({ target: { value } } as any)
+        <ToggleSwitch
+          label={
+            !formData.global?.hideWidget
+              ? `Le widget est visible sur ${
+                  process.env.NEXT_PUBLIC_BAL_WIDGET_SITES?.split(",").join(
+                    ", ",
+                  ) || "tous les sites"
+                }`
+              : "Le widget est masqué"
           }
-          placeholder="Path de la page autorisée (/programme-bal)"
+          checked={!formData.global?.hideWidget}
+          onChange={handleToggle("global", "hideWidget")}
         />
       </section>
       <Tabs
@@ -161,6 +162,7 @@ export const BALWidgetConfigForm = ({
         tabs={[
           { tabId: "communes", label: "Communes" },
           { tabId: "particuliers", label: "Particuliers" },
+          { tabId: "sondages", label: "Sondages" },
         ]}
       >
         {selectedTabId === "communes" && (
@@ -232,7 +234,7 @@ export const BALWidgetConfigForm = ({
                 onChange={(value) =>
                   handleEdit(
                     "gitbookCommunes",
-                    "topArticles"
+                    "topArticles",
                   )({ target: { value } } as any)
                 }
               />
@@ -254,12 +256,22 @@ export const BALWidgetConfigForm = ({
                 onChange={(value) =>
                   handleEdit(
                     "contactUs",
-                    "subjects"
+                    "subjects",
                   )({ target: { value } } as any)
                 }
               />
             </section>
           </>
+        )}
+        {selectedTabId === "sondages" && (
+          <section>
+            <SondagesForm
+              sondages={formData.sondages || []}
+              onChange={(sondages: Sondage[]) =>
+                setFormData((state) => ({ ...state, sondages }))
+              }
+            />
+          </section>
         )}
         {selectedTabId === "particuliers" && (
           <>
@@ -272,7 +284,7 @@ export const BALWidgetConfigForm = ({
                   value: formData.gitbookParticuliers?.welcomeBlockTitle || "",
                   onChange: handleEdit(
                     "gitbookParticuliers",
-                    "welcomeBlockTitle"
+                    "welcomeBlockTitle",
                   ),
                 }}
               />
@@ -286,7 +298,7 @@ export const BALWidgetConfigForm = ({
                 onChange={(value) =>
                   handleEdit(
                     "gitbookParticuliers",
-                    "topArticles"
+                    "topArticles",
                   )({ target: { value } } as any)
                 }
               />
