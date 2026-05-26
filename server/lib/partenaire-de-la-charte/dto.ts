@@ -27,6 +27,8 @@ export interface PartenaireDeLaCharteQuery {
   type?: PartenaireDeLaCharteTypeEnum;
   withCandidates?: boolean;
   codeCommune?: string;
+  dataGouvOrganizationId?: string;
+  apiDepotClientId?: string;
 }
 
 export class PartenaireDeLaCharteDTO {

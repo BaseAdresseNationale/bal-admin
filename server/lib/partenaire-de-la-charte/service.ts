@@ -11,7 +11,7 @@ import { syncClientsPerimeters } from "./clients/sync.service";
 import { TypePerimeterEnum } from "./clients/pertimeters/entity";
 import { getCommune, getEPCICodeFromCommune } from "../../../lib/cog";
 import { S3Service } from "../../utils/s3";
-import { omit } from 'lodash'
+import { omit } from "lodash";
 
 const partenaireDeLaCharteRepository =
   AppDataSource.getRepository(PartenaireDeLaCharte);
@@ -73,7 +73,9 @@ function applyPerimetersFilter(
     codeCommune,
   };
   if (codeDepartement) {
-    conditions.push(`(p.type = :typeDepartement AND p.code = :codeDepartement)`);
+    conditions.push(
+      `(p.type = :typeDepartement AND p.code = :codeDepartement)`,
+    );
     params.typeDepartement = TypePerimeterEnum.DEPARTEMENT;
     params.codeDepartement = codeDepartement;
   }
@@ -95,7 +97,7 @@ function applyPerimetersFilter(
 }
 
 export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
-  const { coverDepartement } = query;
+  const { coverDepartement, dataGouvOrganizationId, apiDepotClientId } = query;
   const { where, perimetersFilter } = createWherePG(query);
 
   const queryPG = partenaireDeLaCharteRepository
@@ -121,6 +123,18 @@ export async function findMany(query: PartenaireDeLaCharteQuery = {}) {
       `(cover_departement @> :arraySearch OR entreprise_is_perimeter_france IS true)`,
       { arraySearch: [coverDepartement] },
     );
+  } else if (dataGouvOrganizationId) {
+    queryPG
+      .andWhere("clients.type = :clientType", { clientType: "moissonneur-bal" })
+      .andWhere("clients.client_id = :clientId", {
+        clientId: dataGouvOrganizationId,
+      });
+  } else if (apiDepotClientId) {
+    queryPG
+      .andWhere("clients.type = :clientType", { clientType: "api-depot" })
+      .andWhere("clients.client_id = :clientId", {
+        clientId: apiDepotClientId,
+      });
   }
 
   const records: PartenaireDeLaCharte[] = await queryPG.getMany();
@@ -215,15 +229,18 @@ function fillPerimetersIds(clients: Client[]) {
   }
 }
 
-async function uploadPublicFile(partenaireId: string, picture: string): Promise<string | undefined> {
+async function uploadPublicFile(
+  partenaireId: string,
+  picture: string,
+): Promise<string | undefined> {
   const match = picture.match(/^data:([^;]+);base64,(.+)$/);
   if (!match) {
     console.warn(`Invalid base64 picture for partenaire ${partenaireId}`);
-    return
+    return;
   }
   const contentType = match[1];
-  const buffer = Buffer.from(match[2], 'base64');
-  const ext = contentType.split('/')[1] ?? 'png';
+  const buffer = Buffer.from(match[2], "base64");
+  const ext = contentType.split("/")[1] ?? "png";
   const fileName = `partenaires/${partenaireId}.${ext}`;
 
   const res = await S3Service.uploadPublicFile(
@@ -233,7 +250,7 @@ async function uploadPublicFile(partenaireId: string, picture: string): Promise<
     { ContentType: contentType },
   );
 
-  return fileName
+  return fileName;
 }
 
 export async function createOne(
@@ -265,9 +282,8 @@ export async function createOne(
     await syncClientsPerimeters(payload.clients);
   }
 
-
   if (payload.picture) {
-    const fileName = await uploadPublicFile(newRecord.id, payload.picture)
+    const fileName = await uploadPublicFile(newRecord.id, payload.picture);
 
     if (fileName) {
       newRecord.pictureUrl = `${process.env.S3_ENDPOINT}/${process.env.S3_CONTAINER_ID}/${fileName}`;
@@ -324,13 +340,13 @@ export async function updateOne(
   }
 
   if (payload.picture) {
-    const fileName = await uploadPublicFile(instance.id, payload.picture)
+    const fileName = await uploadPublicFile(instance.id, payload.picture);
     if (fileName) {
       instance.pictureUrl = `${process.env.S3_ENDPOINT}/${process.env.S3_CONTAINER_ID}/${fileName}`;
     }
   }
 
-  Object.assign(instance, omit(payload, ['picture']));
+  Object.assign(instance, omit(payload, ["picture"]));
   await partenaireDeLaCharteRepository.save(instance);
 
   if (payload.clients) {
@@ -359,4 +375,3 @@ export async function deleteOne(id: string): Promise<boolean> {
   await partenaireDeLaCharteRepository.delete({ id });
   return true;
 }
-
