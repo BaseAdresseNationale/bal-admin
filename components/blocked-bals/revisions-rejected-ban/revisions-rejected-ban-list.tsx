@@ -40,7 +40,10 @@ export const RevisionsRejectedBanList = ({
         .map((r) => ({
           ...r,
           publicationBan: (
-            <PublicationBan revision={r} alerts={alertsByCommune[data.indexOf(r)]} />
+            <PublicationBan
+              revision={r}
+              alerts={alertsByCommune[data.indexOf(r)]}
+            />
           ),
         }));
       setRevisions(revisionsWithBan);

@@ -59,9 +59,6 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
 
   useEffect(() => {
     const determineStatus = async () => {
-      if (revision.status !== StatusRevisionEnum.PUBLISHED) {
-        return;
-      }
       const revisionAlerts = alerts.filter((a) => a.revisionId === revision.id);
       const latestAlert = revisionAlerts
         .filter(
