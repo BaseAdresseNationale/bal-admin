@@ -39,6 +39,7 @@ function getGristDocUrl(gristDocId?: string): string | null {
 const QUESTION_TYPE_LABELS: Record<SondageQuestionType, string> = {
   [SondageQuestionType.RATING_5_STARS]: "Notation 5 étoiles",
   [SondageQuestionType.FREE_TEXT]: "Texte libre",
+  [SondageQuestionType.YES_NO]: "Oui / Non",
 };
 
 const RequiredMark = () => (
@@ -171,6 +172,22 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
     onChange(sondages.filter((s) => s.id !== id));
   };
 
+  const duplicateSondage = (sondage: Sondage) => () => {
+    const copy: Sondage = {
+      id: generateId(),
+      name: `${sondage.name} (copie)`,
+      description: sondage.description,
+      enabled: false,
+      site: "",
+      questions: sondage.questions.map((q) => ({
+        id: generateId(),
+        type: q.type,
+        label: q.label,
+      })),
+    };
+    onChange([...sondages, copy]);
+  };
+
   const handleToggleEnabled = (sondage: Sondage) => () => {
     if (!sondage.enabled) {
       // Vérifier qu'aucun autre sondage actif ne cible déjà ce site
@@ -268,8 +285,17 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
       )}
 
       {sondages.map((sondage) => {
+        const isPublished = Boolean(sondage.gristDocId);
         return (
           <div key={sondage.id} className="sondage-card">
+            {isPublished && (
+              <p className="fr-text--sm fr-mb-1w">
+                <span className="fr-icon-lock-line" aria-hidden="true" /> Ce
+                sondage est publié et ne peut plus être modifié. Vous pouvez le
+                désactiver, le supprimer, ou le dupliquer pour créer une
+                nouvelle version.
+              </p>
+            )}
             <div className="sondage-header">
               <div className="sondage-name">
                 <Input
@@ -282,6 +308,8 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                   nativeInputProps={{
                     required: true,
                     value: sondage.name,
+                    disabled: isPublished,
+                    readOnly: isPublished,
                     onChange: (e) =>
                       updateSondage(sondage.id, { name: e.target.value }),
                   }}
@@ -298,6 +326,7 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                   nativeSelectProps={{
                     required: true,
                     value: sondage.site,
+                    disabled: isPublished,
                     onChange: (e) => handleChangeSite(sondage)(e.target.value),
                   }}
                 >
@@ -319,6 +348,17 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                   checked={sondage.enabled}
                   onChange={handleToggleEnabled(sondage)}
                 />
+                {isPublished && (
+                  <Button
+                    type="button"
+                    priority="tertiary no outline"
+                    iconId="ri-file-copy-line"
+                    onClick={duplicateSondage(sondage)}
+                    title="Dupliquer ce sondage"
+                  >
+                    Dupliquer
+                  </Button>
+                )}
                 <Button
                   type="button"
                   priority="tertiary no outline"
@@ -357,11 +397,15 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                   <MDEditor
                     value={sondage.description || ""}
                     onChange={(value) =>
+                      !isPublished &&
                       updateSondage(sondage.id, { description: value || "" })
                     }
                     height={200}
-                    preview="live"
+                    preview={isPublished ? "preview" : "live"}
+                    hideToolbar={isPublished}
                     textareaProps={{
+                      readOnly: isPublished,
+                      disabled: isPublished,
                       placeholder:
                         "Écrivez la description du sondage en Markdown…",
                     }}
@@ -386,10 +430,14 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                       nativeInputProps={{
                         required: true,
                         value: question.label,
+                        disabled: isPublished,
+                        readOnly: isPublished,
                         placeholder:
                           question.type === SondageQuestionType.RATING_5_STARS
                             ? "Comment évaluez-vous… ?"
-                            : "Votre commentaire…",
+                            : question.type === SondageQuestionType.YES_NO
+                              ? "Êtes-vous d'accord… ?"
+                              : "Votre commentaire…",
                         onChange: (e) =>
                           updateQuestion(
                             sondage,
@@ -397,44 +445,60 @@ export const SondagesForm = ({ sondages, onChange }: SondagesFormProps) => {
                           )({ label: e.target.value }),
                       }}
                     />
-                    <Button
-                      type="button"
-                      priority="tertiary no outline"
-                      iconId="fr-icon-delete-line"
-                      onClick={removeQuestion(sondage, question.id)}
-                      title="Supprimer la question"
-                      aria-label="Supprimer la question"
-                    >
-                      {""}
-                    </Button>
+                    {!isPublished && (
+                      <Button
+                        type="button"
+                        priority="tertiary no outline"
+                        iconId="fr-icon-delete-line"
+                        onClick={removeQuestion(sondage, question.id)}
+                        title="Supprimer la question"
+                        aria-label="Supprimer la question"
+                      >
+                        {""}
+                      </Button>
+                    )}
                   </div>
                 ))}
-                <div
-                  style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}
-                >
-                  <Button
-                    type="button"
-                    priority="secondary"
-                    iconId="fr-icon-star-line"
-                    onClick={addQuestion(
-                      sondage,
-                      SondageQuestionType.RATING_5_STARS,
-                    )}
+                {!isPublished && (
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "0.5rem",
+                      marginTop: "1rem",
+                    }}
                   >
-                    + Notation 5 étoiles
-                  </Button>
-                  <Button
-                    type="button"
-                    priority="secondary"
-                    iconId="fr-icon-edit-line"
-                    onClick={addQuestion(
-                      sondage,
-                      SondageQuestionType.FREE_TEXT,
-                    )}
-                  >
-                    + Texte libre
-                  </Button>
-                </div>
+                    <Button
+                      type="button"
+                      priority="secondary"
+                      iconId="fr-icon-star-line"
+                      onClick={addQuestion(
+                        sondage,
+                        SondageQuestionType.RATING_5_STARS,
+                      )}
+                    >
+                      + Notation 5 étoiles
+                    </Button>
+                    <Button
+                      type="button"
+                      priority="secondary"
+                      iconId="fr-icon-edit-line"
+                      onClick={addQuestion(
+                        sondage,
+                        SondageQuestionType.FREE_TEXT,
+                      )}
+                    >
+                      + Texte libre
+                    </Button>
+                    <Button
+                      type="button"
+                      priority="secondary"
+                      iconId="fr-icon-checkbox-line"
+                      onClick={addQuestion(sondage, SondageQuestionType.YES_NO)}
+                    >
+                      + Oui / Non
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

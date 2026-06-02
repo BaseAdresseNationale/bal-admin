@@ -14,6 +14,7 @@ export interface BALWidgetLink {
 export enum SondageQuestionType {
   RATING_5_STARS = "rating-5-stars",
   FREE_TEXT = "free-text",
+  YES_NO = "yes-no",
 }
 
 export interface SondageQuestion {

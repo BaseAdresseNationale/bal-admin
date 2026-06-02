@@ -34,7 +34,22 @@ async function syncSondagesWithGrist(sondages: Sondage[]): Promise<Sondage[]> {
 }
 
 export async function setConfig(payload: BalWidget) {
-  payload.sondages = await syncSondagesWithGrist(payload.sondages || []);
+  const existing = await getConfig();
+  const existingPublished = new Map(
+    (existing?.sondages || [])
+      .filter((s) => s.gristDocId)
+      .map((s) => [s.id, s]),
+  );
+
+  // Un sondage publié (avec gristDocId) est immuable : on ne préserve
+  // du payload que les champs modifiables (enabled).
+  payload.sondages = (payload.sondages || []).map((s) => {
+    const locked = existingPublished.get(s.id);
+    if (!locked) return s;
+    return { ...locked, enabled: Boolean(s.enabled) };
+  });
+
+  payload.sondages = await syncSondagesWithGrist(payload.sondages);
 
   const record = await balWidgetRepository.findOneBy({});
   if (!record) {
@@ -49,7 +64,7 @@ export async function setConfig(payload: BalWidget) {
 
 export async function submitSondageResponse(
   sondageId: string,
-  answers: Record<string, string | number>,
+  answers: Record<string, string | number | boolean>,
 ): Promise<void> {
   const config = await getConfig();
   const sondage = config?.sondages?.find((s) => s.id === sondageId);
@@ -68,7 +83,7 @@ export async function submitSondageResponse(
   // Validation stricte du payload : chaque clé doit correspondre à une question
   // du sondage, et la valeur doit être du bon type.
   const questionsById = new Map(sondage.questions.map((q) => [q.id, q]));
-  const cleaned: Record<string, string | number> = {};
+  const cleaned: Record<string, string | number | boolean> = {};
   for (const [questionId, value] of Object.entries(answers)) {
     const question = questionsById.get(questionId);
     if (!question) {
@@ -96,6 +111,15 @@ export async function submitSondageResponse(
       }
       // Borne de sécurité pour éviter les payloads abusifs
       cleaned[questionId] = value.slice(0, 5000);
+    } else if (question.type === SondageQuestionType.YES_NO) {
+      if (typeof value !== "boolean") {
+        const err: any = new Error(
+          `Valeur invalide pour la question "${question.label}" : booléen attendu`,
+        );
+        err.status = 400;
+        throw err;
+      }
+      cleaned[questionId] = value;
     }
   }
 
