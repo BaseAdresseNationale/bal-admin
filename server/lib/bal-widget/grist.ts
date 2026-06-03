@@ -27,6 +27,8 @@ function questionGristType(question: SondageQuestion): string {
   switch (question.type) {
     case SondageQuestionType.RATING_5_STARS:
       return "Int";
+    case SondageQuestionType.YES_NO:
+      return "Bool";
     case SondageQuestionType.FREE_TEXT:
     default:
       return "Text";
@@ -151,12 +153,12 @@ export async function syncSondageDocColumns(sondage: Sondage): Promise<void> {
  */
 export async function addSondageResponse(
   sondage: Sondage,
-  answers: Record<string, string | number>,
+  answers: Record<string, string | number | boolean>,
 ): Promise<void> {
   if (!sondage.gristDocId) {
     throw new Error(`Le sondage "${sondage.name}" n'a pas de document Grist`);
   }
-  const fields: Record<string, string | number> = {
+  const fields: Record<string, string | number | boolean> = {
     [SUBMITTED_AT_COL_ID]: Math.floor(Date.now() / 1000),
   };
   for (const [questionId, value] of Object.entries(answers)) {
