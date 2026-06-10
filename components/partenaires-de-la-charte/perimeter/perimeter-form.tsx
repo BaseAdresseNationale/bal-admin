@@ -5,14 +5,20 @@ import { AddPerimeterForm } from "./add-perimeter-form";
 
 type PerimeterFormProps = {
   perimeters: Perimeter[];
-  onAdd: (type: TypePerimeterEnum, code: string) => void;
+  onAdd: (type: TypePerimeterEnum, code: string, expiredAt: string) => void;
   onRemove: (index: number) => void;
+  withExpiredAt?: boolean;
 };
 
-export const PerimeterForm = ({ perimeters, onAdd, onRemove }: PerimeterFormProps) => {
+export const PerimeterForm = ({
+  perimeters,
+  onAdd,
+  onRemove,
+  withExpiredAt = false,
+}: PerimeterFormProps) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-      <AddPerimeterForm onAdd={onAdd} />
+      <AddPerimeterForm onAdd={onAdd} withExpiredAt={withExpiredAt} />
 
       <div>
         <h6 style={{ marginBottom: "0.5rem" }}>
@@ -32,7 +38,8 @@ export const PerimeterForm = ({ perimeters, onAdd, onRemove }: PerimeterFormProp
                   onClick={() => onRemove(index)}
                   type="button"
                 >
-                  {perimeter.type} — {perimeter.code}
+                  {perimeter.type} — {perimeter.code}{" "}
+                  {perimeter.expiredAt ? `- ${perimeter.expiredAt}` : null}
                 </button>
               </li>
             ))}

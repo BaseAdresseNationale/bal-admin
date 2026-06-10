@@ -30,10 +30,14 @@ export const ClientItem = ({
   onChange,
   onRemove,
 }: ClientItemProps) => {
-  const handleAddPerimeter = (type: TypePerimeterEnum, code: string) => {
+  const handleAddPerimeter = (
+    type: TypePerimeterEnum,
+    code: string,
+    expiredAt: string,
+  ) => {
     onChange({
       ...client,
-      perimeters: [...(client.perimeters || []), { type, code }],
+      perimeters: [...(client.perimeters || []), { type, code, expiredAt }],
     });
   };
 
@@ -75,6 +79,7 @@ export const ClientItem = ({
             perimeters={client.perimeters || []}
             onAdd={handleAddPerimeter}
             onRemove={handleRemovePerimeter}
+            withExpiredAt={client.type === ClientTypeEnum.API_DEPOT}
           />
 
           {/* Actions */}

@@ -128,6 +128,7 @@ export type Perimeter = {
   chefDeFileId?: string;
   type: TypePerimeterEnum;
   code: string;
+  expiredAt: string;
 };
 
 export type ChefDeFile = {

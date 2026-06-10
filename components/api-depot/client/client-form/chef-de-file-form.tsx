@@ -5,9 +5,14 @@ import ToggleSwitch from "@codegouvfr/react-dsfr/ToggleSwitch";
 
 import { checkEmail } from "@/lib/util/email";
 
-import { ChefDeFile, Perimeter } from "types/api-depot.types";
+import {
+  ChefDeFile,
+  Perimeter,
+  TypePerimeterEnum,
+} from "types/api-depot.types";
 import { createChefDeFile, updateChefDeFile } from "@/lib/api-depot";
 import PerimeterList from "@/components/api-depot/client/client-form/perimeter-list";
+import { PerimeterForm } from "@/components/partenaires-de-la-charte/perimeter/perimeter-form";
 
 interface ChefDeFileFormProps {
   initialChefDeFile: ChefDeFile;
@@ -23,20 +28,20 @@ const ChefDeFileForm = ({
   onSelect,
 }: ChefDeFileFormProps) => {
   const [nom, setNom] = useState<string>(
-    initialChefDeFile ? initialChefDeFile.nom : ""
+    initialChefDeFile ? initialChefDeFile.nom : "",
   );
   const [email, setEmail] = useState<string>(
-    initialChefDeFile ? initialChefDeFile.email : ""
+    initialChefDeFile ? initialChefDeFile.email : "",
   );
   const [isEmailPublic, setIsEmailPublic] = useState<boolean>(
-    initialChefDeFile ? initialChefDeFile.isEmailPublic : true
+    initialChefDeFile ? initialChefDeFile.isEmailPublic : true,
   );
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [perimeters, setPerimeters] = useState<Perimeter[]>(
-    initialChefDeFile ? initialChefDeFile.perimeters : []
+    initialChefDeFile ? initialChefDeFile.perimeters : [],
   );
   const [isSignataireCharte, setIsSignataireCharte] = useState<boolean>(
-    initialChefDeFile ? initialChefDeFile.isSignataireCharte : false
+    initialChefDeFile ? initialChefDeFile.isSignataireCharte : false,
   );
 
   const saveChefDeFile = async (event) => {
@@ -55,7 +60,7 @@ const ChefDeFileForm = ({
       } else {
         const newChefDeFile: ChefDeFile = await createChefDeFile(
           chefDeFile,
-          isDemo
+          isDemo,
         );
         onSelect(newChefDeFile.id);
       }
@@ -71,17 +76,29 @@ const ChefDeFileForm = ({
   };
 
   const handleEditNom = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { value } = e.target;
     setNom(value);
   };
 
   const handleEditEmail = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { value } = e.target;
     setEmail(value);
+  };
+
+  const onAddPerimeter = (
+    type: TypePerimeterEnum,
+    code: string,
+    expiredAt: string,
+  ) => {
+    setPerimeters((prev) => [...prev, { type, code, expiredAt }]);
+  };
+
+  const onRemovePerimeter = (index: number) => {
+    setPerimeters((prev) => prev.filter((_, i) => i !== index));
   };
 
   useEffect(() => {
@@ -99,14 +116,22 @@ const ChefDeFileForm = ({
         <label className="fr-label">Chef de file</label>
 
         <ToggleSwitch
+          className="fr-m-4v"
           label="Signataire de la charte"
           checked={isSignataireCharte}
           helperText="Le chef de file a signé la charte"
           onChange={setIsSignataireCharte}
         />
 
-        <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-4">
+        <ToggleSwitch
+          className="fr-m-4v"
+          label="Email public"
+          checked={isEmailPublic}
+          onChange={setIsEmailPublic}
+        />
+
+        <div className=" fr-m-4v fr-grid-row fr-grid-row--gutters ">
+          <div className="fr-col-6">
             <Input
               label="Nom"
               nativeInputProps={{
@@ -116,7 +141,7 @@ const ChefDeFileForm = ({
               }}
             />
           </div>
-          <div className="fr-col-4">
+          <div className="fr-col-6">
             <Input
               label="Email"
               nativeInputProps={{
@@ -128,20 +153,21 @@ const ChefDeFileForm = ({
               stateRelatedMessage="L’email n’est pas valide"
             />
           </div>
-          <div className="fr-col-4">
-            <ToggleSwitch
-              label="Email public"
-              checked={isEmailPublic}
-              onChange={setIsEmailPublic}
-            />
-          </div>
+          <div className="fr-col-4"></div>
         </div>
 
-        <PerimeterList
-          perimeters={perimeters}
-          handlePerimeter={setPerimeters}
-        />
-
+        <label className="fr-label">Perimêtre</label>
+        <div
+          style={{ border: "1px solid var(--border-default-grey)" }}
+          className="fr-p-1v"
+        >
+          <PerimeterForm
+            perimeters={perimeters}
+            onAdd={onAddPerimeter}
+            onRemove={onRemovePerimeter}
+            withExpiredAt={true}
+          />
+        </div>
         <div className="fr-my-4w fr-grid-row">
           <Button priority="primary" onClick={saveChefDeFile}>
             Enregistrer
