@@ -11,7 +11,6 @@ import {
   TypePerimeterEnum,
 } from "types/api-depot.types";
 import { createChefDeFile, updateChefDeFile } from "@/lib/api-depot";
-import PerimeterList from "@/components/api-depot/client/client-form/perimeter-list";
 import { PerimeterForm } from "@/components/partenaires-de-la-charte/perimeter/perimeter-form";
 
 interface ChefDeFileFormProps {
