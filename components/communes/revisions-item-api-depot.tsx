@@ -15,6 +15,7 @@ export const RevisionItemApiDepot = ({
   validation,
   createdAt,
   publishedAt = null,
+  context,
   publicationBan,
   selected,
 }: Revision & { publicationBan: React.ReactNode; selected: boolean }) => (
@@ -39,6 +40,11 @@ export const RevisionItemApiDepot = ({
     </td>
     <td className="fr-col fr-my-1v">
       <TypeClientBadge client={client} />
+      {context?.extras?.syncRevisionId ? (
+        <Badge className="fr-ml-2v" severity="info" noIcon>
+          BAL
+        </Badge>
+      ) : null}
     </td>
     <td className="fr-col fr-my-1v">
       <Badge severity={status === "published" ? "success" : "warning"} noIcon>
