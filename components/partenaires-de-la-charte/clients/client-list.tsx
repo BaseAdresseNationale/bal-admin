@@ -29,6 +29,15 @@ export const ClientList = ({
   const [newClientId, setNewClientId] = useState("");
 
   const availableOptions = allClients
+    .sort((clientA, clientB) =>
+      clientA.deletedAt && !clientB.deletedAt
+        ? 1
+        : !clientA.deletedAt && clientB.deletedAt
+          ? -1
+          : clientA.name.localeCompare(clientB.name, undefined, {
+              numeric: true,
+            }),
+    )
     .filter(({ type }) => type === newClientType)
     .map(({ clientId, name, deletedAt }) => ({
       value: clientId,
