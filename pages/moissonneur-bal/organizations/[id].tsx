@@ -12,7 +12,6 @@ import {
   updateOrganization,
 } from "@/lib/api-moissonneur-bal";
 import CopyToClipBoard from "@/components/copy-to-clipboard";
-import PerimeterList from "@/components/api-depot/client/client-form/perimeter-list";
 import Button from "@codegouvfr/react-dsfr/Button";
 import MoissoneurSourceItem from "@/components/moissonneur-bal/sources/moissonneur-source-item";
 import Link from "next/link";
@@ -20,6 +19,8 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import { getPartenaireDeLaCharteByOrganizationDataGouv } from "@/lib/partenaires-de-la-charte";
 import { PartenaireDeLaCharte } from "../../../server/lib/partenaire-de-la-charte/entity";
 import TextInput from "@/components/text-input";
+import { PerimeterForm } from "@/components/partenaires-de-la-charte/perimeter/perimeter-form";
+import { TypePerimeterEnum } from "types/api-depot.types";
 
 type OrganizationPageProps = {
   organization: OrganizationMoissoneurType;
@@ -36,7 +37,7 @@ const OrganizationPage = ({
     {
       perimeters: organization.perimeters || [],
       email: organization.email,
-    }
+    },
   );
 
   const partenaire: PartenaireDeLaCharte | null = useMemo(() => {
@@ -62,11 +63,29 @@ const OrganizationPage = ({
     (property: string) => (value: any) => {
       setFormData((state) => ({ ...state, [property]: value }));
     },
-    []
+    [],
   );
 
   const onResetPerimeter = async () => {
     handleEdit("perimeters")(organization.perimeters);
+  };
+
+  const onAddPerimeter = (
+    type: TypePerimeterEnum,
+    code: string,
+    expiredAt: string,
+  ) => {
+    setFormData((prev) => ({
+      email: prev.email,
+      perimeters: [...prev.perimeters, { type, code, expiredAt }],
+    }));
+  };
+
+  const onRemovePerimeter = (index: number) => {
+    setFormData((prev) => ({
+      email: prev.email,
+      perimeters: prev.perimeters.filter((_, i) => i !== index),
+    }));
   };
 
   const perimeterChange = useMemo(() => {
@@ -114,10 +133,21 @@ const OrganizationPage = ({
                 />
               </div>
             </div>
+            <div
+              style={{ border: "1px solid var(--border-default-grey)" }}
+              className="fr-p-1v fr-col-12 fr-my-4v"
+            >
+              <PerimeterForm
+                perimeters={formData.perimeters}
+                onAdd={onAddPerimeter}
+                onRemove={onRemovePerimeter}
+              />
+            </div>
+            {/* 
             <PerimeterList
               perimeters={formData.perimeters}
               handlePerimeter={handleEdit("perimeters")}
-            />
+            /> */}
             <div className="fr-py-6v">
               <Button
                 priority="primary"
@@ -170,7 +200,7 @@ export async function getServerSideProps({ params }) {
   const sources: SourceMoissoneurType[] = await getSourcesOrganization(id);
 
   const partenaires = await getPartenaireDeLaCharteByOrganizationDataGouv(
-    String(id)
+    String(id),
   );
 
   return {

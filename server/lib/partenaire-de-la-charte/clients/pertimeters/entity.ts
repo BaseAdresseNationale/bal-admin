@@ -40,6 +40,9 @@ export class Perimeter {
   @Column("text", { nullable: false })
   code: string;
 
+  @Column("text", { nullable: true, name: "expired_at" })
+  expiredAt: string;
+
   @ManyToOne(() => Client, (cdf) => cdf.perimeters, {
     onDelete: "CASCADE",
     orphanedRowAction: "delete",

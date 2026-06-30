@@ -12,7 +12,7 @@ const API_MOISSONEUR_BAL =
   "https://plateforme-bal.adresse.data.gouv.fr/moissonneur";
 const { API_MOISSONEUR_BAL_TOKEN } = process.env;
 
-type PerimeterPayload = Pick<Perimeter, "id" | "type" | "code">;
+type PerimeterPayload = Pick<Perimeter, "id" | "type" | "code" | "expiredAt">;
 
 async function syncApiDepotClient(
   clientId: string,
@@ -63,7 +63,7 @@ async function syncMoissonneurClient(
 export async function syncClientsPerimeters(clients: Client[]): Promise<void> {
   for (const client of clients) {
     const perimeters: PerimeterPayload[] = (client.perimeters ?? []).map(
-      ({ type, code, id }) => ({ type, code, id }),
+      ({ type, code, id, expiredAt }) => ({ type, code, id, expiredAt }),
     );
 
     try {
