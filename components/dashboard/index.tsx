@@ -162,15 +162,13 @@ const Dashboard = () => {
             publicationsResponse={chartsData.publicationsResponse}
           />
         </div>
-        <div className="chart-wrapper">
-          <PublicationCountChart
-            publicationsResponse={chartsData.publicationsResponse}
-            firstPublicationEvolutionResponse={
-              chartsData.firstPublicationEvolutionResponse
-            }
-            interval={timeLapses[timeLapseIndex].interval}
-          />
-        </div>
+        <PublicationCountChart
+          publicationsResponse={chartsData.publicationsResponse}
+          firstPublicationEvolutionResponse={
+            chartsData.firstPublicationEvolutionResponse
+          }
+          interval={timeLapses[timeLapseIndex].interval}
+        />
         <div className="chart-wrapper">
           <CreationCountChart
             creationsResponse={chartsData.creationsResponse}
