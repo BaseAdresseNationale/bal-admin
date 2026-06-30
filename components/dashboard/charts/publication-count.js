@@ -64,17 +64,11 @@ function buildSourceDatasets(bucketData, source) {
   ];
 }
 
-interface PublicationCountChartProps {
-  publicationsResponse: any[];
-  firstPublicationEvolutionResponse: any[];
-  interval: number;
-}
-
 const PublicationCountChart = ({
   publicationsResponse,
   firstPublicationEvolutionResponse,
   interval,
-}: PublicationCountChartProps) => {
+}) => {
   const { labels, bucketData } = useMemo(() => {
     let labels = publicationsResponse.map(({ date }) => {
       const [year, month, day] = date.split("-");
@@ -118,7 +112,7 @@ const PublicationCountChart = ({
         return {
           date: `${day}/${month}/${year}`,
           value: Object.values(publishedBAL).reduce(
-            (acc: any, publications: any) => {
+            (acc, publications) => {
               const { total, viaMesAdresses, viaMoissonneur } = publications;
 
               return {
@@ -137,39 +131,27 @@ const PublicationCountChart = ({
       acc.push({
         allBALViaMesAdresses: allBALPublication
           .filter(({ date }) => date.includes(cur))
-          .reduce(
-            (a, { value }: { value: any }) => a + value.viaMesAdresses,
-            0,
-          ),
+          .reduce((a, { value }) => a + value.viaMesAdresses, 0),
         allBALViaMoissonneur: allBALPublication
           .filter(({ date }) => date.includes(cur))
-          .reduce(
-            (a, { value }: { value: any }) => a + value.viaMoissonneur,
-            0,
-          ),
+          .reduce((a, { value }) => a + value.viaMoissonneur, 0),
         allBALViaOther: allBALPublication
           .filter(({ date }) => date.includes(cur))
           .reduce(
-            (a, { value }: { value: any }) =>
+            (a, { value }) =>
               a + (value.total - (value.viaMesAdresses + value.viaMoissonneur)),
             0,
           ),
         newBALViaMesAdresses: newBALPublication
           .filter(({ date }) => date.includes(cur))
-          .reduce(
-            (a, { value }: { value: any }) => a + value.viaMesAdresses,
-            0,
-          ),
+          .reduce((a, { value }) => a + value.viaMesAdresses, 0),
         newBALViaMoissonneur: newBALPublication
           .filter(({ date }) => date.includes(cur))
-          .reduce(
-            (a, { value }: { value: any }) => a + value.viaMoissonneur,
-            0,
-          ),
+          .reduce((a, { value }) => a + value.viaMoissonneur, 0),
         newBALViaOther: newBALPublication
           .filter(({ date }) => date.includes(cur))
           .reduce(
-            (a, { value }: { value: any }) =>
+            (a, { value }) =>
               a + (value.total - (value.viaMesAdresses + value.viaMoissonneur)),
             0,
           ),
@@ -229,6 +211,12 @@ const PublicationCountChart = ({
       }))}
     />
   );
+};
+
+PublicationCountChart.propTypes = {
+  publicationsResponse: PropTypes.array.isRequired,
+  firstPublicationEvolutionResponse: PropTypes.array.isRequired,
+  interval: PropTypes.number,
 };
 
 export default PublicationCountChart;
