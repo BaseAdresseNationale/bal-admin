@@ -1,6 +1,7 @@
 import CopyToClipBoard from "@/components/copy-to-clipboard";
 import { ChefDeFile } from "types/api-depot.types";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import { getPerimeterLabel } from "../partenaires-de-la-charte/perimeter/perimeter-form";
 
 interface ChefDeFileProps extends ChefDeFile {
   hasChefDeFile: boolean;
@@ -46,7 +47,9 @@ const ChefDeFileView = ({
         <ul className="fr-tags-group">
           {perimeters.map((perimeter, index) => (
             <div key={index} className="fr-tag fr-tag--sm fr-tag--dismiss">
-              {perimeter.type} — {perimeter.code}{" "}
+              {perimeter.type} -{" "}
+              {getPerimeterLabel(perimeter.type, perimeter.code)} -{" "}
+              {perimeter.code}{" "}
               {perimeter.expiredAt ? `- ${perimeter.expiredAt}` : null}
             </div>
           ))}

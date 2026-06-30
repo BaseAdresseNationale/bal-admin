@@ -78,6 +78,7 @@ export const AddPerimeterForm = ({
                 type: "date",
                 onChange: handleDateChange,
                 value: expiredAt,
+                min: new Date().toISOString().split("T")[0],
               }}
             />
           </div>

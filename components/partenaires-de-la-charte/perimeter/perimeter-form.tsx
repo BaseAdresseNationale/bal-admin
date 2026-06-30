@@ -2,6 +2,20 @@ import React from "react";
 import { Perimeter } from "server/lib/partenaire-de-la-charte/clients/pertimeters/entity";
 import { TypePerimeterEnum } from "server/lib/partenaire-de-la-charte/clients/pertimeters/entity";
 import { AddPerimeterForm } from "./add-perimeter-form";
+import { getCommune, getDepartement, getEPCI } from "@/lib/cog";
+
+export function getPerimeterLabel(
+  type: "commune" | "departement" | "epci",
+  code: string,
+): string | undefined {
+  if (type === "commune") {
+    return getCommune(code)?.nom;
+  } else if (type === "departement") {
+    return getDepartement(code)?.nom;
+  } else if (type === "epci") {
+    return getEPCI(code).nom;
+  }
+}
 
 type PerimeterFormProps = {
   perimeters: Perimeter[];
@@ -38,7 +52,9 @@ export const PerimeterForm = ({
                   onClick={() => onRemove(index)}
                   type="button"
                 >
-                  {perimeter.type} — {perimeter.code}{" "}
+                  {perimeter.type} -{" "}
+                  {getPerimeterLabel(perimeter.type, perimeter.code)} -{" "}
+                  {perimeter.code}{" "}
                   {perimeter.expiredAt ? `- ${perimeter.expiredAt}` : null}
                 </button>
               </li>
