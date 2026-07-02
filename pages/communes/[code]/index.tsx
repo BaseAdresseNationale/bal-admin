@@ -434,41 +434,55 @@ const CommuneSource = ({
 
 export async function getServerSideProps({ params }) {
   const { code } = params;
-  const emails = await getEmailsCommune(code);
-  const telephones = await getMarieTelephones(code);
-  const signalementSources = await getSignalementSources();
-  const signalementCommuneSettings = await getSignalementCommuneSettings(code);
-  const pendingSignalementCount = await getSignalementCount(
-    code,
-    SignalementStatusEnum.PENDING,
+  const timings: Record<string, number> = {};
+
+  async function timed<T>(name: string, fn: () => Promise<T>): Promise<T> {
+    const start = Date.now();
+    const result = await fn();
+    timings[name] = Date.now() - start;
+    return result;
+  }
+
+  const emails = await timed("getEmailsCommune", () => getEmailsCommune(code));
+  const telephones = await timed("getMarieTelephones", () => getMarieTelephones(code));
+  const signalementSources = await timed("getSignalementSources", () => getSignalementSources());
+  const signalementCommuneSettings = await timed("getSignalementCommuneSettings", () => getSignalementCommuneSettings(code));
+  const pendingSignalementCount = await timed("getSignalementCount(PENDING)", () =>
+    getSignalementCount(code, SignalementStatusEnum.PENDING),
   );
-  const processedSignalementCount = await getSignalementCount(
-    code,
-    SignalementStatusEnum.PROCESSED,
+  const processedSignalementCount = await timed("getSignalementCount(PROCESSED)", () =>
+    getSignalementCount(code, SignalementStatusEnum.PROCESSED),
   );
-  const ignoredSignalementCount = await getSignalementCount(
-    code,
-    SignalementStatusEnum.IGNORED,
+  const ignoredSignalementCount = await timed("getSignalementCount(IGNORED)", () =>
+    getSignalementCount(code, SignalementStatusEnum.IGNORED),
   );
-  const expiredSignalementCount = await getSignalementCount(
-    code,
-    SignalementStatusEnum.EXPIRED,
+  const expiredSignalementCount = await timed("getSignalementCount(EXPIRED)", () =>
+    getSignalementCount(code, SignalementStatusEnum.EXPIRED),
   );
 
-  const lookup = await fetchLookupCommune(code);
+  const lookup = await timed("fetchLookupCommune", () => fetchLookupCommune(code));
 
   const alerts = [];
 
   try {
-    const res = await getCommuneAlerts(code);
+    const res = await timed("getCommuneAlerts", () => getCommuneAlerts(code));
     alerts.push(...res);
   } catch {}
 
   let hasBalPublished = false;
   try {
-    const currentRevision = await getCurrentRevision(code);
+    const currentRevision = await timed("getCurrentRevision", () => getCurrentRevision(code));
     hasBalPublished = Boolean(currentRevision?.context?.extras?.balId);
   } catch {}
+
+  const total = Object.values(timings).reduce((sum, t) => sum + t, 0);
+  console.log(
+    `[communes/${code}] getServerSideProps timings:\n` +
+      Object.entries(timings)
+        .map(([name, ms]) => `  ${name}: ${ms}ms`)
+        .join("\n") +
+      `\n  TOTAL (sequential): ${total}ms`,
+  );
 
   return {
     props: {
