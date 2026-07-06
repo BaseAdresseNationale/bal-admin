@@ -63,6 +63,7 @@ export const PublicationBan: React.FC<PublicationBanProps> = ({
       const latestAlert = revisionAlerts
         .filter(
           (alert) =>
+            alert.status === "info" ||
             alert.status === "warning" ||
             alert.status === "error" ||
             alert.status === "success",
