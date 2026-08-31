@@ -215,6 +215,14 @@ const fetchAndStoreBanSourcesStats = async () => {
     const counts = await countSourcesForDate(date);
     if (!counts) continue;
 
+    const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+    if (total === 0) {
+      console.warn(
+        `CRON: fichier BAN vide ou corrompu pour ${date}, date ignorée`,
+      );
+      continue;
+    }
+
     currentValue[date] = counts;
     if (statInitialized) {
       await updateOne("sources_publication_ban", currentValue);
