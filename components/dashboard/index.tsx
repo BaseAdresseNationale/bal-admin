@@ -8,6 +8,7 @@ import PublicationCountChart from "./charts/publication-count";
 import CreationCountChart from "./charts/creation-count";
 import { useDashboardData } from "@/hooks/dashboard-data";
 import Loader from "../loader";
+import { SourcesPublicationBanChart } from "./charts/sources-publication-ban";
 
 export const defaultChartOptions = {
   responsive: true,
@@ -137,6 +138,11 @@ const Dashboard = () => {
     <Loader isLoading={isLoading}>
       <DashboardContainer>
         <h3 style={{ paddingTop: "16px" }}>Stats de déployement BAL</h3>
+        <div className="chart-wrapper">
+          <SourcesPublicationBanChart
+            sourcesPublicationBan={dashboardData.sourcesPublicationBan}
+          />
+        </div>
         <div className="dashboard-header">
           {timeLapses.map(({ label }, index) => (
             <Button
