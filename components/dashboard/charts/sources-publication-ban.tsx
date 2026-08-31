@@ -1,5 +1,7 @@
 import { Chart } from "react-chartjs-2";
 import { Chart as ChartJS, registerables } from "chart.js";
+import "chartjs-adapter-date-fns";
+import { fr } from "date-fns/locale";
 import { useMemo } from "react";
 import { BanSourcesStat } from "@/lib/api-stats";
 import { formatDate } from "@/lib/util/date";
@@ -11,7 +13,7 @@ interface SourcesPublicationBanChartProps {
 }
 
 const SOURCES = [
-  { key: "BAL", match: ["commune"], label: "BAL", color: "#008300" },
+  { key: "bal", match: ["commune"], label: "BAL", color: "#008300" },
   { key: "cadastre", match: ["cadastre"], label: "Cadastre", color: "#2a78d6" },
 
   { key: "arcep", match: ["arcep"], label: "ARCEP", color: "#4a3aa7" },
@@ -24,9 +26,9 @@ const SOURCES = [
   { key: "sdis", match: ["sdis"], label: "SDIS", color: "#e34948" },
 
   {
-    key: "Assemblage",
+    key: "ban",
     match: ["ign", "inconnue", "ban"],
-    label: "IGN",
+    label: "Assemblage",
     color: "#898781",
   },
 ];
@@ -70,7 +72,9 @@ export const SourcesPublicationBanChart = ({
       seriesByKey.has(source.key),
     ).map((source) => ({
       label: source.label,
-      data: seriesByKey.get(source.key),
+      data: seriesByKey
+        .get(source.key)
+        .map((value, index) => ({ x: dates[index], y: value })),
       backgroundColor: source.color,
       borderColor: source.color,
       fill: true,
@@ -80,7 +84,7 @@ export const SourcesPublicationBanChart = ({
       tension: 0.3,
     }));
 
-    return { labels: dates, datasets };
+    return { datasets };
   }, [sourcesPublicationBan]);
 
   return (
@@ -107,25 +111,21 @@ export const SourcesPublicationBanChart = ({
           },
           tooltip: {
             callbacks: {
-              title: (items) =>
-                formatDate(data.labels[items[0].dataIndex], "PPP"),
+              title: (items) => formatDate(items[0].parsed.x, "PPP"),
               label: (item) =>
-                ` ${item.dataset.label} : ${Number(item.raw).toLocaleString("fr-FR")}`,
+                ` ${item.dataset.label} : ${item.parsed.y.toLocaleString("fr-FR")}`,
             },
           },
         },
         scales: {
           x: {
-            ticks: {
-              autoSkip: false,
-              callback: (_value, index) => {
-                const date = data.labels[index];
-                if (!date) return "";
-                const previousDate = data.labels[index - 1];
-                const isFirstOfYear =
-                  index === 0 || previousDate.slice(0, 4) !== date.slice(0, 4);
-                return isFirstOfYear ? date.slice(0, 4) : "";
-              },
+            type: "time",
+            adapters: {
+              date: { locale: fr },
+            },
+            time: {
+              unit: "year",
+              displayFormats: { year: "yyyy" },
             },
           },
           y: {
