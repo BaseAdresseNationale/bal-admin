@@ -1,16 +1,12 @@
+import PropTypes from "prop-types";
 import { Chart } from "react-chartjs-2";
 import { Chart as ChartJS, registerables } from "chart.js";
 import "chartjs-adapter-date-fns";
 import { fr } from "date-fns/locale";
 import { useMemo } from "react";
-import { BanSourcesStat } from "@/lib/api-stats";
 import { formatDate } from "@/lib/util/date";
 
 ChartJS.register(...registerables);
-
-interface SourcesPublicationBanChartProps {
-  sourcesPublicationBan: BanSourcesStat;
-}
 
 const SOURCES = [
   { key: "bal", match: ["commune"], label: "BAL", color: "#008300" },
@@ -33,7 +29,7 @@ const SOURCES = [
   },
 ];
 
-const normalizeSourceKey = (value: string) =>
+const normalizeSourceKey = (value) =>
   value.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 const SOURCE_BY_KEY = new Map(
@@ -42,13 +38,11 @@ const SOURCE_BY_KEY = new Map(
   ),
 );
 
-export const SourcesPublicationBanChart = ({
-  sourcesPublicationBan,
-}: SourcesPublicationBanChartProps) => {
+const SourcesPublicationBanChart = ({ sourcesPublicationBan }) => {
   const data = useMemo(() => {
     const dates = Object.keys(sourcesPublicationBan || {}).sort();
 
-    const seriesByKey = new Map<string, number[]>();
+    const seriesByKey = new Map();
     const otherSeries = dates.map(() => 0);
 
     dates.forEach((date, index) => {
@@ -140,3 +134,9 @@ export const SourcesPublicationBanChart = ({
     />
   );
 };
+
+SourcesPublicationBanChart.propTypes = {
+  sourcesPublicationBan: PropTypes.Object,
+};
+
+export default SourcesPublicationBanChart;

@@ -6,9 +6,9 @@ import PublicationPerDepartmentChart from "./charts/publications-per-department"
 import FirstPublicationEvolutionChart from "./charts/first-publication-evolution";
 import PublicationCountChart from "./charts/publication-count";
 import CreationCountChart from "./charts/creation-count";
+import SourcesPublicationBanChart from "./charts/sources-publication-ban";
 import { useDashboardData } from "@/hooks/dashboard-data";
 import Loader from "../loader";
-import { SourcesPublicationBanChart } from "./charts/sources-publication-ban";
 
 export const defaultChartOptions = {
   responsive: true,
