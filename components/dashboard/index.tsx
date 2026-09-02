@@ -6,6 +6,7 @@ import PublicationPerDepartmentChart from "./charts/publications-per-department"
 import FirstPublicationEvolutionChart from "./charts/first-publication-evolution";
 import PublicationCountChart from "./charts/publication-count";
 import CreationCountChart from "./charts/creation-count";
+import SourcesPublicationBanChart from "./charts/sources-publication-ban";
 import { useDashboardData } from "@/hooks/dashboard-data";
 import Loader from "../loader";
 
@@ -137,6 +138,11 @@ const Dashboard = () => {
     <Loader isLoading={isLoading}>
       <DashboardContainer>
         <h3 style={{ paddingTop: "16px" }}>Stats de déployement BAL</h3>
+        <div className="chart-wrapper">
+          <SourcesPublicationBanChart
+            sourcesPublicationBan={dashboardData.sourcesPublicationBan}
+          />
+        </div>
         <div className="dashboard-header">
           {timeLapses.map(({ label }, index) => (
             <Button
