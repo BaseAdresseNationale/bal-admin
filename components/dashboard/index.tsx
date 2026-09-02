@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import PublicationPerDepartmentChart from "./charts/publications-per-department";
 import FirstPublicationEvolutionChart from "./charts/first-publication-evolution";
@@ -8,6 +8,7 @@ import PublicationCountChart from "./charts/publication-count";
 import CreationCountChart from "./charts/creation-count";
 import { useDashboardData } from "@/hooks/dashboard-data";
 import Loader from "../loader";
+import FirstPublicationsMonthsChart from "./charts/first-publications-months";
 
 export const defaultChartOptions = {
   responsive: true,
@@ -137,6 +138,13 @@ const Dashboard = () => {
     <Loader isLoading={isLoading}>
       <DashboardContainer>
         <h3 style={{ paddingTop: "16px" }}>Stats de déployement BAL</h3>
+        <div className="chart-wrapper">
+          <Loader isLoading={!dashboardData.firstsPublications}>
+            <FirstPublicationsMonthsChart
+              firstPublicationsMonths={dashboardData.firstsPublications}
+            />
+          </Loader>
+        </div>
         <div className="dashboard-header">
           {timeLapses.map(({ label }, index) => (
             <Button
