@@ -8,8 +8,13 @@ import { ObjectId } from "bson";
 import { Logger } from "../../utils/logger.utils";
 import { Client } from "./clients/entity";
 import { syncClientsPerimeters } from "./clients/sync.service";
-import { TypePerimeterEnum } from "./clients/pertimeters/entity";
-import { getCommune, getEPCICodeFromCommune } from "../../../lib/cog";
+import { Perimeter, TypePerimeterEnum } from "./clients/pertimeters/entity";
+import {
+  getCommune,
+  getEPCICodeFromCommune,
+  getCommunesCodesFromDepartement,
+  getCommunesCodesFromEPCI,
+} from "../../../lib/cog";
 import { S3Service } from "../../utils/s3";
 import { omit } from "lodash";
 
@@ -354,6 +359,37 @@ export async function updateOne(
   }
 
   return findOneOrFail(id);
+}
+
+export async function getPartenaireDeLaChartePerimeters(id: string) {
+  const partenaire = await findOneOrFail(id);
+  const perimeters =
+    partenaire.clients?.flatMap((client) => client.perimeters) || [];
+
+  return perimeters;
+}
+
+function getCodesCommunesFromPerimeters(perimeters: Perimeter[]): string[] {
+  const codesCommunes = perimeters.flatMap((perimeter) => {
+    switch (perimeter.type) {
+      case TypePerimeterEnum.COMMUNE:
+        return [perimeter.code];
+      case TypePerimeterEnum.DEPARTEMENT:
+        return getCommunesCodesFromDepartement(perimeter.code);
+      case TypePerimeterEnum.EPCI:
+        return getCommunesCodesFromEPCI(perimeter.code);
+      default:
+        return [];
+    }
+  });
+
+  return Array.from(new Set(codesCommunes));
+}
+
+export async function getPartenaireDeLaCharteCodesCommunes(id: string) {
+  const perimeters = await getPartenaireDeLaChartePerimeters(id);
+
+  return getCodesCommunesFromPerimeters(perimeters);
 }
 
 export async function findServicesWithCount(
