@@ -13,13 +13,13 @@ const communes = (allCommunes as CommuneCOG[]).filter((c) =>
   [
     CommuneTypeEnum.COMMUNE_ACTUELLE,
     CommuneTypeEnum.ARRONDISSEMENT_MUNICIPAL,
-  ].includes(c.type)
+  ].includes(c.type),
 );
 
 const EPCIsIndex: Record<string, EpciCOG> = keyBy(epcis, "code");
 const departementsIndex: Record<string, DepartementCOG> = keyBy(
   departements,
-  "code"
+  "code",
 );
 const communesIndex: Record<string, CommuneCOG> = keyBy(communes, "code");
 
@@ -55,8 +55,21 @@ export function getCommune(codeCommune: string): CommuneCOG {
 }
 
 export function getEPCICodeFromCommune(codeCommune: string): string | null {
-  const epci = epcis.find((e) =>
-    (e as EpciCOG).membres?.some((m) => m.code === codeCommune),
+  const epci = epcis.find(
+    (e) => (e as EpciCOG).membres?.some((m) => m.code === codeCommune),
   );
   return epci ? (epci as EpciCOG).code : null;
+}
+
+export function getCommunesCodesFromDepartement(
+  codeDepartement: string,
+): string[] {
+  return communes
+    .filter((c) => c.departement === codeDepartement)
+    .map((c) => c.code);
+}
+
+export function getCommunesCodesFromEPCI(codeEPCI: string): string[] {
+  const epci = getEPCI(codeEPCI);
+  return epci?.membres?.map((m) => m.code) ?? [];
 }
