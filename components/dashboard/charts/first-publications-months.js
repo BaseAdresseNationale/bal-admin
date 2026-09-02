@@ -1,12 +1,9 @@
+import PropTypes from "prop-types";
 import { Chart } from "react-chartjs-2";
 import { Chart as ChartJS, registerables } from "chart.js";
 import { useMemo } from "react";
 
 ChartJS.register(...registerables);
-
-interface FirstPublicationsMonthsChart {
-  firstPublicationsMonths: Record<string, number>;
-}
 
 const MONTHS = [
   "Janvier",
@@ -23,34 +20,54 @@ const MONTHS = [
   "Décembre",
 ];
 
-// Transforme une clé au format `${getMonth(date)}-${getYear(date)}` (mois indexé à partir de 0)
-// en libellé lisible, ex: "0-2026" -> "Janvier 2026"
-const formatMonthLabel = (label: string) => {
+// Transforme une clé au format `MM-yyyy` (mois indexé à partir de 1, sur 2 chiffres)
+// en libellé lisible, ex: "01-2026" -> "Janvier 2026"
+const formatMonthLabel = (label) => {
   const [month, year] = label.split("-");
-  return `${MONTHS[Number(month)]} ${year}`;
+  return `${MONTHS[Number(month) - 1]} ${year}`;
 };
 
-// Clé au format `${getMonth(date)}-${getYear(date)}` (mois indexé à partir de 0)
-const OBJECTIVES: Record<string, number> = {
-  "0-2022": 5000,
-  "0-2023": 10000,
-  "0-2024": 15000,
-  "0-2025": 20000,
-  "0-2026": 25000,
+// Trie les clés au format `MM-yyyy` par ordre chronologique
+const sortMonthLabels = (labels) =>
+  [...labels].sort((a, b) => {
+    const [monthA, yearA] = a.split("-");
+    const [monthB, yearB] = b.split("-");
+    return yearA === yearB ? monthA - monthB : yearA - yearB;
+  });
+
+// Clé au format `MM-yyyy` (mois indexé à partir de 1, sur 2 chiffres)
+const OBJECTIVES = {
+  "01-2022": 5000,
+  "01-2023": 10000,
+  "01-2024": 15000,
+  "01-2025": 20000,
+  "01-2026": 25000,
 };
 
-export const FirstPublicationsMonthsChart = ({
-  firstPublicationsMonths,
-}: FirstPublicationsMonthsChart) => {
+const DISPLAY_FROM_YEAR = 2020;
+
+const FirstPublicationsMonthsChart = ({ firstPublicationsMonths }) => {
   const data = useMemo(() => {
-    const labels = Object.keys(firstPublicationsMonths);
+    const sortedLabels = sortMonthLabels(Object.keys(firstPublicationsMonths));
+
+    let cumul = 0;
+    const labels = [];
+    const cumulatedFirstPublications = [];
+    for (const label of sortedLabels) {
+      cumul += firstPublicationsMonths[label];
+      const [, year] = label.split("-");
+      if (Number(year) >= DISPLAY_FROM_YEAR) {
+        labels.push(label);
+        cumulatedFirstPublications.push(cumul);
+      }
+    }
 
     return {
       labels,
       datasets: [
         {
           label: "Cumul BAL publiées",
-          data: Object.values(firstPublicationsMonths),
+          data: cumulatedFirstPublications,
           borderColor: "#36A2EB",
           backgroundColor: "#9BD0F5",
           pointRadius: 0,
@@ -99,7 +116,7 @@ export const FirstPublicationsMonthsChart = ({
               callback: (_value, index) => {
                 const label = data.labels[index];
                 const [month, year] = label.split("-");
-                return month === "0" ? year : "";
+                return month === "01" ? year : "";
               },
             },
           },
@@ -108,3 +125,9 @@ export const FirstPublicationsMonthsChart = ({
     />
   );
 };
+
+FirstPublicationsMonthsChart.propTypes = {
+  firstPublicationsMonths: PropTypes.object,
+};
+
+export default FirstPublicationsMonthsChart;

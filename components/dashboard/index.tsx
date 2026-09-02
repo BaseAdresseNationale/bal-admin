@@ -8,8 +8,7 @@ import PublicationCountChart from "./charts/publication-count";
 import CreationCountChart from "./charts/creation-count";
 import { useDashboardData } from "@/hooks/dashboard-data";
 import Loader from "../loader";
-import { getFirstsPublicationMonths } from "@/lib/api-depot";
-import { FirstPublicationsMonthsChart } from "./charts/first-publications-months";
+import FirstPublicationsMonthsChart from "./charts/first-publications-months";
 
 export const defaultChartOptions = {
   responsive: true,
@@ -86,16 +85,6 @@ const getISODate = (date: Date): string => format(date, "yyyy-MM-dd");
 const Dashboard = () => {
   const [timeLapseIndex, setTimeLapseIndex] = useState(1);
   const { dashboardData, isLoading } = useDashboardData();
-  const [firstPublicationsMonths, setFirstPublicationsMonths] = useState(null);
-
-  useEffect(() => {
-    async function loadFirstPublications() {
-      const firstPublications = await getFirstsPublicationMonths();
-      setFirstPublicationsMonths(firstPublications);
-    }
-
-    loadFirstPublications();
-  }, []);
 
   const addEmptyDatesToResponse = (
     response: ResponseItem[],
@@ -150,9 +139,9 @@ const Dashboard = () => {
       <DashboardContainer>
         <h3 style={{ paddingTop: "16px" }}>Stats de déployement BAL</h3>
         <div className="chart-wrapper">
-          <Loader isLoading={!firstPublicationsMonths}>
+          <Loader isLoading={!dashboardData.firstsPublications}>
             <FirstPublicationsMonthsChart
-              firstPublicationsMonths={firstPublicationsMonths}
+              firstPublicationsMonths={dashboardData.firstsPublications}
             />
           </Loader>
         </div>

@@ -270,17 +270,3 @@ export async function getEmailsCommune(codeCommune: string) {
 
   return processResponse(response);
 }
-
-export async function getFirstsPublicationMonths(): Promise<
-  Record<string, number>
-> {
-  const response = await fetch(
-    `${NEXT_PUBLIC_API_DEPOT_URL}/stats/firsts-publications-months`,
-    {
-      method: "GET",
-      headers: { "content-type": "application/json" },
-    },
-  );
-
-  return processResponse(response);
-}
