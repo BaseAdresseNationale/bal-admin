@@ -106,7 +106,7 @@ partenaireDeLaCharteRoutes.get("/:id", isAdmin, async (req, res) => {
 partenaireDeLaCharteRoutes.get("/:id/perimeters", isAdmin, async (req, res) => {
   try {
     res.json(
-      await PartenaireDeLaCharteService.getPartenaireDeLaChartePerimeters(
+      await PartenaireDeLaCharteService.getPartenaireDeLaChartePerimetersFlatten(
         req.params.id,
       ),
     );
