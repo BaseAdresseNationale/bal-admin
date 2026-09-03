@@ -386,7 +386,7 @@ function getCodesCommunesFromPerimeters(perimeters: Perimeter[]): string[] {
   return Array.from(new Set(codesCommunes));
 }
 
-export async function getPartenaireDeLaCharteCodesCommunes(id: string) {
+export async function getPartenaireDeLaChartePerimetersFlatten(id: string) {
   const perimeters = await getPartenaireDeLaChartePerimeters(id);
 
   return getCodesCommunesFromPerimeters(perimeters);
