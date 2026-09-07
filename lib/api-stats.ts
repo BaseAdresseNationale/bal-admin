@@ -4,6 +4,8 @@ export interface StatData<T> {
   value: T;
 }
 
+export type BanSourcesStat = Record<string, Record<string, number>>;
+
 export interface StatsData {
   firsts_publications?: StatData<Record<string, number>>;
   depot_firsts_publications?: StatData<any>;
@@ -11,6 +13,7 @@ export interface StatsData {
   mes_adresses_bals_creations?: StatData<any>;
   codes_communes_with_ban_errors?: StatData<string[]>;
   blocked_revisions?: StatData<string[]>;
+  sources_publication_ban?: StatData<BanSourcesStat>;
 }
 
 export async function getStats(): Promise<StatsData> {

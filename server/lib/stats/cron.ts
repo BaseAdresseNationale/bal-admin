@@ -1,11 +1,22 @@
 import { schedule } from "node-cron";
-import { findAllStats, createOne, deleteOne } from "./service";
+import {
+  findAllStats,
+  findOneByName,
+  createOne,
+  updateOne,
+  deleteOne,
+} from "./service";
 import { Revision, StatusRevisionEnum } from "../../../types/api-depot.types";
 import {
   buildFirstsPublicationsRecord,
   getLatestMonthStart,
   FIRSTS_PUBLICATIONS_BACKFILL_FROM,
 } from "./firsts-publications";
+import {
+  BanSourcesStat,
+  fetchAvailableBanDates,
+  countSourcesForDate,
+} from "./ban-sources";
 
 export type RevisionLast = Pick<
   Revision,
@@ -220,6 +231,53 @@ const fetchAndStoreFirstsPublicationsStats = async () => {
   console.log("CRON: stats de premières publications enregistrées");
 };
 
+const fetchAndStoreBanSourcesStats = async () => {
+  console.log(
+    "CRON: démarrage du calcul des stats de sources de publication BAN",
+  );
+
+  const existingStat = await findOneByName("sources_publication_ban");
+  const currentValue: BanSourcesStat =
+    (existingStat?.value as BanSourcesStat) || {};
+  let statInitialized = Boolean(existingStat);
+
+  const availableDates = await fetchAvailableBanDates();
+  const missingDates = availableDates.filter((date) => !(date in currentValue));
+
+  if (missingDates.length === 0) {
+    console.log("CRON: aucune nouvelle date BAN à traiter");
+    return;
+  }
+
+  console.log(`CRON: ${missingDates.length} date(s) BAN à traiter`);
+
+  for (const date of missingDates) {
+    const counts = await countSourcesForDate(date);
+    if (!counts) continue;
+
+    const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+    if (total === 0) {
+      console.warn(
+        `CRON: fichier BAN vide ou corrompu pour ${date}, date ignorée`,
+      );
+      continue;
+    }
+
+    currentValue[date] = counts;
+    if (statInitialized) {
+      await updateOne("sources_publication_ban", currentValue);
+    } else {
+      await createOne("sources_publication_ban", currentValue);
+      statInitialized = true;
+    }
+    console.log(
+      `CRON: date ${date} ajoutée aux stats de sources de publication BAN`,
+    );
+  }
+
+  console.log("CRON: fin du calcul des stats de sources de publication BAN");
+};
+
 const calculStats = async () => {
   try {
     await fetchAndStoreBlockedRevisionsStats();
@@ -256,6 +314,15 @@ const calculStats = async () => {
       error,
     );
   }
+
+  try {
+    await fetchAndStoreBanSourcesStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul des stats de sources de publication BAN :",
+      error,
+    );
+  }
 };
 
 export const cronStats = async () => {
@@ -274,6 +341,14 @@ export const cronStats = async () => {
         error,
       );
     }
+  }
+  try {
+    await fetchAndStoreBanSourcesStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul des stats de sources de publication BAN :",
+      error,
+    );
   }
   schedule("0 8 * * *", async () => {
     // Cette tâche s'exécute tous les jours à 8h00

@@ -158,6 +158,13 @@ const Header = ({ session }: HeaderProps) => (
                 </a>
               </Link>
             </li>
+            <li>
+              <Link href="/bal-lab" legacyBehavior passHref>
+                <a className="fr-nav__link" target="_self">
+                  BAL Lab
+                </a>
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
