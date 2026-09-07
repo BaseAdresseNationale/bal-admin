@@ -8,9 +8,14 @@ import {
 } from "./service";
 import { Revision, StatusRevisionEnum } from "../../../types/api-depot.types";
 import {
+  buildFirstsPublicationsRecord,
+  getLatestMonthStart,
+  FIRSTS_PUBLICATIONS_BACKFILL_FROM,
+} from "./firsts-publications";
+import {
+  BanSourcesStat,
   fetchAvailableBanDates,
   countSourcesForDate,
-  BanSourcesStat,
 } from "./ban-sources";
 
 export type RevisionLast = Pick<
@@ -191,6 +196,41 @@ const fetchAndStorePublicationStats = async () => {
   }
 };
 
+const fetchAndStoreFirstsPublicationsStats = async () => {
+  const depotUrl = process.env.NEXT_PUBLIC_API_DEPOT_URL;
+  if (!depotUrl) {
+    console.warn(
+      "Variable d'environnement NEXT_PUBLIC_API_DEPOT_URL manquante : impossible de récupérer les stats de premières publications",
+    );
+    return;
+  }
+
+  console.log(
+    "CRON: démarrage des calculs des statistiques des premières publications",
+  );
+
+  const existingStats = await findAllStats();
+  const existingStat = existingStats.find(
+    ({ name }) => name === "firsts_publications",
+  );
+
+  const from = existingStat
+    ? getLatestMonthStart(existingStat.value as Record<string, number>)
+    : FIRSTS_PUBLICATIONS_BACKFILL_FROM;
+
+  const newRecord = await buildFirstsPublicationsRecord(from, new Date());
+
+  const mergedRecord = {
+    ...((existingStat?.value as Record<string, number>) || {}),
+    ...newRecord,
+  };
+
+  await deleteOne("firsts_publications");
+  await createOne("firsts_publications", mergedRecord);
+
+  console.log("CRON: stats de premières publications enregistrées");
+};
+
 const fetchAndStoreBanSourcesStats = async () => {
   console.log(
     "CRON: démarrage du calcul des stats de sources de publication BAN",
@@ -258,6 +298,15 @@ const calculStats = async () => {
   }
 
   try {
+    await fetchAndStoreFirstsPublicationsStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul des stats de premières publications :",
+      error,
+    );
+  }
+
+  try {
     await fetchAndStorePublicationStats();
   } catch (error) {
     console.error(
@@ -282,6 +331,16 @@ export const cronStats = async () => {
   if (existingStats.length === 0) {
     console.log("Calcul des stats");
     calculStats();
+  }
+  if (!existingStats.find(({ name }) => name === "firsts_publications")) {
+    try {
+      await fetchAndStoreFirstsPublicationsStats();
+    } catch (error) {
+      console.error(
+        "Erreur lors du calcul des stats de premières publications :",
+        error,
+      );
+    }
   }
   try {
     await fetchAndStoreBanSourcesStats();

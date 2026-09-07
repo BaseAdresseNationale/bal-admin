@@ -7,6 +7,7 @@ export interface StatData<T> {
 export type BanSourcesStat = Record<string, Record<string, number>>;
 
 export interface StatsData {
+  firsts_publications?: StatData<Record<string, number>>;
   depot_firsts_publications?: StatData<any>;
   depot_publications?: StatData<any>;
   mes_adresses_bals_creations?: StatData<any>;

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import SourcesPublicationBanChart from "./charts/sources-publication-ban";
+import FirstPublicationsMonthsChart from "./charts/first-publications-months";
 import { useDashboardData } from "@/hooks/dashboard-data";
 import Loader from "../loader";
 
@@ -22,6 +23,12 @@ const BalLabCharts = () => {
   return (
     <Loader isLoading={isLoading}>
       <BalLabContainer>
+        <div className="chart-wrapper">
+          <FirstPublicationsMonthsChart
+            firstPublicationsMonths={dashboardData.firstsPublications}
+          />
+        </div>
+        <br />
         <div className="chart-wrapper">
           <SourcesPublicationBanChart
             sourcesPublicationBan={dashboardData.sourcesPublicationBan}

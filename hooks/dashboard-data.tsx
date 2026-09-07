@@ -8,6 +8,7 @@ interface DashboardData {
   creationsResponse: any[];
   codesCommunesWithBanErrors: string[];
   blockedRevisions: string[];
+  firstsPublications: Record<string, number>;
   sourcesPublicationBan: BanSourcesStat;
 }
 
@@ -17,6 +18,7 @@ const initialDashboardData: DashboardData = {
   creationsResponse: [],
   codesCommunesWithBanErrors: [],
   blockedRevisions: [],
+  firstsPublications: null,
   sourcesPublicationBan: null,
 };
 
@@ -42,6 +44,7 @@ export function useDashboardData() {
           codesCommunesWithBanErrors:
             stats.codes_communes_with_ban_errors?.value || [],
           blockedRevisions: stats.blocked_revisions?.value || [],
+          firstsPublications: stats.firsts_publications?.value || null,
           sourcesPublicationBan: stats.sources_publication_ban?.value || null,
         });
       } catch (err) {

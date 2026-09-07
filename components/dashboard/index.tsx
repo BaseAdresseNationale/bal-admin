@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import PublicationPerDepartmentChart from "./charts/publications-per-department";
 import FirstPublicationEvolutionChart from "./charts/first-publication-evolution";
