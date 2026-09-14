@@ -9,6 +9,12 @@ import { formatDate } from "@/lib/util/date";
 ChartJS.register(...registerables);
 
 const SOURCES = [
+  {
+    key: "bal certifié",
+    match: ["certified"],
+    label: "CERTIFIÉ",
+    color: "#50C878",
+  },
   { key: "bal", match: ["commune"], label: "BAL", color: "#008300" },
   { key: "cadastre", match: ["cadastre"], label: "Cadastre", color: "#2a78d6" },
 
@@ -20,7 +26,6 @@ const SOURCES = [
     color: "#eb6834",
   },
   { key: "sdis", match: ["sdis"], label: "SDIS", color: "#e34948" },
-
   {
     key: "ban",
     match: ["ign", "inconnue", "ban"],

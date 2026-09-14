@@ -72,13 +72,16 @@ export async function countSourcesForDate(
   });
 
   let sourceIndex = -1;
+  let certificationCommuneIndex = -1;
   const counts: Record<string, number> = {};
 
   return new Promise((resolve, reject) => {
     rl.on("line", (line: string) => {
       if (!line) return;
       if (sourceIndex === -1) {
-        sourceIndex = line.split(";").indexOf("source_position");
+        const headers = line.split(";");
+        sourceIndex = headers.indexOf("source_position");
+        certificationCommuneIndex = headers.indexOf("certification_commune");
         if (sourceIndex === -1) {
           rl.close();
           reject(
@@ -89,7 +92,11 @@ export async function countSourcesForDate(
         }
         return;
       }
-      const value = line.split(";")[sourceIndex] || "inconnue";
+      const fields = line.split(";");
+      let value = fields[sourceIndex] || "inconnue";
+      if (value === "commune" && fields[certificationCommuneIndex] === "1") {
+        value = "certified";
+      }
       counts[value] = (counts[value] || 0) + 1;
     });
     rl.on("close", () => resolve(counts));
