@@ -27,13 +27,34 @@ const formatMonthLabel = (label) => {
   return `${MONTHS[Number(month) - 1]} ${year}`;
 };
 
+// Compare deux clés au format `MM-yyyy` par ordre chronologique
+const compareMonthLabels = (a, b) => {
+  const [monthA, yearA] = a.split("-");
+  const [monthB, yearB] = b.split("-");
+  return yearA === yearB ? monthA - monthB : yearA - yearB;
+};
+
 // Trie les clés au format `MM-yyyy` par ordre chronologique
-const sortMonthLabels = (labels) =>
-  [...labels].sort((a, b) => {
-    const [monthA, yearA] = a.split("-");
-    const [monthB, yearB] = b.split("-");
-    return yearA === yearB ? monthA - monthB : yearA - yearB;
-  });
+const sortMonthLabels = (labels) => [...labels].sort(compareMonthLabels);
+
+// Génère toutes les clés `MM-yyyy` entre deux bornes (incluses)
+const buildMonthRange = (fromLabel, toLabel) => {
+  const [fromMonth, fromYear] = fromLabel.split("-").map(Number);
+  const [toMonth, toYear] = toLabel.split("-").map(Number);
+
+  const labels = [];
+  let month = fromMonth;
+  let year = fromYear;
+  while (year < toYear || (year === toYear && month <= toMonth)) {
+    labels.push(`${String(month).padStart(2, "0")}-${year}`);
+    month += 1;
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+  }
+  return labels;
+};
 
 // Clé au format `MM-yyyy` (mois indexé à partir de 1, sur 2 chiffres)
 const OBJECTIVES = {
@@ -42,6 +63,8 @@ const OBJECTIVES = {
   "01-2024": 15000,
   "01-2025": 20000,
   "01-2026": 25000,
+  "01-2027": 30000,
+  "01-2028": 35000,
 };
 
 const DISPLAY_FROM_YEAR = 2020;
@@ -49,18 +72,39 @@ const DISPLAY_FROM_YEAR = 2020;
 const FirstPublicationsMonthsChart = ({ firstPublicationsMonths }) => {
   const data = useMemo(() => {
     const sortedLabels = sortMonthLabels(Object.keys(firstPublicationsMonths));
+    const lastObjectiveLabel = sortMonthLabels(Object.keys(OBJECTIVES)).at(-1);
 
+    const cumulByLabel = {};
     let cumul = 0;
-    const labels = [];
-    const cumulatedFirstPublications = [];
     for (const label of sortedLabels) {
       cumul += firstPublicationsMonths[label];
-      const [, year] = label.split("-");
-      if (Number(year) >= DISPLAY_FROM_YEAR) {
-        labels.push(label);
-        cumulatedFirstPublications.push(cumul);
-      }
+      cumulByLabel[label] = cumul;
     }
+
+    const firstLabel =
+      sortedLabels.find(
+        (label) => Number(label.split("-")[1]) >= DISPLAY_FROM_YEAR,
+      ) ?? `01-${DISPLAY_FROM_YEAR}`;
+    const lastDataLabel = sortedLabels.at(-1);
+    const lastLabel = [lastDataLabel, lastObjectiveLabel]
+      .filter(Boolean)
+      .sort(compareMonthLabels)
+      .at(-1);
+
+    const labels = buildMonthRange(firstLabel, lastLabel);
+
+    let lastKnownCumul = null;
+    const cumulatedFirstPublications = labels.map((label) => {
+      if (cumulByLabel[label] !== undefined) {
+        lastKnownCumul = cumulByLabel[label];
+      } else if (
+        lastDataLabel &&
+        compareMonthLabels(label, lastDataLabel) > 0
+      ) {
+        return null;
+      }
+      return lastKnownCumul;
+    });
 
     return {
       labels,
@@ -68,8 +112,7 @@ const FirstPublicationsMonthsChart = ({ firstPublicationsMonths }) => {
         {
           label: "Cumul BAL publiées",
           data: cumulatedFirstPublications,
-          borderColor: "#36A2EB",
-          backgroundColor: "#9BD0F5",
+          color: "#36A2EB",
           pointRadius: 0,
           tension: 0.4,
         },
@@ -78,8 +121,7 @@ const FirstPublicationsMonthsChart = ({ firstPublicationsMonths }) => {
           data: labels.map((label) => OBJECTIVES[label] ?? null),
           showLine: false,
           pointRadius: 6,
-          pointBackgroundColor: "#FF6384",
-          borderColor: "#FF6384",
+          color: "#FF6384",
         },
       ],
     };
@@ -119,6 +161,10 @@ const FirstPublicationsMonthsChart = ({ firstPublicationsMonths }) => {
                 return month === "01" ? year : "";
               },
             },
+          },
+          y: {
+            min: 0,
+            max: 36000,
           },
         },
       }}
