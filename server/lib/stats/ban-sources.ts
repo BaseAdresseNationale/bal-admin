@@ -55,9 +55,9 @@ async function fetchWithRetry(url: string): Promise<Response | null> {
   throw lastError;
 }
 
-export async function countSourcesForDate(
+export async function openBanCsvLines(
   date: string,
-): Promise<Record<string, number> | null> {
+): Promise<ReturnType<typeof createInterface> | null> {
   const url = fileUrlForDate(date);
   const res = await fetchWithRetry(url);
   if (!res || !res.body) {
@@ -66,10 +66,17 @@ export async function countSourcesForDate(
   }
 
   const nodeStream = Readable.fromWeb(res.body as any);
-  const rl = createInterface({
+  return createInterface({
     input: nodeStream.pipe(createGunzip()),
     crlfDelay: Infinity,
   });
+}
+
+export async function countSourcesForDate(
+  date: string,
+): Promise<Record<string, number> | null> {
+  const rl = await openBanCsvLines(date);
+  if (!rl) return null;
 
   let sourceIndex = -1;
   let certificationCommuneIndex = -1;

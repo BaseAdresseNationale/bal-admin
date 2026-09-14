@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { BanSourcesStat, getStats } from "@/lib/api-stats";
+import { BanSourcesStat, NbNewAdressesStat, getStats } from "@/lib/api-stats";
 
 interface DashboardData {
   firstPublicationEvolutionResponse: any[];
@@ -10,6 +10,7 @@ interface DashboardData {
   blockedRevisions: string[];
   firstsPublications: Record<string, number>;
   sourcesPublicationBan: BanSourcesStat;
+  nbNewAdresses: NbNewAdressesStat;
 }
 
 const initialDashboardData: DashboardData = {
@@ -20,6 +21,7 @@ const initialDashboardData: DashboardData = {
   blockedRevisions: [],
   firstsPublications: null,
   sourcesPublicationBan: null,
+  nbNewAdresses: null,
 };
 
 export function useDashboardData() {
@@ -46,6 +48,7 @@ export function useDashboardData() {
           blockedRevisions: stats.blocked_revisions?.value || [],
           firstsPublications: stats.firsts_publications?.value || null,
           sourcesPublicationBan: stats.sources_publication_ban?.value || null,
+          nbNewAdresses: stats.nb_new_adresses?.value || null,
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);

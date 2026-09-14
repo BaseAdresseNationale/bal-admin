@@ -17,6 +17,7 @@ import {
   fetchAvailableBanDates,
   countSourcesForDate,
 } from "./ban-sources";
+import { NbNewAdressesStat, computeNbNewAdresses } from "./new-addresses";
 
 export type RevisionLast = Pick<
   Revision,
@@ -278,6 +279,47 @@ const fetchAndStoreBanSourcesStats = async () => {
   console.log("CRON: fin du calcul des stats de sources de publication BAN");
 };
 
+const fetchAndStoreNbNewAdressesStats = async () => {
+  console.log("CRON: démarrage du calcul du nombre de nouvelles adresses BAN");
+
+  const availableDates = await fetchAvailableBanDates();
+  if (availableDates.length < 2) {
+    console.warn(
+      "CRON: pas assez de dates BAN disponibles pour calculer nb_new_adresses",
+    );
+    return;
+  }
+  const firstDate = availableDates[0];
+  const lastDate = availableDates[availableDates.length - 1];
+
+  const existingStat = await findOneByName("nb_new_adresses");
+  const existingValue = existingStat?.value as NbNewAdressesStat | undefined;
+
+  if (existingValue?.lastDate === lastDate) {
+    console.log("CRON: nb_new_adresses déjà à jour, aucun recalcul nécessaire");
+    return;
+  }
+
+  const count = await computeNbNewAdresses(firstDate, lastDate);
+  if (count === null) {
+    console.warn(
+      "CRON: calcul de nb_new_adresses impossible (fichier(s) BAN indisponible(s))",
+    );
+    return;
+  }
+
+  const value: NbNewAdressesStat = { firstDate, lastDate, count };
+  if (existingStat) {
+    await updateOne("nb_new_adresses", value);
+  } else {
+    await createOne("nb_new_adresses", value);
+  }
+
+  console.log(
+    `CRON: nb_new_adresses mis à jour (${count} nouvelles adresses entre ${firstDate} et ${lastDate})`,
+  );
+};
+
 const calculStats = async () => {
   try {
     await fetchAndStoreBlockedRevisionsStats();
@@ -323,6 +365,15 @@ const calculStats = async () => {
       error,
     );
   }
+
+  try {
+    await fetchAndStoreNbNewAdressesStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul des stats de nouvelles adresses BAN :",
+      error,
+    );
+  }
 };
 
 export const cronStats = async () => {
@@ -347,6 +398,14 @@ export const cronStats = async () => {
   } catch (error) {
     console.error(
       "Erreur lors du calcul des stats de sources de publication BAN :",
+      error,
+    );
+  }
+  try {
+    await fetchAndStoreNbNewAdressesStats();
+  } catch (error) {
+    console.error(
+      "Erreur lors du calcul des stats de nouvelles adresses BAN :",
       error,
     );
   }

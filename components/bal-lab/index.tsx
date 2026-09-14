@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import SourcesPublicationBanChart from "./charts/sources-publication-ban";
 import FirstPublicationsMonthsChart from "./charts/first-publications-months";
+import NbNewAdresses from "./nb-new-adresses";
 import { useDashboardData } from "@/hooks/dashboard-data";
 import Loader from "../loader";
 
@@ -34,6 +35,7 @@ const BalLabCharts = () => {
             sourcesPublicationBan={dashboardData.sourcesPublicationBan}
           />
         </div>
+        <NbNewAdresses nbNewAdresses={dashboardData.nbNewAdresses} />
       </BalLabContainer>
     </Loader>
   );
