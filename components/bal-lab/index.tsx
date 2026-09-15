@@ -2,7 +2,9 @@ import styled from "styled-components";
 import SourcesPublicationBanChart from "./charts/sources-publication-ban";
 import FirstPublicationsMonthsChart from "./charts/first-publications-months";
 import WebinairesChart from "./charts/webinaires";
+import ZammadTicketsChart from "./charts/zammad-tickets";
 import WebinairesSummary from "./webinaires-summary";
+import ZammadSummary from "./zammad-summary";
 import NbNewAdresses from "./nb-new-adresses";
 import { useDashboardData } from "@/hooks/dashboard-data";
 import Loader from "../loader";
@@ -43,6 +45,11 @@ const BalLabCharts = () => {
           <WebinairesChart webinaires={dashboardData.webinaires} />
         </div>
         <WebinairesSummary webinaires={dashboardData.webinaires} />
+        <br />
+        <div className="chart-wrapper">
+          <ZammadTicketsChart zammad={dashboardData.zammad} />
+        </div>
+        <ZammadSummary zammad={dashboardData.zammad} />
       </BalLabContainer>
     </Loader>
   );

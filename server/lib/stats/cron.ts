@@ -19,6 +19,7 @@ import {
 } from "./ban-sources";
 import { NbNewAdressesStat, computeNbNewAdresses } from "./new-addresses";
 import { computeWebinairesStat } from "./webinaires";
+import { fetchAllZammadTickets, computeZammadStat } from "./zammad";
 
 export type RevisionLast = Pick<
   Revision,
@@ -334,6 +335,20 @@ const fetchAndStoreWebinairesStats = async () => {
   );
 };
 
+const fetchAndStoreZammadStats = async () => {
+  console.log("CRON: démarrage du calcul des stats Zammad");
+
+  const tickets = await fetchAllZammadTickets();
+  const value = computeZammadStat(tickets);
+
+  await deleteOne("zammad");
+  await createOne("zammad", value);
+
+  console.log(
+    `CRON: stats Zammad enregistrées (${value.months.length} mois, ${value.totalTickets} ticket(s), ${value.totalMessages} message(s))`,
+  );
+};
+
 const calculStats = async () => {
   try {
     await fetchAndStoreBlockedRevisionsStats();
@@ -394,6 +409,12 @@ const calculStats = async () => {
   } catch (error) {
     console.error("Erreur lors du calcul des stats de webinaires :", error);
   }
+
+  try {
+    await fetchAndStoreZammadStats();
+  } catch (error) {
+    console.error("Erreur lors du calcul des stats Zammad :", error);
+  }
 };
 
 export const cronStats = async () => {
@@ -434,6 +455,13 @@ export const cronStats = async () => {
       await fetchAndStoreWebinairesStats();
     } catch (error) {
       console.error("Erreur lors du calcul des stats de webinaires :", error);
+    }
+  }
+  if (!existingStats.find(({ name }) => name === "zammad")) {
+    try {
+      await fetchAndStoreZammadStats();
+    } catch (error) {
+      console.error("Erreur lors du calcul des stats Zammad :", error);
     }
   }
   schedule("0 8 * * *", async () => {

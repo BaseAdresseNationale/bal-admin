@@ -4,6 +4,7 @@ import {
   BanSourcesStat,
   NbNewAdressesStat,
   WebinaireStat,
+  ZammadStat,
   getStats,
 } from "@/lib/api-stats";
 
@@ -17,7 +18,14 @@ interface DashboardData {
   sourcesPublicationBan: BanSourcesStat;
   nbNewAdresses: NbNewAdressesStat;
   webinaires: WebinaireStat[];
+  zammad: ZammadStat;
 }
+
+const initialZammadStat: ZammadStat = {
+  months: [],
+  totalTickets: 0,
+  totalMessages: 0,
+};
 
 const initialDashboardData: DashboardData = {
   firstPublicationEvolutionResponse: [],
@@ -29,6 +37,7 @@ const initialDashboardData: DashboardData = {
   sourcesPublicationBan: null,
   nbNewAdresses: null,
   webinaires: [],
+  zammad: initialZammadStat,
 };
 
 export function useDashboardData() {
@@ -57,6 +66,7 @@ export function useDashboardData() {
           sourcesPublicationBan: stats.sources_publication_ban?.value || null,
           nbNewAdresses: stats.nb_new_adresses?.value || null,
           webinaires: stats.webinaires?.value || [],
+          zammad: stats.zammad?.value || initialZammadStat,
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
