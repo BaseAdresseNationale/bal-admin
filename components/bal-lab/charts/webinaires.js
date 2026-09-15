@@ -76,7 +76,7 @@ const WebinairesChart = ({ webinaires }) => {
         plugins: {
           title: {
             display: true,
-            text: "Visualisation des webinaires et du nombre de participants",
+            text: "Visualisation des webinaires et du nombre de inscrits",
             font: {
               size: 18,
             },
@@ -89,7 +89,7 @@ const WebinairesChart = ({ webinaires }) => {
             callbacks: {
               title: (items) => formatDate(items[0].parsed.x, "PPP"),
               label: (item) =>
-                ` ${item.dataset.label} — ${item.raw.nbParticipants} participant(s)`,
+                ` ${item.dataset.label} — ${item.raw.nbParticipants} inscrit(s)`,
             },
           },
         },

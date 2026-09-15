@@ -18,7 +18,6 @@ import {
   countSourcesForDate,
 } from "./ban-sources";
 import { NbNewAdressesStat, computeNbNewAdresses } from "./new-addresses";
-import { computeWebinairesStat } from "./webinaires";
 import { fetchAllZammadTickets, computeZammadStat } from "./zammad";
 
 export type RevisionLast = Pick<
@@ -322,19 +321,6 @@ const fetchAndStoreNbNewAdressesStats = async () => {
   );
 };
 
-const fetchAndStoreWebinairesStats = async () => {
-  console.log("CRON: démarrage du calcul des stats de webinaires");
-
-  const value = await computeWebinairesStat();
-
-  await deleteOne("webinaires");
-  await createOne("webinaires", value);
-
-  console.log(
-    `CRON: stats de webinaires enregistrées (${value.length} webinaire(s))`,
-  );
-};
-
 const fetchAndStoreZammadStats = async () => {
   console.log("CRON: démarrage du calcul des stats Zammad");
 
@@ -405,22 +391,24 @@ const calculStats = async () => {
   }
 
   try {
-    await fetchAndStoreWebinairesStats();
-  } catch (error) {
-    console.error("Erreur lors du calcul des stats de webinaires :", error);
-  }
-
-  try {
     await fetchAndStoreZammadStats();
   } catch (error) {
     console.error("Erreur lors du calcul des stats Zammad :", error);
   }
 };
 
+// Stats calculées à la volée dans findAllStats (jamais persistées en base) :
+// à exclure du test "aucune statistique n'existe encore" ci-dessous, sans
+// quoi il ne se déclencherait plus jamais.
+const LIVE_COMPUTED_STAT_NAMES = ["partenaires", "webinaires"];
+
 export const cronStats = async () => {
   const existingStats = await findAllStats();
+  const storedStats = existingStats.filter(
+    ({ name }) => !LIVE_COMPUTED_STAT_NAMES.includes(name),
+  );
   // Lance le calcul uniquement si aucune statistique n'existe
-  if (existingStats.length === 0) {
+  if (storedStats.length === 0) {
     console.log("Calcul des stats");
     calculStats();
   }
@@ -449,13 +437,6 @@ export const cronStats = async () => {
       "Erreur lors du calcul des stats de nouvelles adresses BAN :",
       error,
     );
-  }
-  if (!existingStats.find(({ name }) => name === "webinaires")) {
-    try {
-      await fetchAndStoreWebinairesStats();
-    } catch (error) {
-      console.error("Erreur lors du calcul des stats de webinaires :", error);
-    }
   }
   if (!existingStats.find(({ name }) => name === "zammad")) {
     try {

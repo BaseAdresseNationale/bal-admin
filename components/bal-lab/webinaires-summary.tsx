@@ -62,7 +62,7 @@ const WebinairesSummary = ({ webinaires }: WebinairesSummaryProps) => {
       </Card>
       <Card>
         <Count>{totalParticipants.toLocaleString("fr-FR")}</Count>
-        <Label>participants au total</Label>
+        <Label>inscrits au total</Label>
       </Card>
     </SummaryRow>
   );
