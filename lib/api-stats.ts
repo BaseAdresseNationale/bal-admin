@@ -31,6 +31,11 @@ export type ZammadStat = {
   totalMessages: number;
 };
 
+export type PartenaireStat = {
+  name: string;
+  type: string;
+};
+
 export interface StatsData {
   firsts_publications?: StatData<Record<string, number>>;
   depot_firsts_publications?: StatData<any>;
@@ -42,6 +47,7 @@ export interface StatsData {
   nb_new_adresses?: StatData<NbNewAdressesStat>;
   webinaires?: StatData<WebinaireStat[]>;
   zammad?: StatData<ZammadStat>;
+  partenaires?: StatData<PartenaireStat[]>;
 }
 
 export async function getStats(): Promise<StatsData> {

@@ -1,11 +1,14 @@
 import { AppDataSource } from "../../utils/typeorm-client";
 import { Stats } from "./entity";
 import { ObjectId } from "bson";
+import { computePartenairesStat } from "./partenaires";
 
 const statsRepository = AppDataSource.getRepository(Stats);
 
 export async function findAllStats(): Promise<Stats[]> {
-  return statsRepository.findBy({});
+  const storedStats = await statsRepository.findBy({});
+  const partenaires = await computePartenairesStat();
+  return [...storedStats, { name: "partenaires", value: partenaires }];
 }
 
 export async function findOneByName(name: string): Promise<Stats | null> {
