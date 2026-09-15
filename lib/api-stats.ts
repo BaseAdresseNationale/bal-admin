@@ -12,6 +12,12 @@ export type NbNewAdressesStat = {
   count: number;
 };
 
+export type WebinaireStat = {
+  type: string;
+  date: string;
+  nbParticipants: number;
+};
+
 export interface StatsData {
   firsts_publications?: StatData<Record<string, number>>;
   depot_firsts_publications?: StatData<any>;
@@ -21,6 +27,7 @@ export interface StatsData {
   blocked_revisions?: StatData<string[]>;
   sources_publication_ban?: StatData<BanSourcesStat>;
   nb_new_adresses?: StatData<NbNewAdressesStat>;
+  webinaires?: StatData<WebinaireStat[]>;
 }
 
 export async function getStats(): Promise<StatsData> {

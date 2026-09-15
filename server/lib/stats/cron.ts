@@ -18,6 +18,7 @@ import {
   countSourcesForDate,
 } from "./ban-sources";
 import { NbNewAdressesStat, computeNbNewAdresses } from "./new-addresses";
+import { computeWebinairesStat } from "./webinaires";
 
 export type RevisionLast = Pick<
   Revision,
@@ -320,6 +321,19 @@ const fetchAndStoreNbNewAdressesStats = async () => {
   );
 };
 
+const fetchAndStoreWebinairesStats = async () => {
+  console.log("CRON: démarrage du calcul des stats de webinaires");
+
+  const value = await computeWebinairesStat();
+
+  await deleteOne("webinaires");
+  await createOne("webinaires", value);
+
+  console.log(
+    `CRON: stats de webinaires enregistrées (${value.length} webinaire(s))`,
+  );
+};
+
 const calculStats = async () => {
   try {
     await fetchAndStoreBlockedRevisionsStats();
@@ -374,6 +388,12 @@ const calculStats = async () => {
       error,
     );
   }
+
+  try {
+    await fetchAndStoreWebinairesStats();
+  } catch (error) {
+    console.error("Erreur lors du calcul des stats de webinaires :", error);
+  }
 };
 
 export const cronStats = async () => {
@@ -408,6 +428,13 @@ export const cronStats = async () => {
       "Erreur lors du calcul des stats de nouvelles adresses BAN :",
       error,
     );
+  }
+  if (!existingStats.find(({ name }) => name === "webinaires")) {
+    try {
+      await fetchAndStoreWebinairesStats();
+    } catch (error) {
+      console.error("Erreur lors du calcul des stats de webinaires :", error);
+    }
   }
   schedule("0 8 * * *", async () => {
     // Cette tâche s'exécute tous les jours à 8h00
