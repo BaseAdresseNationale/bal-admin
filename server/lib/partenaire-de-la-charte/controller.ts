@@ -103,7 +103,7 @@ partenaireDeLaCharteRoutes.get("/:id", isAdmin, async (req, res) => {
   }
 });
 
-partenaireDeLaCharteRoutes.get("/:id/perimeters", isAdmin, async (req, res) => {
+partenaireDeLaCharteRoutes.get("/:id/perimeters", async (req, res) => {
   try {
     res.json(
       await PartenaireDeLaCharteService.getPartenaireDeLaChartePerimetersFlatten(
