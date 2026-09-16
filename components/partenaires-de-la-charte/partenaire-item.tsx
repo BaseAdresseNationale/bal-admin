@@ -4,6 +4,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Link from "next/link";
 import {
   PartenaireDeLaCharte,
+  PartenaireDeLaCharteOrganismeTypeEnum,
   PartenaireDeLaCharteTypeEnum,
 } from "../../server/lib/partenaire-de-la-charte/entity";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
@@ -33,6 +34,23 @@ const getPartenaireTypeColor = (type: PartenaireDeLaCharteTypeEnum) => {
   }
 };
 
+const getOrgaTypeColor = (
+  organismeType: PartenaireDeLaCharteOrganismeTypeEnum,
+) => {
+  switch (organismeType) {
+    case PartenaireDeLaCharteOrganismeTypeEnum.DEPARTEMENT:
+      return "success";
+    case PartenaireDeLaCharteOrganismeTypeEnum.EPCI:
+      return "info";
+    case PartenaireDeLaCharteOrganismeTypeEnum.SYNDICAT_MIXTE:
+      return "error";
+    case PartenaireDeLaCharteOrganismeTypeEnum.REGION:
+      return "new";
+    default:
+      return undefined;
+  }
+};
+
 const getDate = (signatureDate: Date, creationDate: Date) => {
   if (signatureDate) {
     return new Date(signatureDate).toLocaleDateString();
@@ -47,7 +65,7 @@ export const PartenaireItem = ({
   type,
   name,
   charteSignatureDate,
-  services,
+  organismeType,
   clients,
   entrepriseReviews,
 }: PartenaireDeLaCharte) => {
@@ -87,23 +105,25 @@ export const PartenaireItem = ({
       </Badge>
     );
 
+  const badgeOrga =
+    type === PartenaireDeLaCharteTypeEnum.ORGANISME ? (
+      <Badge
+        severity={getOrgaTypeColor(organismeType)}
+        noIcon
+        style={{ position: "relative" }}
+      >
+        {organismeType}
+      </Badge>
+    ) : null;
+
   return (
     <tr key={id}>
-      <td className="fr-col fr-my-1v">{badgeType}</td>
+      <td className="fr-col fr-my-1v">
+        {badgeType} {badgeOrga}
+      </td>
       <td className="fr-col fr-my-1v">{name}</td>
       <td className="fr-col fr-my-1v">
         {getDate(charteSignatureDate, createdAt)}
-      </td>
-      <td className="fr-col fr-my-1v">
-        {services?.map((service) => (
-          <Badge
-            severity="info"
-            style={{ marginRight: 2, marginBottom: 2 }}
-            key={service}
-          >
-            {service}
-          </Badge>
-        ))}
       </td>
       <td className="fr-col fr-my-1v">
         {nbClientMoissonneur > 0 && (

@@ -34,7 +34,6 @@ const PartenairesDeLaChartePage = ({
                   "Type",
                   "Nom",
                   "Date de signature",
-                  "Services",
                   "Applications",
                   "",
                 ]}
@@ -83,7 +82,6 @@ const PartenairesDeLaChartePage = ({
                     "Type",
                     "Nom",
                     "Date de candidature",
-                    "Services",
                     "Applications",
                     "",
                   ]}
