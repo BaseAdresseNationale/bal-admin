@@ -1,6 +1,14 @@
 import styled from "styled-components";
+import { differenceInCalendarDays } from "date-fns";
 import { NbNewAdressesStat } from "@/lib/api-stats";
 import { formatDate } from "@/lib/util/date";
+
+const SummaryRow = styled.div`
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
 
 const Card = styled.div`
   display: flex;
@@ -44,16 +52,32 @@ const NbNewAdresses = ({ nbNewAdresses }: NbNewAdressesProps) => {
   }
 
   const { firstDate, lastDate, count } = nbNewAdresses;
+  const nbDays = differenceInCalendarDays(
+    new Date(lastDate),
+    new Date(firstDate),
+  );
+  const perDay = nbDays > 0 ? count / nbDays : null;
 
   return (
-    <Card>
-      <Count>{count.toLocaleString("fr-FR")}</Count>
-      <Label>nouvelles adresses dans la BAN</Label>
-      <Period>
-        entre le {formatDate(firstDate, "PPP")} et le{" "}
-        {formatDate(lastDate, "PPP")}
-      </Period>
-    </Card>
+    <SummaryRow>
+      <Card>
+        <Count>{count.toLocaleString("fr-FR")}</Count>
+        <Label>nouvelles adresses dans la BAN</Label>
+        <Period>
+          entre le {formatDate(firstDate, "PPP")} et le{" "}
+          {formatDate(lastDate, "PPP")}
+        </Period>
+      </Card>
+      {perDay !== null && (
+        <Card>
+          <Count>
+            {perDay.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}
+          </Count>
+          <Label>nouvelles adresses par jour en moyenne</Label>
+          <Period>depuis le {formatDate(firstDate, "PPP")}</Period>
+        </Card>
+      )}
+    </SummaryRow>
   );
 };
 

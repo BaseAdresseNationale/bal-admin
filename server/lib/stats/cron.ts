@@ -18,6 +18,7 @@ import {
   countSourcesForDate,
 } from "./ban-sources";
 import { NbNewAdressesStat, computeNbNewAdresses } from "./new-addresses";
+import { fetchAllZammadTickets, computeZammadStat } from "./zammad";
 
 export type RevisionLast = Pick<
   Revision,
@@ -320,6 +321,20 @@ const fetchAndStoreNbNewAdressesStats = async () => {
   );
 };
 
+const fetchAndStoreZammadStats = async () => {
+  console.log("CRON: démarrage du calcul des stats Zammad");
+
+  const tickets = await fetchAllZammadTickets();
+  const value = computeZammadStat(tickets);
+
+  await deleteOne("zammad");
+  await createOne("zammad", value);
+
+  console.log(
+    `CRON: stats Zammad enregistrées (${value.months.length} mois, ${value.totalTickets} ticket(s), ${value.totalMessages} message(s))`,
+  );
+};
+
 const calculStats = async () => {
   try {
     await fetchAndStoreBlockedRevisionsStats();
@@ -374,12 +389,26 @@ const calculStats = async () => {
       error,
     );
   }
+
+  try {
+    await fetchAndStoreZammadStats();
+  } catch (error) {
+    console.error("Erreur lors du calcul des stats Zammad :", error);
+  }
 };
+
+// Stats calculées à la volée dans findAllStats (jamais persistées en base) :
+// à exclure du test "aucune statistique n'existe encore" ci-dessous, sans
+// quoi il ne se déclencherait plus jamais.
+const LIVE_COMPUTED_STAT_NAMES = ["partenaires", "webinaires"];
 
 export const cronStats = async () => {
   const existingStats = await findAllStats();
+  const storedStats = existingStats.filter(
+    ({ name }) => !LIVE_COMPUTED_STAT_NAMES.includes(name),
+  );
   // Lance le calcul uniquement si aucune statistique n'existe
-  if (existingStats.length === 0) {
+  if (storedStats.length === 0) {
     console.log("Calcul des stats");
     calculStats();
   }
@@ -408,6 +437,13 @@ export const cronStats = async () => {
       "Erreur lors du calcul des stats de nouvelles adresses BAN :",
       error,
     );
+  }
+  if (!existingStats.find(({ name }) => name === "zammad")) {
+    try {
+      await fetchAndStoreZammadStats();
+    } catch (error) {
+      console.error("Erreur lors du calcul des stats Zammad :", error);
+    }
   }
   schedule("0 8 * * *", async () => {
     // Cette tâche s'exécute tous les jours à 8h00

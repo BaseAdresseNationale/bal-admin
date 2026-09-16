@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 
-import { BanSourcesStat, NbNewAdressesStat, getStats } from "@/lib/api-stats";
+import {
+  BanSourcesStat,
+  NbNewAdressesStat,
+  WebinaireStat,
+  ZammadStat,
+  PartenaireStat,
+  getStats,
+} from "@/lib/api-stats";
 
 interface DashboardData {
   firstPublicationEvolutionResponse: any[];
@@ -11,7 +18,16 @@ interface DashboardData {
   firstsPublications: Record<string, number>;
   sourcesPublicationBan: BanSourcesStat;
   nbNewAdresses: NbNewAdressesStat;
+  webinaires: WebinaireStat[];
+  zammad: ZammadStat;
+  partenaires: PartenaireStat[];
 }
+
+const initialZammadStat: ZammadStat = {
+  months: [],
+  totalTickets: 0,
+  totalMessages: 0,
+};
 
 const initialDashboardData: DashboardData = {
   firstPublicationEvolutionResponse: [],
@@ -22,6 +38,9 @@ const initialDashboardData: DashboardData = {
   firstsPublications: null,
   sourcesPublicationBan: null,
   nbNewAdresses: null,
+  webinaires: [],
+  zammad: initialZammadStat,
+  partenaires: [],
 };
 
 export function useDashboardData() {
@@ -49,6 +68,9 @@ export function useDashboardData() {
           firstsPublications: stats.firsts_publications?.value || null,
           sourcesPublicationBan: stats.sources_publication_ban?.value || null,
           nbNewAdresses: stats.nb_new_adresses?.value || null,
+          webinaires: stats.webinaires?.value || [],
+          zammad: stats.zammad?.value || initialZammadStat,
+          partenaires: stats.partenaires?.value || [],
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
